@@ -1,67 +1,72 @@
 drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
     circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
     circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard;
-drop type if exists curcuit_board_machine_state, customer_type;
-CREATE TYPE curcuit_board_machine_state AS ENUM ('ok', 'broken', 'decommissioned');
+drop type if exists circuit_board_machine_state, customer_type;
+CREATE TYPE circuit_board_machine_state AS ENUM ('ok', 'broken', 'decommissioned');
 CREATE TYPE customer_type AS ENUM ('legal_entity', 'individual');
 
 create table if not exists store (
-    id serial PRIMARY KEY NOT NULL,
+    id serial PRIMARY KEY,
     name varchar(255) NOT NULL
 );
 
 create table if not exists product (
-    id serial PRIMARY KEY NOT NULL,
+    id serial PRIMARY KEY,
     name varchar(255) NOT NULL
 );
 
 create table if not exists tea_composition (
-    super_id serial PRIMARY KEY NOT NULL check(super_id > 0) REFERENCES product /*todo*/,
-    name varchar(255) NOT NULL
+    super_id serial PRIMARY KEY REFERENCES product on delete cascade on update cascade,
+    created date NOT NULL,
+    description text
 );
 
 create table if not exists store_item (
-    store_id int NOT NULL check(store_id > 0) REFERENCES store on delete cascade on update cascade,
-    product_id int NOT NULL check(product_id > 0) REFERENCES product on delete cascade on update cascade,
-    amount real NOT NULL
+    store_id int REFERENCES store on delete cascade on update cascade,
+    product_id int REFERENCES product on delete cascade on update cascade,
+    amount real NOT NULL,
+    primary key (store_id, product_id)
 );
 
 create table if not exists tea (
-    super_id serial PRIMARY KEY NOT NULL check (super_id > 0) REFERENCES product,
+    super_id serial PRIMARY KEY REFERENCES product on delete cascade on update cascade,
     type varchar(128) NOT NULL,
     created date NOT NULL
 );
 
 create table if not exists factory_employee (
-    id serial PRIMARY KEY NOT NULL,
+    id serial PRIMARY KEY,
     fname varchar(255) NOT NULL,
     mname varchar(255),
     lname varchar(255) NOT NULL
 );
 
 create table if not exists tea_cupboard (
-    id serial PRIMARY KEY NOT NULL,
-    owner_id int check(owner_id > 0) REFERENCES factory_employee on delete set null on update cascade,
-    color int
+    id serial PRIMARY KEY,
+    owner_id int REFERENCES factory_employee on delete cascade on update cascade,
+    color int check ( color > 0 and color < cast(x'FFFFFF' as int) ),
+    capacity real check ( capacity > 0 )
 );
 
 create table if not exists cupboard_item (
-    product_id int NOT NULL check(product_id > 0) REFERENCES tea on delete cascade,
-    cupboard_id int NOT NULL check(cupboard_id > 0) REFERENCES tea_cupboard on delete cascade,
-    amount real NOT NULL
+    product_id int REFERENCES tea on delete cascade on update cascade,
+    cupboard_id int REFERENCES tea_cupboard on delete cascade on update cascade,
+    amount real NOT NULL check ( amount > 0 ),
+    primary key (product_id, cupboard_id)
 );
 
 create table if not exists composition_item (
-    composition_id int NOT NULL check(composition_id > 0) REFERENCES tea_composition on delete cascade,
-    product_id int NOT NULL check(product_id > 0) REFERENCES tea /*todo delete update*/,
-    amount real NOT NULL
+    composition_id int REFERENCES tea_composition on delete cascade on update cascade,
+    product_id int REFERENCES tea on delete cascade on update cascade,
+    amount_percent real NOT NULL check ( amount_percent between 0 and 100 ),
+    primary key (composition_id, product_id)
 );
 
 create table if not exists circuit_board_model (
     id varchar(128),
     version varchar(128),
-    element_gap real NOT NULL,
-    hole_diameter real NOT NULL,
+    element_gap real NOT NULL check ( element_gap > 0 ),
+    hole_diameter real NOT NULL check ( hole_diameter > 0 ),
     stiffness real NOT NULL,
     thermal_expansion_coef real NOT NULL,
     primary key (id, version)
@@ -69,31 +74,37 @@ create table if not exists circuit_board_model (
 
 create table if not exists circuit_board_machine (
     id serial primary key,
-    assembly_date date NOT NULL,
-    work_hrs real,
-    area real /*todo что это памагити*/,
-    state curcuit_board_machine_state NOT NULL
+    assembly_date date NOT NULL check ( assembly_date <= now() ) default now(),
+    work_hrs real not null check ( work_hrs >= 0 ) default 0,
+    area real not null check ( area > 0 ),
+    state circuit_board_machine_state NOT NULL
 );
 
 create table if not exists circuit_board_machine_param_item (
-    machine_id int NOT NULL REFERENCES circuit_board_machine(id),
-    board_model_id varchar(128) not null /*todo delete update*/,
-    board_model_version varchar(128) NOT NULL /*todo delete update*/,
-    speed real,
-    foreign key (board_model_id, board_model_version) references circuit_board_model(id, version)
+    machine_id int REFERENCES circuit_board_machine(id) on update cascade on delete cascade,
+    board_model_id varchar(128),
+    board_model_version varchar(128),
+    speed real not null check ( speed > 0 ),
+    primary key (machine_id, board_model_id, board_model_version),
+    foreign key (board_model_id, board_model_version) references circuit_board_model(id, version) on update cascade on delete cascade
 );
 
 create table if not exists customer (
-    id serial PRIMARY KEY NOT NULL,
+    id serial PRIMARY KEY,
     type customer_type NOT NULL,
     fname varchar(255) NOT NULL,
     mname varchar(255),
     lname varchar(255) NOT NULL,
-    email varchar(255) /*todo null?????*/,
-    phone bigint /*todo null?????*/,
-    ITIN int /*todo null?????*/,
-    company_name varchar(255)
+    email varchar(255) check ( email like '' )/*todo*/,
+    phone bigint /*todo*/,
+    ITIN bigint check ( ITIN >= 0 and ITIN < 10000000000000) default null,
+    company_name varchar(255),
+    check ( email is not null or phone is not null )
 );
+
+(?:[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f
+\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:
+        (?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])
 
 create table if not exists address (
     id serial PRIMARY KEY NOT NULL,
@@ -139,17 +150,3 @@ create table if not exists delivery_truck (
     capacity int NOT NULL,
     delivery_by timestamp
 );
-
-insert into store(name) values ('Shop_1');
-insert into store(name) values ('Shop_2');
-insert into store(name) values ('Shop_3');
-
-insert into product(name) values ('tea'); /*1*/
-insert into product(name) values ('coffee');
-insert into product(name) values ('sugar');
-insert into product(name) values ('lemon');
-insert into product(name) values ('mint');
-insert into product(name) values ('xylitol');
-insert into product(name) values ('thyme');
-insert into product(name) values ('cranberry');
-insert into product(name) values ('camomile');
