@@ -59,35 +59,6 @@ create table if not exists employee_machine_xref (
     primary key (employee_id, machine_id)
 );
 
----------------------
-
-create table if not exists tea_composition (
-    super_id serial primary key references product on delete cascade on update cascade,
-    created date not null,
-    description text
-);
-
-create table if not exists store_item (
-    store_id int references store on delete cascade on update cascade,
-    product_id int references product on delete cascade on update cascade,
-    amount real not null,
-    primary key (store_id, product_id)
-);
-
-create table if not exists cupboard_item (
-    product_id int references tea on delete cascade on update cascade,
-    cupboard_id int references tea_cupboard on delete cascade on update cascade,
-    amount real not null check ( amount > 0 ),
-    primary key (product_id, cupboard_id)
-);
-
-create table if not exists composition_item (
-    composition_id int references tea_composition on delete cascade on update cascade,
-    product_id int references tea on delete cascade on update cascade  /*todo что, если из таблицы чаев удаляется чай? он удалится и из композиции?*/,
-    amount_percent real not null check ( amount_percent between 0 and 100 ),
-    primary key (composition_id, product_id)
-);
-
 create table if not exists circuit_board_machine_param_item (
     machine_id int references circuit_board_machine(id) on update cascade on delete cascade,
     board_model_id varchar(128),
@@ -118,6 +89,34 @@ create table if not exists address (
     street varchar(255) not null,
     building int not null,
     comment text
+);
+---------------------
+
+create table if not exists tea_composition (
+    super_id serial primary key references product on delete cascade on update cascade,
+    created date not null,
+    description text
+);
+
+create table if not exists store_item (
+    store_id int references store on delete cascade on update cascade,
+    product_id int references product on delete cascade on update cascade,
+    amount real not null,
+    primary key (store_id, product_id)
+);
+
+create table if not exists cupboard_item (
+    product_id int references tea on delete cascade on update cascade,
+    cupboard_id int references tea_cupboard on delete cascade on update cascade,
+    amount real not null check ( amount > 0 ),
+    primary key (product_id, cupboard_id)
+);
+
+create table if not exists composition_item (
+    composition_id int references tea_composition on delete cascade on update cascade,
+    product_id int references tea on delete cascade on update cascade  /*todo что, если из таблицы чаев удаляется чай? он удалится и из композиции?*/,
+    amount_percent real not null check ( amount_percent between 0 and 100 ),
+    primary key (composition_id, product_id)
 );
 
 create table if not exists "order" (
@@ -152,6 +151,6 @@ create table if not exists delivery_truck (
     id serial primary key,
     order_id int default null references "order" on update cascade on delete set default,
     capacity int not null check(capacity > 0),
-    delivery_by timestamp not null
+    delivery_by timestamp default null,
+    check ( order_id IS NOT NULL AND delivery_by IS NOT NULL OR order_id IS NULL AND delivery_by IS NULL)
 );
-
