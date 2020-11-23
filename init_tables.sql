@@ -1,9 +1,32 @@
+/**
+  * удаление всех таблиц и типов, создание необходимых типов данных
+ */
 drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
-    circuit_board_model, circuit_board_machine, employee_machine_xref, circuit_board_machine_param_item, customer, address, "order",
+    circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
     circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard;
--- drop type if exists circuit_board_machine_state, customer_type;
--- CREATE TYPE if not exists circuit_board_machine_state AS ENUM ('ok', 'broken', 'decommissioned'); --todo каскадное удаление или что-то типа того
--- CREATE TYPE if not exists customer_type AS ENUM ('legal_entity', 'individual');
+drop table if exists employee_machine_xref cascade;
+drop type if exists circuit_board_machine_state cascade;
+drop type if exists customer_type cascade;
+CREATE TYPE circuit_board_machine_state AS ENUM ('ok', 'broken', 'decommissioned');
+CREATE TYPE customer_type AS ENUM ('legal_entity', 'individual');
+
+/**
+  * создание всех таблиц
+  * триггеры:
+  * 1) при создании/удалении строки в tea добавляется соотв. строка в product
+  * (add_tea_to_products, delete_tea_from_products)
+  * 2) при создании/удалении строки в tea_composition добавляется соотв. строка в product
+  * (add_tea_composition_to_products, delete_tea_composition_from_products())
+  *
+  *-----------------------------------------------------------------------------------------
+  *
+  * to be done: (желательно по мере выполнения переносить их из 'to be done' в готовые)
+  * --todo 3) в чайной композиции обязательно должен быть хотя бы 1 вид чая
+  * --todo 4) При insert into circuit_board, у производящей машины увеличивается work_hrs
+  * (в зависимости от его параметров), с вероятностью 0.02*work_hrs
+  * машина может сломаться.
+  * --todo 5) Если в store_item кончается товар (amount = 0), строка с ним удалится
+ */
 
 create table if not exists store (
     id serial primary key,
@@ -27,6 +50,35 @@ create table if not exists tea (
     type varchar(128) not null,
     created date not null check (created <= now())
 );
+
+CREATE OR REPLACE FUNCTION add_tea_to_products() RETURNS trigger AS
+$$
+DECLARE
+    _id integer := 0;
+BEGIN
+    insert into product(name) values ('Tea') returning id into _id;
+    NEW.super_id := _id;
+    return new;
+END;
+$$ LANGUAGE plpgSQL;
+
+CREATE TRIGGER add_tea_to_products
+    before INSERT ON tea
+    FOR EACH row
+    EXECUTE PROCEDURE add_tea_to_products();
+
+CREATE OR REPLACE FUNCTION delete_product() RETURNS trigger AS
+$$
+BEGIN
+    delete from product where id = old.super_id;
+    return old;
+END;
+$$ LANGUAGE plpgSQL;
+
+CREATE TRIGGER delete_tea_from_products
+    after DELETE ON tea
+    FOR EACH row
+    EXECUTE PROCEDURE delete_product(super_id);
 
 create table if not exists tea_cupboard (
     id serial primary key,
@@ -90,13 +142,42 @@ create table if not exists address (
     building int not null,
     comment text
 );
----------------------
 
 create table if not exists tea_composition (
     super_id serial primary key references product on delete cascade on update cascade,
     created date not null,
+    name varchar not null,
     description text
+-- todo convert to trigger
+--     check (
+--         (
+--             select count(ci.product_id) from composition_item ci
+--             left join tea t on t.super_id = ci.product_id
+--             where ci.product_id = t.super_id
+--         ) > 0
+--     )
 );
+
+CREATE OR REPLACE FUNCTION add_tea_composition_to_products() RETURNS trigger AS
+$$
+DECLARE
+    _id integer := 0;
+BEGIN
+    insert into product(name) values ('Tea Composition') returning id into _id;
+    NEW.super_id := _id;
+    return new;
+END;
+$$ LANGUAGE plpgSQL;
+
+CREATE TRIGGER add_tea_composition_to_products
+    before INSERT ON tea_composition
+    FOR EACH row
+    EXECUTE PROCEDURE add_tea_composition_to_products();
+
+CREATE TRIGGER delete_tea_composition_from_products
+    after DELETE ON tea_composition
+    FOR EACH row
+    EXECUTE PROCEDURE delete_product(super_id);
 
 create table if not exists store_item (
     store_id int references store on delete cascade on update cascade,
@@ -114,15 +195,15 @@ create table if not exists cupboard_item (
 
 create table if not exists composition_item (
     composition_id int references tea_composition on delete cascade on update cascade,
-    product_id int references tea on delete cascade on update cascade  /*todo что, если из таблицы чаев удаляется чай? он удалится и из композиции?*/,
+    product_id int references product on delete restrict on update cascade,
     amount_percent real not null check ( amount_percent between 0 and 100 ),
     primary key (composition_id, product_id)
 );
 
 create table if not exists "order" (
     id serial primary key,
-    customer_id int not null check(customer_id > 0) references customer on delete cascade on update cascade,
-    address_id int not null check(address_id > 0) references address on delete cascade on update restrict, -- if customer delete his address, we could lose existing order
+    customer_id int not null check(customer_id > 0) references customer on delete restrict on update cascade,
+    address_id int not null check(address_id > 0) references address on delete restrict on update restrict, -- if customer delete his address, we could lose existing order
     accepted timestamp,
     fulfilled timestamp,
     delivered timestamp,
