@@ -1,10 +1,10 @@
 /**
   * функции для использования извне - предполагается, что не для первоначального заполнения
   *
-  * to be done: (желательно по мере выполнения переносить их из 'to be done' в готовые)
-  * 2) create_order - создает заказ, выбирает любой свободный грузовик(и)
-  * 3) update_circuit_board_machine - покупает новую машину для печатных плат, чтобы заменить старые
-  * ??????????? 4) (как вариант использования) buy_product - купить товар(-ы) в магазине (зачем? - см.отчет)
+  * to be done:
+  * 1) create_order - создает заказ, выбирает любой свободный грузовик(и)
+  * 2) update_circuit_board_machine - покупает новую машину для печатных плат, чтобы заменить старые
+  * ??????????? 3) (как вариант использования) buy_product - купить товар(-ы) в магазине (зачем? - см.отчет)
   *
  */
 
@@ -28,14 +28,16 @@ $$
     end;
 $$ language plpgsql;
 
-CREATE OR REPLACE FUNCTION create_tea_composition(name varchar, description text) RETURNS integer AS
-$$
-DECLARE
+create or replace function create_tea_composition(
+    name varchar,
+    description text)
+returns integer as $$
+declare
     sum real := 0;
     tea_share real := random();
     percentage real := 0;
     _composition_id integer;
-BEGIN
+begin
 /*
     Описание происходящего:
     float sum = 0;
@@ -76,13 +78,12 @@ BEGIN
         end if;
 
         select sum(amount_percent) from composition_item where composition_item.composition_id = _composition_id into sum;
---         sum := sum + percentage;
     end loop;
     return _composition_id;
-END
-$$ LANGUAGE plpgSQL;
+end
+$$ language plpgSQL;
 
-CREATE OR REPLACE FUNCTION get_new_circuit_board_machine() RETURNS integer AS
+create or replace function get_new_circuit_board_machine() returns integer as
 $$
     begin
         -- todo добавить новую машину, подключить random(1..n) сотрудников

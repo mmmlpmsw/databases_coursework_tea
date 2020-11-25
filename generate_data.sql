@@ -3,17 +3,15 @@
   * (исключительно для внутреннего пользования и удобства)
   * --------------------------------------------
   *
-  * to be done: (желательно по мере выполнения переносить их из 'to be done' в готовые)
-  *
   * ((просто чтобы не забыть, где недоделано - вероятно,
   * часть из них заполнится другими функциями))
   * вставка чайных композиций руками (которые должны быть мемные)
-  * вставка в store_item
   * вставка в cupboard_item
   * вставка в order
   * вставка в circuit_board
   * вставка в order_item
   * --todo триггер, чтобы отсоединять сотрудников от списанной машины
+  * --todo триггер, чтобы не добавить чай в шкаф, если закончилось место?
   * --todo Триггер: если машина становится списанной, отсоединять от неё сотрудников и купить еще одну машину (функция get_new_circuit_board_machine)
   * --todo при создании печатной платы увеличить work_hours у машины, которая её произвела
   * --todo индексы
@@ -73,31 +71,34 @@ insert into tea(type, created) values
   * в таблицу factory_employee все возможные варианты их перебора.
  */
 
-CREATE OR REPLACE FUNCTION insert_employees_and_cupboards(fnames varchar[],
-                                            mnames varchar[],
-                                            lnames varchar[]) RETURNS void AS
-$$
-DECLARE
+create or replace function insert_employees_and_cupboards(
+    fnames varchar[],
+    mnames varchar[],
+    lnames varchar[]
+)
+returns void as $$
+declare
     i integer := 0;
     j integer := 0;
     k integer := 0;
     count integer := 0;
-BEGIN
-    FOR i IN 1..array_length(fnames, 1) LOOP
-        FOR j IN 1..array_length(mnames, 1) LOOP
-                FOR k IN 1..array_length(lnames, 1) LOOP
+begin
+    for i in 1..array_length(fnames, 1) loop
+        for j in 1..array_length(mnames, 1) loop
+                for k in 1..array_length(lnames, 1) loop
                         count:= count + 1;
                         insert into factory_employee(fname, mname, lname) values (fnames[i], mnames[j], lnames[k]);
                         insert into tea_cupboard(owner_id, color, capacity) values (count, floor(random() * (16777215 - 0) + 0)::int, floor(random() * (40 - 10) + 10)::int);
-                END LOOP;
-        END LOOP;
-    END LOOP;
-END;
-$$ LANGUAGE plpgSQL;
+                end loop;
+        end loop;
+    end loop;
+end;
+$$ language plpgSQL;
 
-select insert_employees_and_cupboards(ARRAY['Dmitriy', 'Leonid', 'Ilya', 'Boris', 'Miron', 'Nikita', 'Egor', 'Stepan', 'Andrey', 'Aleksandr', 'Anton', 'Grigoriy', 'Georgiy', 'Lev', 'Vladimir'],
-    ARRAY['Vsevolodovich', 'Ivanovich', 'Maksimovich', 'Timofeevich', 'Vladislavovich', 'Bogdanovich', 'Egorovich', 'Aleksandrovich', 'Artemovich', 'Bogdanovich', 'Miroslavovich', 'Glebovich', 'Romanovich', '', 'Andreevich'],
-    ARRAY['Arkhipov', 'Borodin', 'Voronkov', 'Golovanov', 'Denisov', 'Zhukov', 'Zhuravlev', 'Zimin', 'Kirillov', 'Kulikov', 'Pakhomov', 'Semenov', 'Sofronov', 'Fokin', 'Osipov']);
+select insert_employees_and_cupboards(
+    array['Dmitriy', 'Leonid', 'Ilya', 'Boris', 'Miron', 'Nikita', 'Egor', 'Stepan', 'Andrey', 'Aleksandr', 'Anton', 'Grigoriy', 'Georgiy', 'Lev', 'Vladimir'],
+    array['Vsevolodovich', 'Ivanovich', 'Maksimovich', 'Timofeevich', 'Vladislavovich', 'Bogdanovich', 'Egorovich', 'Aleksandrovich', 'Artemovich', 'Bogdanovich', 'Miroslavovich', 'Glebovich', 'Romanovich', '', 'Andreevich'],
+    array['Arkhipov', 'Borodin', 'Voronkov', 'Golovanov', 'Denisov', 'Zhukov', 'Zhuravlev', 'Zimin', 'Kirillov', 'Kulikov', 'Pakhomov', 'Semenov', 'Sofronov', 'Fokin', 'Osipov']);
 
 --------------------------------------------
 /**
@@ -107,24 +108,26 @@ select insert_employees_and_cupboards(ARRAY['Dmitriy', 'Leonid', 'Ilya', 'Boris'
   * Остальные параметры платы генерируются рандомно.
  */
 
-CREATE OR REPLACE FUNCTION insert_circuit_board_model(ids varchar[],
-                                                    versions varchar[]) RETURNS VOID AS
-$$
-DECLARE
+create or replace function insert_circuit_board_model(
+    ids varchar[],
+    versions varchar[]
+)
+returns void as $$
+declare
     i integer := 0;
     j integer := 0;
-BEGIN
-    FOR i IN 1..array_length(ids, 1) LOOP
-        FOR j IN 1..array_length(versions, 1) LOOP
+begin
+    for i in 1..array_length(ids, 1) loop
+        for j in 1..array_length(versions, 1) loop
                     insert into circuit_board_model values (ids[i], versions[j], (random()+0.1)::real,
                                                             (random() * 10 + 10)::real, (random() * 20 + 10)::real, (random()*90 + 25)::real);
-        END LOOP;
-    END LOOP;
-END;
-$$ LANGUAGE plpgSQL;
+        end loop;
+    end loop;
+end;
+$$ language plpgSQL;
 
-select insert_circuit_board_model(ARRAY['A320M', 'A320N', 'A321M', 'A321N', 'B420M', 'B420N', 'A320R', 'B420S', 'B440M', 'A230C', 'A453F'],
-    ARRAY['A', 'B', 'C', 'D', 'E', 'F', 'J', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'Q', 'V', 'W', 'X', 'Y', 'Z',
+select insert_circuit_board_model(array['A320M', 'A320N', 'A321M', 'A321N', 'B420M', 'B420N', 'A320R', 'B420S', 'B440M', 'A230C', 'A453F'],
+    array['A', 'B', 'C', 'D', 'E', 'F', 'J', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'Q', 'V', 'W', 'X', 'Y', 'Z',
          'AA', 'AB', 'AR', 'PR', 'HD', 'EA', 'NP', 'CF', 'LN', 'PI', 'ET', 'MJ', 'BT', 'TS', 'JP', 'JS', 'CS']);
 
 --------------------------------------------
@@ -142,67 +145,67 @@ $$
     end
 $$ language plpgsql;
 
-CREATE OR REPLACE FUNCTION insert_circuit_board_machine(ok_count integer, broken_count integer, discomissioned_count integer) RETURNS void AS
-$$
-DECLARE
+create or replace function insert_circuit_board_machine(
+    ok_count integer,
+    broken_count integer,
+    discomissioned_count integer
+)
+returns void as $$
+declare
     i integer := 0;
-
-BEGIN
-    FOR i IN 1..ok_count LOOP
+begin
+    for i in 1..ok_count loop
          insert into circuit_board_machine(assembly_date, work_hrs, area, state) values (random_past(10), (random() * 500 + 0)::real,
                                                   (random() * 100 + 1)::real, 'ok');
-    END LOOP;
-    FOR i IN 1..broken_count LOOP
+    end loop;
+    for i in 1..broken_count loop
         insert into circuit_board_machine(assembly_date, work_hrs, area, state) values (random_past(10), (random() * 500 + 0)::real,
                                                   (random() * 100 + 1)::real, 'broken');
-    END LOOP;
-    FOR i IN 1..discomissioned_count LOOP
+    end loop;
+    for i in 1..discomissioned_count loop
         insert into circuit_board_machine(assembly_date, work_hrs, area, state) values (random_past(10), (random() * 500 + 0)::real,
                                                   (random() * 100 + 1)::real, 'decommissioned');
-    END LOOP;
-END;
-$$ LANGUAGE plpgSQL;
+    end loop;
+end;
+$$ language plpgSQL;
 
 select insert_circuit_board_machine(50, 5, 10);
 
 --------------------------------------------
 /**
-  * Доработать!!!!!!!
   * Здесь находится процесс закрепления сотрудников завода за машинами, производящими платы.
   * Сейчас функция ставит на одну машину нескольких сотрудников.
-  * Надо превратить это в many-to-many!
-  * + момент с тем, как быть с машинами, которые discomissioned и broken
   * insert_circuit_board_machine принимает кол-во каждого из типов машин и вставляет их в таблицу
   * Остальные параметры машины генерируются рандомно.
  */
 
-CREATE OR REPLACE FUNCTION insert_employee_machine_xref() RETURNS VOID AS
+create or replace function insert_employee_machine_xref() returns void as
 $$
-DECLARE
+declare
     i integer := 0;
     machine_id integer := 0;
     employee_id integer := 0;
     employees_count integer := 0;
     machines_count integer := 0;
-BEGIN
+begin
     select count(*) from factory_employee into employees_count;
     select count(*) from circuit_board_machine into machines_count;
 
-    FOR i IN 1..employees_count LOOP
+    for i in 1..employees_count loop
         select id from circuit_board_machine where state != 'decommissioned' order by random() limit 1 into machine_id;
         insert into employee_machine_xref values (i, machine_id) on conflict do nothing;
-    END LOOP;
+    end loop;
 
-    FOR i IN 1..machines_count LOOP
+    for i in 1..machines_count loop
         select id from factory_employee order by random() limit 1 into employee_id;
         insert into employee_machine_xref values (employee_id, i) on conflict do nothing;
-    END LOOP;
+    end loop;
 
     delete from employee_machine_xref as emx where exists(
         select id from circuit_board_machine where state = 'decommissioned' and id = emx.machine_id
     );
-END;
-$$ LANGUAGE plpgSQL;
+end;
+$$ language plpgSQL;
 
 select insert_employee_machine_xref(); --todo при переходе из ok -> broken/discomissioned куда сотрудника?
 
@@ -214,34 +217,33 @@ select insert_employee_machine_xref(); --todo при переходе из ok ->
   * Скорость выпуска одной платы на машине вычисляется рандомно.
  */
 
-DROP FUNCTION insert_circuit_board_machine_param_item(integer,integer);
-CREATE OR REPLACE FUNCTION insert_circuit_board_machine_param_item(machines_count integer, cbmodels_count integer) RETURNS VOID AS
-$$
-DECLARE
+create or replace function insert_circuit_board_machine_param_item(
+    machines_count integer,
+    cbmodels_count integer
+)
+returns void as $$
+declare
     i integer := 0;
     random_speed integer := 0;
     circuit_board_model_row circuit_board_model%ROWTYPE;
     machine_id integer := 0;
-BEGIN
-    FOR i IN 1..cbmodels_count LOOP
+begin
+    for i in 1..cbmodels_count loop
         machine_id = (random() * (machines_count - 1) + 1)::integer;
-        SELECT id, version into circuit_board_model_row FROM circuit_board_model ORDER BY id LIMIT 1 OFFSET i;
+        select id, version into circuit_board_model_row from circuit_board_model order by id limit 1 offset i;
         random_speed := (random() * ( 100 - 10) + 10)::real;
         insert into circuit_board_machine_param_item values (machine_id, circuit_board_model_row.id, circuit_board_model_row.version, random_speed);
-    END LOOP;
-
+    end loop;
 END
-$$ LANGUAGE plpgSQL;
+$$ language plpgSQL;
 
 select insert_circuit_board_machine_param_item(65, 400);
 
 --------------------------------------------
 /**
   * Здесь находится процесс вставки в таблицы заказчиков.
-  * insert_legal_entities принимает массивы фамилий, имен, отчеств, почт и названий компаний.
-  * Номер телефона и ИНН генерируются рандомно
-  *
-  * insert_individuals
+  * insert_legal_entities и insert_individuals принимают массивы фамилий, имен, отчеств и названий компаний.
+  * Номер телефона, ИНН и почты генерируются рандомно
  */
 
 create or replace function get_random_email(
@@ -270,80 +272,79 @@ begin
 end;
 $$ language plpgsql;
 
-drop function insert_legal_entities;
-CREATE OR REPLACE FUNCTION insert_legal_entities(
+
+create or replace function insert_legal_entities(
     count integer,
     fnames varchar[],
     mnames varchar[],
     lnames varchar[],
     emails varchar[],
     companies_names varchar[]
-) RETURNS VOID AS $$
-DECLARE
+) returns void as $$
+declare
     i integer := 0;
     phone bigint := 0;
-    ITIN bigint := 0;
-BEGIN
-    FOR i IN 1..count LOOP
+    ITin bigint := 0;
+begin
+    for i in 1..count loop
         phone := (random() * (9999999999 - 9000000000) + 9000000000)::bigint;
-        ITIN := (random() * (9999999999 - 0) + 0)::bigint;
-        insert into customer(type, fname, mname, lname, email, phone, ITIN, company_name)
-        VALUES ('legal_entity', fnames[i], mnames[i], lnames[i],emails[i], phone, ITIN, companies_names[i]);
-    END LOOP;
-
+        ITin := (random() * (9999999999 - 0) + 0)::bigint;
+        insert into customer(type, fname, mname, lname, email, phone, ITin, company_name)
+        values ('legal_entity', fnames[i], mnames[i], lnames[i],emails[i], phone, ITin, companies_names[i]);
+    end loop;
 END
-$$ LANGUAGE plpgSQL;
+$$ language plpgSQL;
 
 -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
 select insert_legal_entities(
     10,
-    ARRAY['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander'],
-    ARRAY['Aleksandrovich', 'Edouardovich', 'Borisovich', null, null, 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
-    ARRAY['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Fedorov'],
-    ARRAY['zfsseugrvc@gmail.com', 'gztxvgvacj@gmail.com', 'jgqmwjigdr@gmail.com', 'wzdpukvkrm@gmail.com', 'haxsdhokzf@gmail.com', 'rgvxlfzchs@gmail.com', 'zejtpivlls@gmail.com', 'fjetsheccb@gmail.com', 'xgwcrxhslf@gmail.com', 'enhppseqcn@gmail.com'],
-    ARRAY['CODENETIX', 'INSIGHTWHALE', 'AZOFT', 'FIRST LINE SOFTWARE', 'SHOPDEV', 'Veeam Software', 'Luxoft', 'TeamDev', 'T-Systems CIS', 'ScienceSoft Inc.']
+    array['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander'],
+    array['Aleksandrovich', 'Edouardovich', 'Borisovich', null, null, 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
+    array['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Fedorov'],
+    array['zfsseugrvc@gmail.com', 'gztxvgvacj@gmail.com', 'jgqmwjigdr@gmail.com', 'wzdpukvkrm@gmail.com', 'haxsdhokzf@gmail.com', 'rgvxlfzchs@gmail.com', 'zejtpivlls@gmail.com', 'fjetsheccb@gmail.com', 'xgwcrxhslf@gmail.com', 'enhppseqcn@gmail.com'],
+    array['CODENETIX', 'inSIGHTWHALE', 'AZOFT', 'FIRST LinE SOFTWARE', 'SHOPDEV', 'Veeam Software', 'Luxoft', 'TeamDev', 'T-Systems CIS', 'ScienceSoft Inc.']
 );
 
 
-CREATE OR REPLACE FUNCTION insert_individuals(
+create or replace function insert_individuals(
     fnames varchar[],
     mnames varchar[],
     lnames varchar[]
 )
-RETURNS VOID AS $$
-DECLARE
+returns void as $$
+declare
     i integer := 0;
     j integer := 0;
     k integer := 0;
     phone bigint := 0;
-BEGIN
-    FOR i IN 1..array_length(fnames, 1) LOOP
+begin
+    for i in 1..array_length(fnames, 1) loop
         for j in 1..array_length(mnames, 1) loop
             for k in 1..array_length(lnames, 1) loop
                 if (random() < 0.4) then continue; end if;
 
                 phone := (random() * (9999999999 - 9000000000) + 9000000000)::bigint;
                 insert into customer(type, fname, mname, lname, email, phone)
-                VALUES ('individual', fnames[i], mnames[j], lnames[k], get_random_email(fnames[i], lnames[k]), phone)
+                values ('individual', fnames[i], mnames[j], lnames[k], get_random_email(fnames[i], lnames[k]), phone)
                 on conflict do nothing;
             end loop;
         end loop;
-    END LOOP;
+    end loop;
 
-END
-$$ LANGUAGE plpgSQL;
+end
+$$ language plpgSQL;
 
 -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
 select insert_individuals(
-    ARRAY['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander', 'David'],
-    ARRAY['Aleksandrovich', 'Edouardovich', 'Borisovich', 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
-    ARRAY['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Mashin', 'Erukhimov', 'Zyryanov', 'Shestakov', 'Alenkov', 'Kubikov', 'Nekrasov', 'Sokolov', 'Petrov', 'Ivanov', 'Sidorov', 'Bostrikov', 'Aliev', 'Khokhlov', 'Ivaskevich', 'Mozalyov', 'Titenko', 'Kosarev', 'Kovalyov', 'Zhasminov', 'Fedorenko', 'Storozhev', 'Koshelev', 'Chirkunov', 'Shpak', 'Bachirov', 'Vinnichenko', 'Voronkov', 'Bagramyan', 'Malygin', 'Kesler', 'Voloshkov', 'Efimov', 'Portnov']
+    array['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander', 'David'],
+    array['Aleksandrovich', 'Edouardovich', 'Borisovich', 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
+    array['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Mashin', 'Erukhimov', 'Zyryanov', 'Shestakov', 'Alenkov', 'Kubikov', 'Nekrasov', 'Sokolov', 'Petrov', 'Ivanov', 'Sidorov', 'Bostrikov', 'Aliev', 'Khokhlov', 'Ivaskevich', 'Mozalyov', 'Titenko', 'Kosarev', 'Kovalyov', 'Zhasminov', 'Fedorenko', 'Storozhev', 'Koshelev', 'Chirkunov', 'Shpak', 'Bachirov', 'Vinnichenko', 'Voronkov', 'Bagramyan', 'Malygin', 'Kesler', 'Voloshkov', 'Efimov', 'Portnov']
 );
 
 select insert_individuals(
-    ARRAY['Olivia', 'Emma', 'Ava', 'Sophia', 'Galina', 'Irina', 'Lada', 'Marisha', 'Yelena', 'Ketherina', 'Julia', 'Anastasia', 'Darya', 'Nadezhda', 'Inna', 'Zara', 'Jazzy', 'Maria', 'Olga', 'Anzhelika', 'Veronika', 'Alisa', 'Valentina', 'Polina', 'Arina', 'Sonya'],
-    ARRAY['Aleksandrovna', 'Edouardovna', 'Borisovna', 'Fedorovna', 'Filippovna', 'Georgiyevna', 'Grigoryevna', null],
-    ARRAY['Mashina', 'Erukhimova', 'Zyryanova', 'Shestakova', 'Alenkova', 'Kubikova', 'Nekrasova', 'Sokolova', 'Petrova', 'Ivanova', 'Sidorova', 'Bostrikova', 'Alieva', 'Khokhlova', 'Ivaskevich', 'Mozalyova', 'Titenko', 'Kosareva', 'Kovalyova', 'Zhasminova', 'Fedorenko', 'Storozheva', 'Kosheleva', 'Chirkunova', 'Shpak', 'Bachirova', 'Vinnichenko', 'Voronkova', 'Bagramyan', 'Malygina', 'Kesler', 'Voloshkova', 'Efimova', 'Portnova']
+    array['Olivia', 'Emma', 'Ava', 'Sophia', 'Galina', 'Irina', 'Lada', 'Marisha', 'Yelena', 'Ketherina', 'Julia', 'Anastasia', 'Darya', 'Nadezhda', 'Inna', 'Zara', 'Jazzy', 'Maria', 'Olga', 'Anzhelika', 'Veronika', 'Alisa', 'Valentina', 'Polina', 'Arina', 'Sonya'],
+    array['Aleksandrovna', 'Edouardovna', 'Borisovna', 'Fedorovna', 'Filippovna', 'Georgiyevna', 'Grigoryevna', null],
+    array['Mashina', 'Erukhimova', 'Zyryanova', 'Shestakova', 'Alenkova', 'Kubikova', 'Nekrasova', 'Sokolova', 'Petrova', 'Ivanova', 'Sidorova', 'Bostrikova', 'Alieva', 'Khokhlova', 'Ivaskevich', 'Mozalyova', 'Titenko', 'Kosareva', 'Kovalyova', 'Zhasminova', 'Fedorenko', 'Storozheva', 'Kosheleva', 'Chirkunova', 'Shpak', 'Bachirova', 'Vinnichenko', 'Voronkova', 'Bagramyan', 'Malygina', 'Kesler', 'Voloshkova', 'Efimova', 'Portnova']
 );
 
 --------------------------------------------
@@ -356,28 +357,32 @@ select insert_individuals(
   * рандомными индексами из вышеупомянутых массивов.
  */
 
-CREATE OR REPLACE FUNCTION insert_address(entity_count integer, city varchar[], street varchar[]) RETURNS VOID AS
-$$
-DECLARE
+create or replace function insert_address(
+    entity_count integer,
+    city varchar[],
+    street varchar[]
+)
+returns void as $$
+declare
     i integer := 0;
     random_city_idx integer := 0;
     random_street_idx integer := 0;
     random_building integer := 0;
-BEGIN
-    FOR i IN 1..entity_count LOOP
+begin
+    for i in 1..entity_count loop
         random_city_idx := (random() * (array_length(city, 1) - 1) + 1)::integer;
         random_street_idx := (random() * (array_length(street, 1) - 1) + 1)::integer;
         random_building := (random() * (150 - 1) + 1)::integer;
        insert into address(owner_id, country, city, street, building, comment)
-       VALUES (i, 'Russian Federation', city[random_city_idx], street[random_street_idx], random_building, '');
-    END LOOP;
+       values (i, 'Russian Federation', city[random_city_idx], street[random_street_idx], random_building, '');
+    end loop;
 
 END
-$$ LANGUAGE plpgSQL;
+$$ language plpgSQL;
 -- http://translit-online.ru
 -- http://ulitsa.eu/top.php
-select insert_address(10, ARRAY['Moscow', 'Petrozavodsk', 'Rostov-on-Don', 'Saint Petersburg', 'Tomsk', 'Ufa', 'Yaroslavl', 'Omsk', 'Kaliningrad', 'Kazan'],
-    ARRAY['Centralnaya, ul.', 'Molodezhnaya, ul.', 'Shkolnaya, ul.', 'Lesnaya, ul.', 'Sovetskaya, ul.', 'Novaya, ul.', 'Sadovaya, ul.', 'Naberezhnaya, ul.', 'Zarechnaya, ul.',
+select insert_address(10, array['Moscow', 'Petrozavodsk', 'Rostov-on-Don', 'Saint Petersburg', 'Tomsk', 'Ufa', 'Yaroslavl', 'Omsk', 'Kaliningrad', 'Kazan'],
+    array['Centralnaya, ul.', 'Molodezhnaya, ul.', 'Shkolnaya, ul.', 'Lesnaya, ul.', 'Sovetskaya, ul.', 'Novaya, ul.', 'Sadovaya, ul.', 'Naberezhnaya, ul.', 'Zarechnaya, ul.',
         'Zelenaya, ul.', 'Mira, ul.', 'Lenina, ul.', 'Polevaya, ul.', 'Lugovaya, ul.', 'Oktyabrskaya, ul.', 'Komsomolskaya, ul.',
         'Gagarina, ul.', 'Pervomajskaya, ul.', 'Severnaya, ul.', 'Solnechnaya, ul.', 'Stepnaya, ul.', 'YUzhnaya, ul.', 'Beregovaya, ul.', 'Kirova, ul.', 'Pionerskaya, ul.']
     );
@@ -390,21 +395,54 @@ select insert_address(10, ARRAY['Moscow', 'Petrozavodsk', 'Rostov-on-Don', 'Sain
   * Первоначально поля, связанные с заказом не инициализированы
  */
 
-CREATE OR REPLACE FUNCTION insert_delivery_truck(trucks_count integer) RETURNS VOID AS
+create or replace function insert_delivery_truck(trucks_count integer) returns void as
 $$
-DECLARE
+declare
     i integer := 0;
     random_capacity integer := 0;
-BEGIN
-    FOR i IN 1..trucks_count LOOP
+begin
+    for i in 1..trucks_count loop
        random_capacity := (random() * (150 - 10) + 10)::integer;
        insert into delivery_truck(order_id, capacity, delivery_by)
-       VALUES (NULL, random_capacity, NULL);
-    END LOOP;
+       values (NULL, random_capacity, NULL);
+    end loop;
 
-END
-$$ LANGUAGE plpgSQL;
+end
+$$ language plpgSQL;
 
 select insert_delivery_truck(20);
+
+--------------------------------------------
+/**
+  * Заполнение таблицы связи продуктов и магазинов.
+  * Количество товара генерируется рандомно
+ */
+
+create or replace function insert_store_item() returns void as
+$$
+declare
+    i integer := 0;
+    product_id integer := 0;
+    store_id integer := 0;
+    stores_count integer := 0;
+    products_count integer := 0;
+begin
+    select count(*) from store into stores_count;
+    select count(*) from product into products_count;
+
+    for i in 1..stores_count loop
+        select id from product order by random() limit 1 into product_id;
+        insert into store_item values (i, product_id, random() * 190 + 10) on conflict do nothing;
+    end loop;
+
+    for i in 1..products_count loop
+        select id from store order by random() limit 1 into store_id;
+        insert into store_item values (store_id, i, random() * 190 + 10) on conflict do nothing;
+    end loop;
+
+end;
+$$ language plpgSQL;
+
+select insert_store_item();
 
 --------------------------------------------
