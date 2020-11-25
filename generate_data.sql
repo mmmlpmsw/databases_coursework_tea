@@ -4,21 +4,21 @@
   * --------------------------------------------
   *
   * to be done: (желательно по мере выполнения переносить их из 'to be done' в готовые)
-  * --todo insert individuals
-  * --todo improve insert_employee_machine_xref
   *
   * ((просто чтобы не забыть, где недоделано - вероятно,
   * часть из них заполнится другими функциями))
   * вставка чайных композиций руками (которые должны быть мемные)
   * вставка в store_item
   * вставка в cupboard_item
-  * вставка в composition_item
   * вставка в order
   * вставка в circuit_board
   * вставка в order_item
+  * --todo триггер, чтобы отсоединять сотрудников от списанной машины
+  * --todo Триггер: если машина становится списанной, отсоединять от неё сотрудников и купить еще одну машину (функция get_new_circuit_board_machine)
+  * --todo при создании печатной платы увеличить work_hours у машины, которая её произвела
   * --todo индексы
   * --todo поправить отчет и диаграмму по итоговым таблицам, если останется время
- */
+  */
 
 insert into store(name) values
     ('Prisma'), ('Products'), ('Red Dragon'), ('Magnet'), ('Real'), ('Diksi'), ('Green Bean'), ('Okey'),
@@ -176,30 +176,35 @@ select insert_circuit_board_machine(50, 5, 10);
   * Остальные параметры машины генерируются рандомно.
  */
 
-CREATE OR REPLACE FUNCTION insert_employee_machine_xref(employees_count integer, machines_count integer) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION insert_employee_machine_xref() RETURNS VOID AS
 $$
 DECLARE
     i integer := 0;
-    employee_on_one_machine integer := 0;
-    count integer := 0;
-    machine_id integer := 1;
+    machine_id integer := 0;
+    employee_id integer := 0;
+    employees_count integer := 0;
+    machines_count integer := 0;
 BEGIN
-    employee_on_one_machine = employees_count / machines_count;
---     RAISE NOTICE 'employee_on_one_machine(%)', employee_on_one_machine;
+    select count(*) from factory_employee into employees_count;
+    select count(*) from circuit_board_machine into machines_count;
+
     FOR i IN 1..employees_count LOOP
-        count := count + 1;
-        IF count = employee_on_one_machine and machine_id < machines_count THEN
-            machine_id := machine_id + 1;
-            count := 0;
-        ELSIF count = employee_on_one_machine and machine_id = machines_count THEN
-            count := 0;
-        END IF;
-        insert into employee_machine_xref values (i, machine_id);
+        select id from circuit_board_machine where state != 'decommissioned' order by random() limit 1 into machine_id;
+        insert into employee_machine_xref values (i, machine_id) on conflict do nothing;
     END LOOP;
+
+    FOR i IN 1..machines_count LOOP
+        select id from factory_employee order by random() limit 1 into employee_id;
+        insert into employee_machine_xref values (employee_id, i) on conflict do nothing;
+    END LOOP;
+
+    delete from employee_machine_xref as emx where exists(
+        select id from circuit_board_machine where state = 'decommissioned' and id = emx.machine_id
+    );
 END;
 $$ LANGUAGE plpgSQL;
 
-select insert_employee_machine_xref(3375, 65); --todo при переходе из ok -> broken/discomissioned куда сотрудника?
+select insert_employee_machine_xref(); --todo при переходе из ok -> broken/discomissioned куда сотрудника?
 
 --------------------------------------------
 /**
@@ -239,15 +244,47 @@ select insert_circuit_board_machine_param_item(65, 400);
   * insert_individuals
  */
 
-CREATE OR REPLACE FUNCTION insert_legal_entities(legal_entity_count integer, fnames varchar[], mnames varchar[],
-                                            lnames varchar[], emails varchar[], companies_names varchar[]) RETURNS VOID AS
-$$
+create or replace function get_random_email(
+    fname varchar,
+    lname varchar
+) returns varchar as $$
+declare
+    result varchar := '';
+    domains varchar[] := array[
+        'google.com',
+        'yandex.ru',
+        'yahoo.com',
+        'hotmail.com',
+        'mail.ru',
+        'protonmail.com',
+        'icloud.com'
+    ];
+begin
+    result := result ||
+              substring(lower(fname) from 1 for 1) ||
+              lower(lname) ||
+              (random()*999)::integer ||
+              '@' ||
+              domains[(random()*array_length(domains, 1))::int];
+    return result;
+end;
+$$ language plpgsql;
+
+drop function insert_legal_entities;
+CREATE OR REPLACE FUNCTION insert_legal_entities(
+    count integer,
+    fnames varchar[],
+    mnames varchar[],
+    lnames varchar[],
+    emails varchar[],
+    companies_names varchar[]
+) RETURNS VOID AS $$
 DECLARE
     i integer := 0;
     phone bigint := 0;
     ITIN bigint := 0;
 BEGIN
-    FOR i IN 1..legal_entity_count LOOP
+    FOR i IN 1..count LOOP
         phone := (random() * (9999999999 - 9000000000) + 9000000000)::bigint;
         ITIN := (random() * (9999999999 - 0) + 0)::bigint;
         insert into customer(type, fname, mname, lname, email, phone, ITIN, company_name)
@@ -258,34 +295,56 @@ END
 $$ LANGUAGE plpgSQL;
 
 -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
-select insert_legal_entities(10, ARRAY['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander'],
-    ARRAY['Aleksandrovich', 'Edouardovich', 'Borisovich', '', '', 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', ''],
+select insert_legal_entities(
+    10,
+    ARRAY['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander'],
+    ARRAY['Aleksandrovich', 'Edouardovich', 'Borisovich', null, null, 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
     ARRAY['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Fedorov'],
     ARRAY['zfsseugrvc@gmail.com', 'gztxvgvacj@gmail.com', 'jgqmwjigdr@gmail.com', 'wzdpukvkrm@gmail.com', 'haxsdhokzf@gmail.com', 'rgvxlfzchs@gmail.com', 'zejtpivlls@gmail.com', 'fjetsheccb@gmail.com', 'xgwcrxhslf@gmail.com', 'enhppseqcn@gmail.com'],
-    ARRAY['CODENETIX', 'INSIGHTWHALE', 'AZOFT', 'FIRST LINE SOFTWARE', 'SHOPDEV', 'Veeam Software', 'Luxoft', 'TeamDev', 'T-Systems CIS', 'ScienceSoft Inc.']);
+    ARRAY['CODENETIX', 'INSIGHTWHALE', 'AZOFT', 'FIRST LINE SOFTWARE', 'SHOPDEV', 'Veeam Software', 'Luxoft', 'TeamDev', 'T-Systems CIS', 'ScienceSoft Inc.']
+);
+
+
+CREATE OR REPLACE FUNCTION insert_individuals(
+    fnames varchar[],
+    mnames varchar[],
+    lnames varchar[]
+)
+RETURNS VOID AS $$
+DECLARE
+    i integer := 0;
+    j integer := 0;
+    k integer := 0;
+    phone bigint := 0;
+BEGIN
+    FOR i IN 1..array_length(fnames, 1) LOOP
+        for j in 1..array_length(mnames, 1) loop
+            for k in 1..array_length(lnames, 1) loop
+                if (random() < 0.4) then continue; end if;
+
+                phone := (random() * (9999999999 - 9000000000) + 9000000000)::bigint;
+                insert into customer(type, fname, mname, lname, email, phone)
+                VALUES ('individual', fnames[i], mnames[j], lnames[k], get_random_email(fnames[i], lnames[k]), phone)
+                on conflict do nothing;
+            end loop;
+        end loop;
+    END LOOP;
+
+END
+$$ LANGUAGE plpgSQL;
+
 -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
+select insert_individuals(
+    ARRAY['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander', 'David'],
+    ARRAY['Aleksandrovich', 'Edouardovich', 'Borisovich', 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
+    ARRAY['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Mashin', 'Erukhimov', 'Zyryanov', 'Shestakov', 'Alenkov', 'Kubikov', 'Nekrasov', 'Sokolov', 'Petrov', 'Ivanov', 'Sidorov', 'Bostrikov', 'Aliev', 'Khokhlov', 'Ivaskevich', 'Mozalyov', 'Titenko', 'Kosarev', 'Kovalyov', 'Zhasminov', 'Fedorenko', 'Storozhev', 'Koshelev', 'Chirkunov', 'Shpak', 'Bachirov', 'Vinnichenko', 'Voronkov', 'Bagramyan', 'Malygin', 'Kesler', 'Voloshkov', 'Efimov', 'Portnov']
+);
 
---todo insert individuals
---
--- CREATE OR REPLACE FUNCTION insert_individuals(individuals_count integer, fnames varchar[], mnames varchar[],
---                                             lnames varchar[], emails varchar[]) RETURNS VOID AS
--- $$
--- DECLARE
---     i integer := 0;
---     phone bigint := 0;
---     ITIN bigint := 0;
--- BEGIN
---     FOR i IN 1..individuals_count LOOP
---         phone := (random() * (9999999999 - 9000000000) + 9000000000)::bigint;
---         ITIN := (random() * (9999999999 - 0) + 0)::bigint;
---         insert into customer(type, fname, mname, lname, email, phone, ITIN, company_name)
---         VALUES ('individual', fnames[i], mnames[i], lnames[i],emails[i], phone, ITIN, '');
---     END LOOP;
---
--- END
--- $$ LANGUAGE plpgSQL;
-
--- select insert_individuals(150, );
+select insert_individuals(
+    ARRAY['Olivia', 'Emma', 'Ava', 'Sophia', 'Galina', 'Irina', 'Lada', 'Marisha', 'Yelena', 'Ketherina', 'Julia', 'Anastasia', 'Darya', 'Nadezhda', 'Inna', 'Zara', 'Jazzy', 'Maria', 'Olga', 'Anzhelika', 'Veronika', 'Alisa', 'Valentina', 'Polina', 'Arina', 'Sonya'],
+    ARRAY['Aleksandrovna', 'Edouardovna', 'Borisovna', 'Fedorovna', 'Filippovna', 'Georgiyevna', 'Grigoryevna', null],
+    ARRAY['Mashina', 'Erukhimova', 'Zyryanova', 'Shestakova', 'Alenkova', 'Kubikova', 'Nekrasova', 'Sokolova', 'Petrova', 'Ivanova', 'Sidorova', 'Bostrikova', 'Alieva', 'Khokhlova', 'Ivaskevich', 'Mozalyova', 'Titenko', 'Kosareva', 'Kovalyova', 'Zhasminova', 'Fedorenko', 'Storozheva', 'Kosheleva', 'Chirkunova', 'Shpak', 'Bachirova', 'Vinnichenko', 'Voronkova', 'Bagramyan', 'Malygina', 'Kesler', 'Voloshkova', 'Efimova', 'Portnova']
+);
 
 --------------------------------------------
 /**

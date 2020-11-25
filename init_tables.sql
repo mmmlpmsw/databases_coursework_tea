@@ -3,7 +3,7 @@
  */
 drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
     circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
-    circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard;
+    circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard cascade;
 drop table if exists employee_machine_xref cascade;
 drop type if exists circuit_board_machine_state cascade;
 drop type if exists customer_type cascade;
@@ -126,7 +126,7 @@ create table if not exists customer (
     fname varchar(255) not null,
     mname varchar(255),
     lname varchar(255) not null,
-    email varchar(255) check (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    email varchar(255) unique check (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
     phone bigint,
     ITIN bigint check ( ITIN >= 0 and ITIN <= 9999999999) default null,
     company_name varchar(255),
