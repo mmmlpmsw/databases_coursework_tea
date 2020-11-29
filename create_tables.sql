@@ -1,14 +1,6 @@
-/**
-  * удаление всех таблиц и типов, создание необходимых типов данных
- */
-drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
-    circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
-    circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard cascade;
-drop table if exists employee_machine_xref cascade;
-drop type if exists circuit_board_machine_state cascade;
-drop type if exists customer_type cascade;
-create type circuit_board_machine_state as enum ('ok', 'broken', 'decommissioned');
-create type customer_type as enum ('legal_entity', 'individual');
+-- Drop all tables
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
 /**
   * создание всех таблиц
@@ -50,35 +42,6 @@ create table if not exists tea (
     created date not null check (created <= now())
 );
 
-create or replace function add_tea_to_products() returns trigger as
-$$
-declare
-    _id integer := 0;
-begin
-    insert into product(name) values ('Tea') returning id into _id;
-    NEW.super_id := _id;
-    return new;
-end;
-$$ language plpgSQL;
-
-create trigger add_tea_to_products
-    before insert on tea
-    for each row
-    execute procedure add_tea_to_products();
-
-create or replace function delete_product() returns trigger as
-$$
-begin
-    delete from product where id = old.super_id;
-    return old;
-end;
-$$ language plpgSQL;
-
-create trigger delete_tea_from_products
-    after delete on tea
-    for each row
-    execute procedure delete_product(super_id);
-
 create table if not exists tea_cupboard (
     id serial primary key,
     owner_id int references factory_employee on delete cascade on update cascade,
@@ -96,6 +59,7 @@ create table if not exists circuit_board_model (
     primary key (id, version)
 );
 
+create type circuit_board_machine_state as enum ('ok', 'broken', 'decommissioned');
 create table if not exists circuit_board_machine (
     id serial primary key,
     assembly_date date not null check ( assembly_date <= now() ) default now(),
@@ -119,6 +83,7 @@ create table if not exists circuit_board_machine_param_item (
     foreign key (board_model_id, board_model_version) references circuit_board_model(id, version) on update cascade on delete cascade
 );
 
+create type customer_type as enum ('legal_entity', 'individual');
 create table if not exists customer (
     id serial primary key,
     type customer_type not null,
@@ -148,27 +113,6 @@ create table if not exists tea_composition (
     name varchar not null,
     description text
 );
-
-create or replace function add_tea_composition_to_products() returns trigger as
-$$
-declare
-    _id integer := 0;
-begin
-    insert into product(name) values ('Tea Composition') returning id into _id;
-    NEW.super_id := _id;
-    return new;
-end;
-$$ language plpgSQL;
-
-create trigger add_tea_composition_to_products
-    before insert on tea_composition
-    for each row
-    execute procedure add_tea_composition_to_products();
-
-create trigger delete_tea_composition_from_products
-    after delete on tea_composition
-    for each row
-    execute procedure delete_product(super_id);
 
 create table if not exists store_item (
     store_id int references store on delete cascade on update cascade,
