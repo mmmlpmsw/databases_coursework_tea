@@ -36,6 +36,7 @@ create table if not exists factory_employee (
     lname varchar(255) not null
 );
 
+-- trigger before insert
 create table if not exists tea (
     super_id serial primary key references product on delete cascade on update cascade,
     type varchar(128) not null,
