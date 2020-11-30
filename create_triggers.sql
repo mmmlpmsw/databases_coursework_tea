@@ -1,7 +1,3 @@
-/**
-  * --todo триггер, чтобы не добавить чай в шкаф, если закончилось место?
-*/
-
 -- Adds product entry for new product subclass entries
 create or replace function _trigger_add_products_entry() returns trigger as $$
 declare
@@ -78,7 +74,6 @@ $$ language plpgsql;
   * 1) покупает новую машину с той же площадью и характеристиками (см. 2), меняется состояние и дата покупки
   * 2) все machine_param_items перекидываются со старой машины на новую
   * 3) все сотрудники переводятся на новую машину
-  *
  */
 create or replace function _trigger_transfer_employee_from_decommissioned_machine() returns trigger as $$
 declare
@@ -89,6 +84,32 @@ begin
          update circuit_board_machine_param_item set machine_id = new_machine_id where machine_id = new.id;
          update employee_machine_xref set machine_id = new_machine_id where machine_id = new.id;
     end if;
+    return new;
+end;
+$$ language plpgsql;
+
+-- триггер, чтобы не добавить чай в шкаф, если закончилось место
+create or replace function _trigger_check_tea_cupboard_capacity() returns trigger as $$
+declare
+    sum real := 0;
+    cupboard_amount real := 0;
+    repeated_id integer := null;
+    repeated_amount real := null;
+begin
+    select sum(amount) from cupboard_item where cupboard_id = new.cupboard_id into sum;
+    select capacity from tea_cupboard where id = new.cupboard_id into cupboard_amount;
+    if sum + new.amount >= cupboard_amount then
+        return NULL;
+    end if;
+    select product_id from cupboard_item
+    where product_id = new.product_id and cupboard_id = new.cupboard_id into repeated_id;
+    if repeated_id is not null then
+        select amount from cupboard_item
+    where product_id = new.product_id and cupboard_id = new.cupboard_id into repeated_amount;
+        delete from cupboard_item where product_id = new.product_id and cupboard_id = new.cupboard_id;
+        new.amount := new.amount + repeated_amount;
+    end if;
+
     return new;
 end;
 $$ language plpgsql;
@@ -128,3 +149,7 @@ create trigger consider_machine_breaking after update of work_hrs on circuit_boa
 DROP TRIGGER IF EXISTS transfer_employee_from_decommissioned_machine on circuit_board_machine;
 create trigger transfer_employee_from_decommissioned_machine after update of state on circuit_board_machine
     for each row execute procedure _trigger_transfer_employee_from_decommissioned_machine();
+
+DROP TRIGGER IF EXISTS check_tea_cupboard_capacity on cupboard_item;
+create trigger check_tea_cupboard_capacity before insert on cupboard_item
+    for each row execute procedure _trigger_check_tea_cupboard_capacity();

@@ -3,9 +3,8 @@
   *
   * to be done:
   * 1) create_order - создает заказ, выбирает любой свободный грузовик(и)
-  * 2) update_circuit_board_machine - покупает новую машину для печатных плат, чтобы заменить старые
-  * ??????????? 3) (как вариант использования) buy_product - купить товар(-ы) в магазине (зачем? - см.отчет)
-  * 4) add_tea_to_cupboard
+  * 2) buy_product - купить товар(-ы) в магазине (зачем? - см.отчет)
+  * 3) add_tea_to_cupboard
   *
  */
 
@@ -84,9 +83,26 @@ begin
 end
 $$ language plpgSQL;
 
-create or replace function get_new_circuit_board_machine() returns integer as
+create or replace function get_new_circuit_board_machine(cbmodels_count integer) returns integer as
 $$
+    declare
+        new_machine_id integer := 0;
+        i integer := 0;
+        random_speed integer := 0;
+        employees_count integer := 0;
+        employee_id integer := 0;
+        circuit_board_model_row circuit_board_model%ROWTYPE;
     begin
-        -- todo добавить новую машину, подключить random(1..n) сотрудников
+        insert into circuit_board_machine(assembly_date, work_hrs, area, state) values (now(), 0, (random() * 100 + 1)::real, 'ok') returning id into new_machine_id;
+        for i in 1..cbmodels_count loop
+            select id, version into circuit_board_model_row from circuit_board_model order by id limit 1 offset i;
+            random_speed := (random() * ( 100 - 10) + 10)::real;
+            insert into circuit_board_machine_param_item values (machine_id, circuit_board_model_row.id, circuit_board_model_row.version, random_speed);
+        end loop;
+        select count(*) from factory_employee into employees_count;
+        for i in 1..employees_count loop
+            select id from factory_employee order by random() limit 1 into employee_id;
+            insert into employee_machine_xref values (employee_id, machine_id) on conflict do nothing;
+        end loop;
     end;
 $$ language plpgsql;
