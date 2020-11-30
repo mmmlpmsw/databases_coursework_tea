@@ -1,8 +1,14 @@
--- Drop all tables
+-- drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
+--     circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
+--     circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard cascade;
+-- drop table if exists employee_machine_xref cascade;
+-- drop type if exists circuit_board_machine_state cascade;
+-- drop type if exists customer_type cascade;
+
+-- -- Drop all tables
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO david;
-GRANT ALL ON SCHEMA public TO nadya;
+alter schema public owner to coursework_admin;
 
 create table if not exists store (
     id serial primary key,
@@ -104,19 +110,19 @@ create table if not exists tea_composition (
     description text
 );
 
--- trigger before update
+-- trigger after update
 create table if not exists store_item (
     store_id int references store on delete cascade on update cascade,
     product_id int references product on delete cascade on update cascade,
-    amount real not null check ( amount > 0 ),
+    amount real not null check ( amount >= 0 ),
     primary key (store_id, product_id)
 );
 
--- trigger before update
+-- trigger after update
 create table if not exists cupboard_item (
     product_id int references tea on delete cascade on update cascade,
     cupboard_id int references tea_cupboard on delete cascade on update cascade,
-    amount real not null check ( amount > 0 ),
+    amount real not null check ( amount >= 0 ),
     primary key (product_id, cupboard_id)
 );
 
