@@ -58,12 +58,57 @@ insert into tea(type, created) values
         ('Nordqvist China Gunpowder', '2020-06-01'), ('Nordqvist Keisarin Morsian', '2020-06-01'), ('Nordqvist Muumimamman Voimajuoma', '2020-07-01'), ('Nordqvist Tiikerin Päiväuni', '2020-07-01'), ('Nordqvist China Green', '2020-06-05'),
             ('Nordqvist Olet Ihana', '2020-08-12'),  ('Nordqvist Päivän Paras Hetki', '2020-08-14'),  ('Nordqvist Tsemppiä', '2020-07-25'),  ('Nordqvist Viisasten Tee', '2020-03-30');
 
+CREATE or replace FUNCTION fmod (
+   dividend double precision,
+   divisor double precision
+) RETURNS double precision
+    LANGUAGE sql IMMUTABLE AS
+'SELECT dividend - floor(dividend / divisor) * divisor';
+
 --------------------------------------------
 /**
   * Функция для вставки сотрудников завода и их чайных шкафов.
   * Принимает массивы с фамилиями, именами, отчествами и вставляет
   * в таблицу factory_employee все возможные варианты их перебора.
  */
+
+-- all values from 0 to 1
+create or replace function hsv_to_rgb(hue double precision, saturation double precision, value double precision) returns integer as $$
+declare
+    c double precision := null;
+    x double precision := null;
+    m double precision := null;
+    mr double precision := null;
+    mg double precision := null;
+    mb double precision := null;
+    r double precision := null;
+    g double precision := null;
+    b double precision := null;
+begin
+    c := value * saturation;
+    x := c * (1.0 - abs(fmod(hue*6, 2) - 1.0));
+    m := value - c;
+    if 0 <= hue and hue < 60.0/360 then
+        mr := c; mg := x; mb := 0;
+    elseif 60.0/360 <= hue and hue < 120.0/360 then
+        mr := x; mg := c; mb := 0;
+    elseif 120.0/360 <= hue and hue < 180.0/360 then
+        mr := 0; mg := c; mb := x;
+    elseif 180.0/360 <= hue and hue < 240.0/360 then
+        mr := 0; mg := x; mb := c;
+    elseif 240.0/360 <= hue and hue < 300.0/360 then
+        mr := x; mg := 0; mb := c;
+    else
+        mr := c; mg := 0; mb := x;
+    end if;
+
+    r := (mr + m)*255;
+    g := (mg + m)*255;
+    b := (mb + m)*255;
+
+    return floor(r)*256*256 + floor(g)*256 + floor(b);
+end;
+$$ language plpgsql;
 
 create or replace function insert_employees_and_cupboards(
     fnames varchar[],
@@ -82,7 +127,12 @@ begin
                 for k in 1..array_length(lnames, 1) loop
                         count:= count + 1;
                         insert into factory_employee(fname, mname, lname) values (fnames[i], mnames[j], lnames[k]);
-                        insert into tea_cupboard(owner_id, color, capacity) values (count, floor(random() * (16777215 - 0) + 0)::int, floor(random() * (40 - 10) + 10)::int);
+                        insert into tea_cupboard(owner_id, color, capacity)
+                        values (
+                                count,
+                                hsv_to_rgb(random(), 1, 1),
+                                floor(random() * (40 - 10) + 10)::int
+                        );
                 end loop;
         end loop;
     end loop;
@@ -173,8 +223,7 @@ select insert_circuit_board_machine(50, 5, 10);
   * Остальные параметры машины генерируются рандомно.
  */
 
-create or replace function insert_employee_machine_xref() returns void as
-$$
+do $$
 declare
     i integer := 0;
     machine_id integer := 0;
@@ -200,8 +249,6 @@ begin
     );
 end;
 $$ language plpgSQL;
-
-select insert_employee_machine_xref(); --todo при переходе из ok -> broken/discomissioned куда сотрудника?
 
 --------------------------------------------
 /**
@@ -413,11 +460,11 @@ select insert_address(10, array['Moscow', 'Petrozavodsk', 'Rostov-on-Don', 'Sain
   * Первоначально поля, связанные с заказом не инициализированы
  */
 
-create or replace function insert_delivery_truck(trucks_count integer) returns void as
-$$
+do $$
 declare
     i integer := 0;
     random_capacity integer := 0;
+    trucks_count integer := 20;
 begin
     for i in 1..trucks_count loop
        random_capacity := (random() * (150 - 10) + 10)::integer;
@@ -428,16 +475,13 @@ begin
 end
 $$ language plpgSQL;
 
-select insert_delivery_truck(20);
-
 --------------------------------------------
 /**
   * Заполнение таблицы связи продуктов и магазинов.
   * Количество товара генерируется рандомно
  */
 
-create or replace function insert_store_item() returns void as
-$$
+do $$
 declare
     i integer := 0;
     product_id integer := 0;
@@ -461,6 +505,11 @@ begin
 end;
 $$ language plpgSQL;
 
-select insert_store_item();
-
 --------------------------------------------
+
+-- create cupboard items
+do $$
+begin
+
+end;
+$$ language plpgsql;

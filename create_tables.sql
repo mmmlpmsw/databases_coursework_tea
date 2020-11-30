@@ -5,7 +5,7 @@
 -- drop type if exists circuit_board_machine_state cascade;
 -- drop type if exists customer_type cascade;
 
--- -- Drop all tables
+-- Drop all tables
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 alter schema public owner to coursework_admin;

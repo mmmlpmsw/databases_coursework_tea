@@ -83,6 +83,7 @@ begin
 end
 $$ language plpgSQL;
 
+-- todo delete?
 create or replace function get_new_circuit_board_machine(cbmodels_count integer) returns integer as
 $$
     declare
