@@ -128,6 +128,23 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function _trigger_check_product() returns trigger as $$
+declare
+    tea_id integer := null;
+begin
+     select super_id from tea where super_id = new.product_id into tea_id;
+     if tea_id IS NULL then
+         select super_id from tea_composition where super_id = new.product_id into tea_id;
+     end if;
+
+     if tea_id is not null then
+         return new;
+     end if;
+     return null;
+
+end;
+$$ language plpgsql;
+
 create trigger add_tea_to_products before insert on tea
     for each row execute procedure _trigger_add_products_entry('Tea');
 
@@ -157,3 +174,6 @@ create trigger transfer_employee_from_decommissioned_machine after update of sta
 
 create trigger check_tea_cupboard_capacity before insert on cupboard_item
     for each row execute procedure _trigger_check_tea_cupboard_capacity();
+
+create trigger check_product before insert on cupboard_item
+    for each row execute procedure _trigger_check_product();

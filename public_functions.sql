@@ -3,8 +3,8 @@
   *
   * to be done:
   * 1) create_order - создает заказ, выбирает любой свободный грузовик(и)
-  * 2) buy_product - купить товар(-ы) в магазине (зачем? - см.отчет)
-  * 3) add_tea_to_cupboard
+  * 2) add_tea_to_cupboard
+  * 3) выводить содержимое новой композиции
   *
  */
 
@@ -107,3 +107,18 @@ $$
         end loop;
     end;
 $$ language plpgsql;
+
+create or replace function buy_product(_store_id integer, _product_id integer, _amount real) returns void as
+$$
+declare
+    fact_amount real := 0;
+begin
+    select amount from store_item where store_id = _store_id and product_id = _product_id into fact_amount;
+    if (_amount > fact_amount) then
+         return;
+    else
+        update store_item set amount = fact_amount - _amount where store_id = _store_id and product_id = _product_id;
+    end if;
+end
+$$ language plpgsql;
+

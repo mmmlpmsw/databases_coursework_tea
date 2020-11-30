@@ -1,6 +1,6 @@
 /**
-  * функции и insert'ы для генерации большого количества начальных данных в таблицы
-  * (исключительно для внутреннего пользования и удобства)
+  * functions and inserts for generating a large amount of initial data in tables
+  * (for internal use and convenience only)
   * --------------------------------------------
   *
   * ((просто чтобы не забыть, где недоделано - вероятно,
@@ -10,6 +10,9 @@
   * вставка в order
   * вставка в circuit_board
   * вставка в order_item
+  * --todo индексы
+  * --todo поправить отчет и диаграмму по итоговым таблицам, если останется время
+
   */
 
 insert into store(name) values
@@ -506,10 +509,3 @@ end;
 $$ language plpgSQL;
 
 --------------------------------------------
-
--- create cupboard items
-do $$
-begin
-
-end;
-$$ language plpgsql;

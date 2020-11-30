@@ -120,9 +120,9 @@ create table if not exists store_item (
 );
 
 -- trigger after update
--- trigger before insert
+-- trigger before insert x2
 create table if not exists cupboard_item (
-    product_id int references tea on delete cascade on update cascade,
+    product_id int references product on delete cascade on update cascade,
     cupboard_id int references tea_cupboard on delete cascade on update cascade,
     amount real not null check ( amount >= 0 ),
     primary key (product_id, cupboard_id)
