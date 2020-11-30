@@ -73,7 +73,6 @@ end;
 $$ language plpgsql;
 
 -- Machine breaks with 0.0002*work_hrs probability after each work_hrs update
--- should check with condition random() < new.work_hrs (шоб наверняка)
 create or replace function _trigger_consider_machine_breaking() returns trigger as $$
 begin
     if random() < 0.0002*work_hrs then
@@ -102,7 +101,7 @@ begin
 end;
 $$ language plpgsql;
 
--- триггер, чтобы не добавить чай в шкаф, если закончилось место
+-- not add tea to the tea cupboard if you run out of space
 create or replace function _trigger_check_tea_cupboard_capacity() returns trigger as $$
 declare
     sum real := 0;
@@ -128,6 +127,7 @@ begin
 end;
 $$ language plpgsql;
 
+-- avoid adding anything other than tea or tea composition to the tea cupboard
 create or replace function _trigger_check_product() returns trigger as $$
 declare
     tea_id integer := null;

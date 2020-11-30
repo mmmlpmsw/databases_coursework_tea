@@ -2,17 +2,16 @@
   * functions and inserts for generating a large amount of initial data in tables
   * (for internal use and convenience only)
   * --------------------------------------------
-  *
-  * ((просто чтобы не забыть, где недоделано - вероятно,
-  * часть из них заполнится другими функциями))
-  * вставка чайных композиций руками (которые должны быть мемные)
-  * вставка в cupboard_item
+  * to be done:
   * вставка в order
   * вставка в circuit_board
   * вставка в order_item
   * --todo индексы
-  * --todo поправить отчет и диаграмму по итоговым таблицам, если останется время
-
+  * --------------------------------------------
+  * useful links:
+  * -- http://translit-online.ru
+  * -- http://ulitsa.eu/top.php
+  * -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
   */
 
 insert into store(name) values
@@ -61,19 +60,15 @@ insert into tea(type, created) values
         ('Nordqvist China Gunpowder', '2020-06-01'), ('Nordqvist Keisarin Morsian', '2020-06-01'), ('Nordqvist Muumimamman Voimajuoma', '2020-07-01'), ('Nordqvist Tiikerin Päiväuni', '2020-07-01'), ('Nordqvist China Green', '2020-06-05'),
             ('Nordqvist Olet Ihana', '2020-08-12'),  ('Nordqvist Päivän Paras Hetki', '2020-08-14'),  ('Nordqvist Tsemppiä', '2020-07-25'),  ('Nordqvist Viisasten Tee', '2020-03-30');
 
+
+
+--------------------------------------------
 CREATE or replace FUNCTION fmod (
    dividend double precision,
    divisor double precision
 ) RETURNS double precision
     LANGUAGE sql IMMUTABLE AS
 'SELECT dividend - floor(dividend / divisor) * divisor';
-
---------------------------------------------
-/**
-  * Функция для вставки сотрудников завода и их чайных шкафов.
-  * Принимает массивы с фамилиями, именами, отчествами и вставляет
-  * в таблицу factory_employee все возможные варианты их перебора.
- */
 
 -- all values from 0 to 1
 create or replace function hsv_to_rgb(hue double precision, saturation double precision, value double precision) returns integer as $$
@@ -113,6 +108,11 @@ begin
 end;
 $$ language plpgsql;
 
+/**
+  * Функция для вставки сотрудников завода и их чайных шкафов.
+  * Принимает массивы с фамилиями, именами, отчествами и вставляет
+  * в таблицу factory_employee все возможные варианты их перебора.
+ */
 create or replace function insert_employees_and_cupboards(
     fnames varchar[],
     mnames varchar[],
@@ -339,7 +339,6 @@ begin
 END
 $$ language plpgSQL;
 
--- http://imja.name/familii/pyatsot-chastykh-familij.shtml
 select insert_legal_entities(
     10,
     array['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander'],
@@ -447,8 +446,7 @@ begin
 
 END
 $$ language plpgSQL;
--- http://translit-online.ru
--- http://ulitsa.eu/top.php
+
 select insert_address(10, array['Moscow', 'Petrozavodsk', 'Rostov-on-Don', 'Saint Petersburg', 'Tomsk', 'Ufa', 'Yaroslavl', 'Omsk', 'Kaliningrad', 'Kazan'],
     array['Centralnaya, ul.', 'Molodezhnaya, ul.', 'Shkolnaya, ul.', 'Lesnaya, ul.', 'Sovetskaya, ul.', 'Novaya, ul.', 'Sadovaya, ul.', 'Naberezhnaya, ul.', 'Zarechnaya, ul.',
         'Zelenaya, ul.', 'Mira, ul.', 'Lenina, ul.', 'Polevaya, ul.', 'Lugovaya, ul.', 'Oktyabrskaya, ul.', 'Komsomolskaya, ul.',
@@ -509,9 +507,7 @@ end;
 $$ language plpgSQL;
 
 -- -------------------------------------
-
--- todo test
--- create cupboard items
+-- insert cupboard items
 do $$
 declare
     cupboards_count integer := 0;
