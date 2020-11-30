@@ -54,6 +54,7 @@ create table if not exists circuit_board_model (
 
 create type circuit_board_machine_state as enum ('ok', 'broken', 'decommissioned');
 -- trigger after update of work_hrs
+-- trigger after update of state
 create table if not exists circuit_board_machine (
     id serial primary key,
     assembly_date date not null check ( assembly_date <= now() ) default now(),
@@ -119,6 +120,7 @@ create table if not exists store_item (
 );
 
 -- trigger after update
+-- trigger before insert
 create table if not exists cupboard_item (
     product_id int references tea on delete cascade on update cascade,
     cupboard_id int references tea_cupboard on delete cascade on update cascade,

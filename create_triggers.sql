@@ -1,3 +1,17 @@
+-- drop all triggers
+do $$
+begin
+    execute coalesce(
+        (
+            SELECT string_agg('DROP TRIGGER ' || trigger_name || ' ON ' || event_object_table || ';', '')
+            FROM information_schema.triggers
+            WHERE trigger_schema = 'public'
+        ),
+        ''
+    );
+end
+$$ language plpgsql;
+
 -- Adds product entry for new product subclass entries
 create or replace function _trigger_add_products_entry() returns trigger as $$
 declare
@@ -114,42 +128,32 @@ begin
 end;
 $$ language plpgsql;
 
-DROP TRIGGER IF EXISTS add_tea_to_products on tea;
 create trigger add_tea_to_products before insert on tea
     for each row execute procedure _trigger_add_products_entry('Tea');
 
-DROP TRIGGER IF EXISTS add_tea_composition_to_products on tea_composition;
 create trigger add_tea_composition_to_products before insert on tea_composition
     for each row execute procedure _trigger_add_products_entry('Tea Composition');
 
-DROP TRIGGER IF EXISTS delete_tea_from_products on tea;
 create trigger delete_tea_from_products after delete on tea
     for each row execute procedure _trigger_delete_super_product();
 
-DROP TRIGGER IF EXISTS delete_tea_composition_from_products on tea_composition;
 create trigger delete_tea_composition_from_products after delete on tea_composition
     for each row execute procedure _trigger_delete_super_product();
 
-DROP TRIGGER IF EXISTS delete_absent_store_item on store_item;
 create trigger delete_absent_store_item after update on store_item
     for each row execute procedure _trigger_delete_absent_store_item();
 
-DROP TRIGGER IF EXISTS delete_absent_cupboard_item on cupboard_item;
 create trigger delete_absent_cupboard_item after update on cupboard_item
     for each row execute procedure _trigger_delete_absent_cupboard_item();
 
-DROP TRIGGER IF EXISTS increase_machine_work_hrs on circuit_board;
 create trigger increase_machine_work_hrs after insert on circuit_board
     for each row execute procedure _trigger_increase_machine_work_hrs();
 
-DROP TRIGGER IF EXISTS consider_machine_breaking on circuit_board_machine;
 create trigger consider_machine_breaking after update of work_hrs on circuit_board_machine
     for each row execute procedure _trigger_consider_machine_breaking();
 
-DROP TRIGGER IF EXISTS transfer_employee_from_decommissioned_machine on circuit_board_machine;
 create trigger transfer_employee_from_decommissioned_machine after update of state on circuit_board_machine
     for each row execute procedure _trigger_transfer_employee_from_decommissioned_machine();
 
-DROP TRIGGER IF EXISTS check_tea_cupboard_capacity on cupboard_item;
 create trigger check_tea_cupboard_capacity before insert on cupboard_item
     for each row execute procedure _trigger_check_tea_cupboard_capacity();
