@@ -122,8 +122,9 @@ begin
 end
 $$ language plpgsql;
 
+-- Пытается добавить чай в шкаф. Если получилось, возвращает true, если не хватило места - false.
 create or replace function try_put_to_cupboard(cupboard_id integer, product_id integer, amount real) returns boolean as $$
 begin
-    -- todo
+    return true; -- todo
 end;
 $$ language plpgsql;

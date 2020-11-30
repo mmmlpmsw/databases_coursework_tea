@@ -526,7 +526,7 @@ begin
         if current_max_amount_per_tea = 0 then continue; end if;
         for j in 1..current_teas_num loop
             current_tea_amount := random()*current_max_amount_per_tea;
-            select try_put_to_cupboard(i, get_random_tea(), current_tea_amount);
+            perform try_put_to_cupboard(i, get_random_tea(), current_tea_amount);
         end loop;
     end loop;
 end;
