@@ -336,9 +336,33 @@ $$ language plpgSQL;
 
 -- http://imja.name/familii/pyatsot-chastykh-familij.shtml
 select insert_individuals(
-    array['Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg', 'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander', 'David'],
-    array['Aleksandrovich', 'Edouardovich', 'Borisovich', 'Fedorovich', 'Filippovich', 'Georgiyevich', 'Grigoryevich', null],
-    array['Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov', 'Sokolov', 'Mikhaylov', 'Novikov', 'Mashin', 'Erukhimov', 'Zyryanov', 'Shestakov', 'Alenkov', 'Kubikov', 'Nekrasov', 'Sokolov', 'Petrov', 'Ivanov', 'Sidorov', 'Bostrikov', 'Aliev', 'Khokhlov', 'Ivaskevich', 'Mozalyov', 'Titenko', 'Kosarev', 'Kovalyov', 'Zhasminov', 'Fedorenko', 'Storozhev', 'Koshelev', 'Chirkunov', 'Shpak', 'Bachirov', 'Vinnichenko', 'Voronkov', 'Bagramyan', 'Malygin', 'Kesler', 'Voloshkov', 'Efimov', 'Portnov']
+    array[
+        'Anatoliy', 'Vyacheslav', 'Yan', 'Konstantin', 'Oleg',
+        'Pavel', 'Pyotr', 'Fedor', 'Platon', 'Rodion', 'Alexander',
+        'David', 'Patrick', 'Renat', 'Timur', 'Vlad', 'Oliver',
+        'Suga', 'Jimin', 'Jungkook', 'Denis', 'Efrem', 'Vsevolod',
+        'Vadim', 'Boris', 'Avraam', 'Nikita', 'Fedor', 'Joseph', 'German',
+        'Ilya', 'Jack', 'Daniil', 'Nikon', 'Igor', 'Kamil', 'Albert'
+    ],
+    array[
+        'Aleksandrovich', 'Edouardovich', 'Borisovich', 'Fedorovich',
+        'Filippovich', 'Georgiyevich', 'Grigoryevich', null, 'Daniilovich',
+        'Ilevich', 'Avramovich', 'Nikonovich', 'Igorovich', 'Kamilovich',
+        'Germanovich', 'Jackovich', 'Timurovich', 'Efremovich', 'Jiminovich'
+    ],
+    array[
+        'Ivanov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasilyev', 'Petrov',
+        'Sokolov', 'Mikhaylov', 'Novikov', 'Mashin', 'Erukhimov', 'Zyryanov',
+        'Shestakov', 'Alenkov', 'Kubikov', 'Nekrasov', 'Sokolov', 'Petrov',
+        'Ivanov', 'Sidorov', 'Bostrikov', 'Aliev', 'Khokhlov', 'Ivaskevich',
+        'Mozalyov', 'Titenko', 'Kosarev', 'Kovalyov', 'Zhasminov', 'Fedorenko',
+        'Storozhev', 'Koshelev', 'Chirkunov', 'Shpak', 'Bachirov', 'Vinnichenko',
+        'Voronkov', 'Bagramyan', 'Malygin', 'Kesler', 'Voloshkov', 'Efimov',
+        'Portnov', 'Einstein', 'Adams', 'Zaytsev', 'Saakyan', 'King', 'Bush',
+        'Wolf', 'Belov', 'Night', 'Tsoy', 'Pavlov', 'Defo', 'Mironov', 'Grigoryev',
+        'Gachev', 'Maslyakov', 'Leontyev', 'Marks', 'Kozlov', 'Kerry', 'Karter',
+        'Block', 'Bogomolov', 'Brown', 'Boyko', 'Bakh', 'Barns', 'Andreev', 'Aliev'
+    ]
 );
 
 select insert_individuals(
