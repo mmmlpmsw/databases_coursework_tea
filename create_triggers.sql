@@ -1,3 +1,7 @@
+/**
+  * --todo триггер, чтобы не добавить чай в шкаф, если закончилось место?
+*/
+
 -- Adds product entry for new product subclass entries
 create or replace function _trigger_add_products_entry() returns trigger as $$
 declare
@@ -20,7 +24,7 @@ $$ language plpgSQL;
 -- If amount of store item is 0, delete it
 create or replace function _trigger_delete_absent_store_item() returns trigger as $$
 begin
-    if round(new.amount) = 0 then
+    if new.amount = 0 then
         delete from store_item where store_id = new.store_id and product_id = new.product_id;
         return NULL; -- do not execute other triggers
     end if;
@@ -69,6 +73,26 @@ begin
 end;
 $$ language plpgsql;
 
+/**
+  * Триггер: если машина становится списанной, отсоединять от неё сотрудников и купить еще одну машину (функция get_new_circuit_board_machine)
+  * 1) покупает новую машину с той же площадью и характеристиками (см. 2), меняется состояние и дата покупки
+  * 2) все machine_param_items перекидываются со старой машины на новую
+  * 3) все сотрудники переводятся на новую машину
+  *
+ */
+create or replace function _trigger_transfer_employee_from_decommissioned_machine() returns trigger as $$
+declare
+    new_machine_id integer := 0;
+begin
+    if new.state = 'decommissioned' then
+         insert into circuit_board_machine(assembly_date, work_hrs, area, state) values (now(), 0, new.area, 'ok') returning id into new_machine_id;
+         update circuit_board_machine_param_item set machine_id = new_machine_id where machine_id = new.id;
+         update employee_machine_xref set machine_id = new_machine_id where machine_id = new.id;
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
 DROP TRIGGER IF EXISTS add_tea_to_products on tea;
 create trigger add_tea_to_products before insert on tea
     for each row execute procedure _trigger_add_products_entry('Tea');
@@ -100,3 +124,7 @@ create trigger increase_machine_work_hrs after insert on circuit_board
 DROP TRIGGER IF EXISTS consider_machine_breaking on circuit_board_machine;
 create trigger consider_machine_breaking after update of work_hrs on circuit_board_machine
     for each row execute procedure _trigger_consider_machine_breaking();
+
+DROP TRIGGER IF EXISTS transfer_employee_from_decommissioned_machine on circuit_board_machine;
+create trigger transfer_employee_from_decommissioned_machine after update of state on circuit_board_machine
+    for each row execute procedure _trigger_transfer_employee_from_decommissioned_machine();
