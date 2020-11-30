@@ -1,23 +1,8 @@
 -- Drop all tables
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
-
-/**
-  * создание всех таблиц
-  * триггеры:
-  * 1) при создании/удалении строки в tea добавляется соотв. строка в product
-  * (add_tea_to_products, delete_tea_from_products)
-  * 2) при создании/удалении строки в tea_composition добавляется соотв. строка в product
-  * (add_tea_composition_to_products, delete_tea_composition_from_products())
-  *
-  *-----------------------------------------------------------------------------------------
-  *
-  * to be done: (желательно по мере выполнения переносить их из 'to be done' в готовые)
-  * --todo 3) При insert into circuit_board, у производящей машины увеличивается work_hrs
-  * --(в зависимости от его параметров), с вероятностью 0.02*work_hrs
-  * машина может сломаться.
-  * --todo 4) Если в store_item кончается товар (amount = 0), строка с ним удалится
- */
+GRANT ALL ON SCHEMA public TO david;
+GRANT ALL ON SCHEMA public TO nadya;
 
 create table if not exists store (
     id serial primary key,
@@ -37,6 +22,7 @@ create table if not exists factory_employee (
 );
 
 -- trigger before insert
+-- trigger after delete
 create table if not exists tea (
     super_id serial primary key references product on delete cascade on update cascade,
     type varchar(128) not null,
@@ -61,6 +47,7 @@ create table if not exists circuit_board_model (
 );
 
 create type circuit_board_machine_state as enum ('ok', 'broken', 'decommissioned');
+-- trigger after update of work_hrs
 create table if not exists circuit_board_machine (
     id serial primary key,
     assembly_date date not null check ( assembly_date <= now() ) default now(),
@@ -79,7 +66,7 @@ create table if not exists circuit_board_machine_param_item (
     machine_id int references circuit_board_machine(id) on update cascade on delete cascade,
     board_model_id varchar(128),
     board_model_version varchar(128),
-    speed real not null check ( speed > 0 ),
+    speed_items_per_hour real not null check ( speed_items_per_hour > 0 ),
     primary key (machine_id, board_model_id, board_model_version),
     foreign key (board_model_id, board_model_version) references circuit_board_model(id, version) on update cascade on delete cascade
 );
@@ -108,6 +95,8 @@ create table if not exists address (
     comment text
 );
 
+-- trigger before insert
+-- trigger after delete
 create table if not exists tea_composition (
     super_id serial primary key references product on delete cascade on update cascade,
     created date not null,
@@ -115,13 +104,15 @@ create table if not exists tea_composition (
     description text
 );
 
+-- trigger before update
 create table if not exists store_item (
     store_id int references store on delete cascade on update cascade,
     product_id int references product on delete cascade on update cascade,
-    amount real not null,
+    amount real not null check ( amount > 0 ),
     primary key (store_id, product_id)
 );
 
+-- trigger before update
 create table if not exists cupboard_item (
     product_id int references tea on delete cascade on update cascade,
     cupboard_id int references tea_cupboard on delete cascade on update cascade,
@@ -146,6 +137,7 @@ create table if not exists "order" (
     comment text
 );
 
+-- trigger after insert
 create table if not exists circuit_board (
     id serial primary key,
     model_id varchar(128) not null,
