@@ -122,3 +122,8 @@ begin
 end
 $$ language plpgsql;
 
+create or replace function try_put_to_cupboard(cupboard_id integer, product_id integer, amount real) returns boolean as $$
+begin
+    -- todo
+end;
+$$ language plpgsql;

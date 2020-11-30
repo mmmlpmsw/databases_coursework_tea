@@ -508,4 +508,26 @@ begin
 end;
 $$ language plpgSQL;
 
---------------------------------------------
+-- -------------------------------------
+
+-- todo test
+-- create cupboard items
+do $$
+declare
+    cupboards_count integer := 0;
+    current_max_amount_per_tea real := 0;
+    current_tea_amount real := 0;
+    current_teas_num integer := 0;
+begin
+    select count(*) from tea_cupboard into cupboards_count;
+    for i in 1..cupboards_count loop
+        current_teas_num := 1 + 9*random();
+        select coalesce(capacity, 0)/current_teas_num from tea_cupboard into current_max_amount_per_tea;
+        if current_max_amount_per_tea = 0 then continue; end if;
+        for j in 1..current_teas_num loop
+            current_tea_amount := random()*current_max_amount_per_tea;
+            select try_put_to_cupboard(i, get_random_tea(), current_tea_amount);
+        end loop;
+    end loop;
+end;
+$$ language plpgsql;
