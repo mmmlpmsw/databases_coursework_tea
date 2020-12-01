@@ -45,7 +45,11 @@ insert into product(name) values
         ('Dried mint'), ('Cinnamon'), ('Dried rosehip'), ('Strawberry'), ('Dried Thyme'), ('Dried marjoram'),
         ('Honey'), ('Licorice'), ('Tangerine'), ('Mango'),
         ('Potato'), ('Tomato'), ('Onion'), ('Avocado'), ('Carrot'), ('Brokkoli'), ('Salad'), ('Cucumber'),
-        ('Garlic'), ('Pepper');
+        ('Garlic'), ('Pepper'),
+        ('Royal Canin sterilised'), ('Royal Canin kitten'),('Royal Canin mother&babycat'),('Royal Canin sensible'),('Royal Canin protein'),('Royal Canin fit'),('Royal Canin indoor'),
+        ('Perfect Fit chicken'),('Perfect Fit beef'),('Perfect Fit turkey'),('Perfect Fit salmon'),
+        ('Franks ProGold kitten'),('Franks ProGold light'),('Whiskas creamy sauce&shrimp&salmon'),('Whiskas tomato jelly&poultry&beef'),('Whiskas cream sauce&lamb&beef'),('Whiskas cheese sauce&chicken&duck'),('Whiskas beef'),('Whiskas chicken'),('Whiskas rabbit'),('Whiskas salmon'),
+        ('Whiskas stew with veal'), ('Whiskas stew with rabbit and turkey'),('Whiskas stew with trout'),('Whiskas paté with veal'),('Whiskas paté with duck'),('Whiskas paté with chicken and turkey'),('Whiskas mini fillet of beef');
 
 insert into tea(type, created) values
         ('Lipton Green', '2020-08-18'), ('Lipton Black', '2020-08-19'),
