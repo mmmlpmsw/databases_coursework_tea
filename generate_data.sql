@@ -6,7 +6,6 @@
   * вставка в order
   * вставка в circuit_board
   * вставка в order_item
-  * --todo индексы
   * --------------------------------------------
   * useful links:
   * -- http://translit-online.ru
