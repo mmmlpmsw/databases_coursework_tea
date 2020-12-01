@@ -63,7 +63,17 @@ insert into tea(type, created) values
         ('Nordqvist China Gunpowder', '2020-06-01'), ('Nordqvist Keisarin Morsian', '2020-06-01'), ('Nordqvist Muumimamman Voimajuoma', '2020-07-01'), ('Nordqvist Tiikerin Päiväuni', '2020-07-01'), ('Nordqvist China Green', '2020-06-05'),
             ('Nordqvist Olet Ihana', '2020-08-12'),  ('Nordqvist Päivän Paras Hetki', '2020-08-14'),  ('Nordqvist Tsemppiä', '2020-07-25'),  ('Nordqvist Viisasten Tee', '2020-03-30');
 
-
+insert into customer(type, fname, mname, lname, email) values
+('individual', 'Anton', 'Valerevich', 'Gavrilov', 'avgavrilov@itmo.ru'),
+('individual', 'Sergej', 'Viktorovich', 'Klimenkov', 'klimenkov@itmo.ru'),
+('individual', 'Evgenij', 'Alekseevich', 'Tsopa', 'evgenij.tsopa@itmo.ru'),
+('individual', 'Vladimir', 'Vyacheslavovich', 'Nikolaev', 'vvnikolaev@itmo.ru'),
+('individual', 'Alexey', 'Evgenjevich', 'Pismak', 'alexey.pismak@cs.ifmo.ru'),
+('individual', 'Pavel', 'Valerevich', 'Balakshin', 'pvbalakshin@itmo.ru'),
+('individual', 'Aleksandr', 'Sergeevich', 'Yarkeev', 'bleizard@cs.ifmo.ru'),
+('individual', 'Ivan', 'Vladimirovich', 'Uskov', 'liveinkarai@gmail.com'),
+('individual', 'Ilya', 'Valentinovich', 'Perminov', 'ivperminov@itmo.ru'),
+('individual', 'Dmitrij', 'Borisovich', 'Afanasev', 'dima@cs.ifmo.ru');
 
 --------------------------------------------
 CREATE or replace FUNCTION fmod (
