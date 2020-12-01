@@ -1,14 +1,29 @@
--- drop table if exists store, product, store_item, tea_composition, store_item, tea, cupboard_item, composition_item,
---     circuit_board_model, circuit_board_machine, circuit_board_machine_param_item, customer, address, "order",
---     circuit_board, order_item, delivery_truck, factory_employee, tea_cupboard cascade;
--- drop table if exists employee_machine_xref cascade;
--- drop type if exists circuit_board_machine_state cascade;
--- drop type if exists customer_type cascade;
+-- drop types
+do $$
+begin
+    execute coalesce(
+        (
+            SELECT distinct string_agg('drop type if exists "' || pg_type.typname || '" cascade;', '') FROM pg_type
+                JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid
+        ),
+        ''
+    );
+end
+$$ language plpgsql;
 
--- Drop all tables
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-alter schema public owner to coursework_admin;
+-- drop tables
+do $$
+begin
+    execute coalesce(
+        (
+            SELECT string_agg('drop table if exists "' || table_name || '" cascade;', '')
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+        ),
+        ''
+    );
+end
+$$ language plpgsql;
 
 create table if not exists store (
     id serial primary key,
