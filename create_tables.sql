@@ -1,16 +1,3 @@
--- drop types
-do $$
-begin
-    execute coalesce(
-        (
-            SELECT distinct string_agg('drop type if exists "' || pg_type.typname || '" cascade;', '') FROM pg_type
-                JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid
-        ),
-        ''
-    );
-end
-$$ language plpgsql;
-
 -- drop tables
 do $$
 begin
@@ -19,6 +6,19 @@ begin
             SELECT string_agg('drop table if exists "' || table_name || '" cascade;', '')
             FROM information_schema.tables
             WHERE table_schema = 'public'
+        ),
+        ''
+    );
+end
+$$ language plpgsql;
+
+-- drop types
+do $$
+begin
+    execute coalesce(
+        (
+            SELECT distinct string_agg('drop type if exists "' || pg_type.typname || '" cascade;', '') FROM pg_type
+                JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid
         ),
         ''
     );
@@ -145,7 +145,7 @@ create table if not exists cupboard_item (
 
 create table if not exists composition_item (
     composition_id int references tea_composition on delete cascade on update cascade,
-    product_id int references product on delete restrict on update cascade,
+    product_id int references product on delete cascade on update cascade,
     amount_percent real not null check ( amount_percent between 0 and 100 ),
     primary key (composition_id, product_id)
 );
