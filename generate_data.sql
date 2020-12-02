@@ -2,11 +2,6 @@
   * functions and inserts for generating a large amount of initial data in tables
   * (for internal use and convenience only)
   * --------------------------------------------
-  * to be done:
-  * вставка в order
-  * вставка в circuit_board
-  * вставка в order_item
-  * --------------------------------------------
   * useful links:
   * -- http://translit-online.ru
   * -- http://ulitsa.eu/top.php
@@ -539,4 +534,32 @@ begin
         end loop;
     end loop;
 end;
+$$ language plpgsql;
+-- -------------------------------------
+-- insert tea_compositions
+-- http://www.teausa.com/14656/glossary-of-terms
+do $$
+begin
+    perform create_tea_composition('Wiry', 'A tea leaf which is tightly rolled or twisted, indicative of good withering.');
+    perform create_tea_composition('Tisane', 'A term which describes an herbal infusion.');
+    perform create_tea_composition('Sumatra', 'Tea grown on the island of Sumatra. Grades and characteristics are similar to Java teas.');
+    perform create_tea_composition('Stand-out', 'No surprises here. A tea liquor which is much above average.');
+    perform create_tea_composition('Tannin', 'A class of chemicals contained in tea that are thought to be responsible for tea''s health benefits. The contribute heavily to the taste and pungent characteristics of tea.');
+    perform create_tea_composition('Thick', 'Describes tea liquor having substance, but not necessarily strength.');
+    perform create_tea_composition('Soft', 'A tea which is under fermented (under oxidized).');
+    perform create_tea_composition('Silvery Oolong', 'Another costly tea which utilizes the delicate whitish leaf from the first flush.');
+    perform create_tea_composition('Pekoe', 'A size of tea leaf characterized by leaves which are shorter and not as wiry as Orange Pekoe. The liquors generally have more color.');
+    perform create_tea_composition('Silver Tip Pekoe ', 'A very costly tea from China and Sri Lanka, made from full-grown buds of special cultivars. This is sometimes referred to as White Tea.');
+    perform create_tea_composition('Rains', 'Describes liquor of a dull plain tea manufactured during the rainy season.');
+    perform create_tea_composition('Organoleptic', 'The process used by most tea tasters to evaluate the quality of a tea using all the senses.');
+    perform create_tea_composition('Rich', 'A mellow liquor which is abounding in quality and thickness.');
+    perform create_tea_composition('Gone Off', 'Tea which is not good because it is old, mouldy, or otherwise tainted.');
+    perform create_tea_composition('Autumnal', 'Describes the liquor from teas grown in Autumn, in cool weather. The term is most often applied to teas from Northern India.');
+    perform create_tea_composition('Muddy', 'A term which describes a dull or lifeless liquor.');
+    perform create_tea_composition('Mouldy', 'An undesirable trait characterized by a mouldy taste and odor resulting from improper storage.');
+    perform create_tea_composition('Gyokuro', 'A prized Japanese Green Tea which is rich in taste and pleasing to the eye. The tea undergoes special handling at every stage of its growth (shaded) and processing (hand-fired).');
+    perform create_tea_composition('Bancha', 'A Japanese tea made from coarse leaves, usually from the last plucking. This tea is generally consumed domestically.');
+    perform create_tea_composition('Flush', 'The new growth on a tea plant consisting of a full complement of leaves. It takes about 15 - 20 days for bush to flush after plucking.');
+
+end
 $$ language plpgsql;
