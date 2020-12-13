@@ -186,3 +186,5 @@ create table if not exists delivery_truck (
     delivery_by timestamp default null,
     check ( order_id is not null and delivery_by is not null or order_id is null and delivery_by is null)
 );
+
+reassign owned by nadya to coursework_admin;
