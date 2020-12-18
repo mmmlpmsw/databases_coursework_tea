@@ -6,7 +6,7 @@ export default function () {
   let activationSound = new Audio('/assets/media/cheat_activated.wav');
   activationSound.load();
 
-  this.addCheatListener = function (code, handler) {
+  this.setCheatListener = function (code, handler) {
     if (handler == null)
       delete map[code.toUpperCase()];
     else

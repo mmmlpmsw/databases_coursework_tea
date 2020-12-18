@@ -5,7 +5,7 @@ export default function () {
   const TARGET_SELECTOR = "[physical-body]";
   const SCALE = 1/200;
 
-  cheatCode.addCheatListener("ALLFALLSDOWN", activate);
+  cheatCode.setCheatListener("ALLFALLSDOWN", activate);
 
   let objects = [];
 
@@ -14,7 +14,7 @@ export default function () {
   let walls = {};
 
   function activate() {
-    cheatCode.addCheatListener("ALLFALLSDOWN", null);
+    cheatCode.setCheatListener("ALLFALLSDOWN", null);
     world = planck.World({
       gravity: planck.Vec2(0, 10),
     });

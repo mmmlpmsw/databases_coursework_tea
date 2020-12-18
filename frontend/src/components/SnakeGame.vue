@@ -206,7 +206,7 @@
       }
     },
     mounted() {
-      cheatCode.addCheatListener('DONTEATYOURSELF', this.activate);
+      cheatCode.setCheatListener('DONTEATYOURSELF', this.activate);
     }
   }
 </script>

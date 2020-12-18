@@ -421,7 +421,7 @@
       }
     },
     mounted() {
-      cheatCode.addCheatListener('DAMNBRICKS', this.activate);
+      cheatCode.setCheatListener('DAMNBRICKS', this.activate);
     }
   }
 </script>
