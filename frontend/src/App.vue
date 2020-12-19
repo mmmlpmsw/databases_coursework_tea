@@ -86,5 +86,5 @@
 </script>
 
 <style lang="scss">
-  @import "$src/style/global";
+  @import "~$src/style/global";
 </style>

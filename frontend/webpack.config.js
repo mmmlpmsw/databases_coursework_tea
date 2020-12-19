@@ -43,27 +43,7 @@ module.exports = {
         ]
       }, {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          // TODO enable this if SCSS doesn't work, remove this otherwise
-          loaders: {
-            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-            // the "scss" and "sass" values for the lang attribute to the right configs here.
-            // other preprocessors should work out of the box, no loader config like this necessary.
-            'scss': [
-              'vue-style-loader',
-              'css-loader',
-              'postcss-loader',
-              'sass-loader'
-            ],
-            'sass': [
-              'vue-style-loader',
-              'css-loader',
-              'postcss-loader',
-              'sass-loader?indentedSyntax'
-            ]
-          }
-        },
+        loader: 'vue-loader'
       }, {
         test: /\.js$/,
         loader: 'babel-loader',
