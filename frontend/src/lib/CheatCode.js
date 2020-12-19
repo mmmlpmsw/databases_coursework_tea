@@ -3,7 +3,7 @@ export default function () {
   let maxBufferLength = 0;
   let buffer = '';
 
-  let activationSound = new Audio('/assets/media/cheat_activated.wav');
+  let activationSound = new Audio(require('$assets/media/sound/cheat_activated.wav'));
   activationSound.load();
 
   this.setCheatListener = function (code, handler) {
