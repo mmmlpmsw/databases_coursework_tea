@@ -1,12 +1,26 @@
-let path = require('path');
-let webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const { VueLoaderPlugin } = require("vue-loader");
 
 module.exports = {
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'build.js'
+    path: path.join(__dirname, 'dist'),
+    publicPath: '/dist',
+    filename: 'main.js'
+  },
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true,
+    overlay: true,
+    host: 'localhost',
+    port: 3000,
+    hot: true,
+    proxy: {
+      'http://localhost/api/*': {
+        target: `http://localhost:8080`
+      }
+    }
   },
   module: {
     rules: [
@@ -52,7 +66,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/
-      },  {
+      }, {
         test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
         loader: 'file-loader',
         options: {
@@ -67,24 +81,11 @@ module.exports = {
       '$assets': path.resolve(__dirname, 'assets'),
       '$src': path.resolve(__dirname, 'src')
     },
-    extensions: ['*', '.js', '.vue', '.json']
-  },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true,
-    host: 'localhost',
-    port: 3000,
-    hot: true,
-    proxy: {
-      'http://localhost/api/*': {
-        target: `http://localhost:8080`
-      }
-    }
+    extensions: ['.*', '.vue', '.js']
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    require("vue-loader")
+    new VueLoaderPlugin()
   ],
   performance: {
     hints: false
