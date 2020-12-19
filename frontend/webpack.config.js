@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const { VueLoaderPlugin } = require("vue-loader");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/main.js',
@@ -14,6 +15,7 @@ module.exports = {
     noInfo: true,
     overlay: true,
     host: 'localhost',
+    writeToDisk: true,
     port: 3000,
     hot: true,
     proxy: {
@@ -44,23 +46,23 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           // TODO enable this if SCSS doesn't work, remove this otherwise
-          // loaders: {
-          //   // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-          //   // the "scss" and "sass" values for the lang attribute to the right configs here.
-          //   // other preprocessors should work out of the box, no loader config like this necessary.
-          //   'scss': [
-          //     'vue-style-loader',
-          //     'css-loader',
-          //     'postcss-loader',
-          //     'sass-loader'
-          //   ],
-          //   'sass': [
-          //     'vue-style-loader',
-          //     'css-loader',
-          //     'postcss-loader',
-          //     'sass-loader?indentedSyntax'
-          //   ]
-          // }
+          loaders: {
+            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
+            // the "scss" and "sass" values for the lang attribute to the right configs here.
+            // other preprocessors should work out of the box, no loader config like this necessary.
+            'scss': [
+              'vue-style-loader',
+              'css-loader',
+              'postcss-loader',
+              'sass-loader'
+            ],
+            'sass': [
+              'vue-style-loader',
+              'css-loader',
+              'postcss-loader',
+              'sass-loader?indentedSyntax'
+            ]
+          }
         },
       }, {
         test: /\.js$/,
@@ -77,7 +79,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      // 'vue$': 'vue/dist/vue.esm.js', // todo not sure if this is needed
+      'vue$': 'vue/dist/vue.esm.js',
       '$assets': path.resolve(__dirname, 'assets'),
       '$src': path.resolve(__dirname, 'src')
     },
@@ -85,7 +87,12 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'assets' }
+      ]
+    })
   ],
   performance: {
     hints: false

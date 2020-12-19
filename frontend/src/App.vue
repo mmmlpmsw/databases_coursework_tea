@@ -81,10 +81,10 @@
     },
     router,
     store,
-    i18n,
+    i18n
   }
 </script>
 
-<style>
-
+<style lang="scss">
+  @import "$src/style/global";
 </style>
