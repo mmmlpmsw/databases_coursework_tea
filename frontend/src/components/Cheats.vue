@@ -10,9 +10,9 @@
   import TetrisGame from "$src/components/TetrisGame";
 
   export default {
-    comments: [
+    components: {
       SnakeGame,
       TetrisGame
-    ]
+    }
   }
 </script>

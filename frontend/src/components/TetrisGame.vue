@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import TransitionExpand from "#/components/TransitionExpand";
+  import TransitionExpand from "$src/components/TransitionExpand";
 
   const
     EMPTY = 'transparent',

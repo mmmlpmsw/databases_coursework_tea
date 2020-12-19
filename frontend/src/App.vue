@@ -13,12 +13,17 @@
   import Vuex from "vuex";
 
   import Header from "$src/components/Header";
+  import Cheats from "$src/components/Cheats";
+  import Stores from "$src/pages/Stores";
+  import Factory from "$src/pages/Factory";
+  import Orders from "$src/pages/Orders";
+  import NotFound from "$src/pages/NotFound";
 
   import i18n_ru_RU from '$assets/i18n/ru_RU.js';
   import i18n_en_US from '$assets/i18n/en_US.js';
-  import Cheats from "$src/components/Cheats";
 
   Vue.use(VueRouter);
+  Vue.use(VueI18n);
   Vue.use(Vuex);
 
   let router = initRouter();
@@ -28,9 +33,10 @@
   function initRouter() {
     const routes = [
       { path: '/',        redirect: '/factory'  },
-      { path: '/stores',  component: null       }, // todo
-      { path: '/factory', component: null       }, // todo
-      { path: '/orders',  component: null       }, // todo
+      { path: '/stores',  component: Stores     },
+      { path: '/factory', component: Factory    },
+      { path: '/orders',  component: Orders     },
+      { path: '*',        component: NotFound   },
     ];
 
     return new VueRouter({
@@ -70,6 +76,7 @@
   export default {
     components: {
       Cheats,
+      VueRouter,
       'a-header': Header
     },
     router,
