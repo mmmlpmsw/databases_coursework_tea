@@ -1,5 +1,5 @@
 <template>
-  <div id="root">
+  <div id="root" :theme-dark="$store.state.darkTheme">
     <a-header/>
     <router-view/>
     <cheats/>
@@ -65,10 +65,12 @@
   function initGlobalStore() {
     return new Vuex.Store({
       state: {
-        // Empty for now
+        darkTheme: false
       },
       mutations: {
-        // Empty for now
+        switchTheme(state) {
+          state.darkTheme = !state.darkTheme;
+        }
       }
     });
   }

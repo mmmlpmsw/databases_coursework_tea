@@ -53,7 +53,9 @@
 
   .nav_btn {
     height: 64px;
-    padding: 21px 19px;
+    padding: 0 19px;
+    line-height: 64px;
+    display: inline-block;
 
     &:hover {
       background: rgba(255, 255, 255, 0.15);

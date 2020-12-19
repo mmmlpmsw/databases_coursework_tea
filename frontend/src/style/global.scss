@@ -1,12 +1,17 @@
 body {
   margin: 0;
-  background-color: #e8e8e8;
   height: 100vh;
 }
 
-.root {
-  min-height: 100%;
+#root {
+  min-height: 100vh;
   overflow: auto;
+  transition: background-color 300ms;
+  background-color: #e8e8e8;
+
+  &[theme-dark] {
+    background-color: #212121;
+  }
 }
 
 [v-cloak] {

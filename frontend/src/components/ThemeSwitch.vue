@@ -1,19 +1,14 @@
 <template>
   <div class="bg" @click="onClick">
-    <div class="slider" :class="{'to_right': darkTheme}"></div>
+    <div class="slider" :class="{'to_right': $store.state.darkTheme}"></div>
   </div>
 </template>
 
 <script>
   export default {
-    data() {
-      return {
-        darkTheme: false
-      }
-    },
     methods: {
       onClick() {
-        this.darkTheme = !this.darkTheme;
+        this.$store.commit('switchTheme');
       }
     }
   }
