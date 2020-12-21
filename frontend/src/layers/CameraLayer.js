@@ -32,8 +32,7 @@ export default class CameraLayer extends Layer {
   }
 
   unproject(x, y) {
-    // var aaaa = this._matrix.multiply(new DOMMatrix([x, y, 0, 0, 0, 0]));
-    // return {x: aaaa.a, y: aaaa.b};
+    return { x: this._matrix.a * x + this._matrix.c * y, y: this._matrix.b * x + this._matrix.d * y };
   }
   
   render(ctx, idx) {

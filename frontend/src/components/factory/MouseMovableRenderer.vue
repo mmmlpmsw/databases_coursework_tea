@@ -36,7 +36,7 @@
         this.cameraLayer.setCameraPosition(this.dragStart.x + -e.offsetX, this.dragStart.y + -e.offsetY);
       },
       onMouseDown(e) {
-        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        let point = this.cameraLayer.unproject(this.cameraLayer._cameraX + e.offsetX, this.cameraLayer._cameraY  + e.offsetY);
         this.dragStart.x = point.x;
         this.dragStart.y = point.y;
         this.dragging = true;
