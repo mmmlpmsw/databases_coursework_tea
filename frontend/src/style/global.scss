@@ -4,10 +4,13 @@ body {
 }
 
 #root {
-  min-height: 100vh;
-  overflow: auto;
+  height: 100vh;
+  overflow: hidden;
   transition: background-color 300ms;
   background-color: #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 
   &[theme-dark] {
     background-color: #212121;

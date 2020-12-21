@@ -1,5 +1,7 @@
 <template>
-  <canvas ref="canvas" class="base-renderer"/>
+  <div class="base-renderer">
+    <canvas class="canvas" ref="canvas"/>
+  </div>
 </template>
 
 <script>
@@ -31,8 +33,8 @@
         this.eventBus.$emit('render');
       },
       onWindowResize() {
-        this.canvas.width  = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.canvas.width  = this.canvas.parentElement.offsetWidth;
+        this.canvas.height = this.canvas.parentElement.offsetHeight;
         this.askForRender();
       }
     },
@@ -54,3 +56,10 @@
     }
   }
 </script>
+
+<style>
+  .canvas {
+    width: 100%;
+    height: 100%;
+  }
+</style>

@@ -5,14 +5,13 @@
 <script>
   import BasicObjectsRenderer from "$src/components/factory/BasicObjectsRenderer";
   import Vue from 'vue';
+  import CameraLayer from "$src/layers/CameraLayer";
 
   export default {
     data: function() {
       return {
         rendererBus: new Vue(),
-        renderables: [
-
-        ]
+        renderables: []
       }
     },
     methods: {
@@ -31,14 +30,16 @@
           ctx.fillText(`Time ${Date.now()}`, 1, idx*120 + 50);
         }
       };
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
-      this.renderables.push(obj);
+      let arr = [];
+      arr.push(obj);
+      arr.push(obj);
+      arr.push(obj);
+      arr.push(obj);
+      arr.push(obj);
+      arr.push(obj);
+      let layer = new CameraLayer(arr);
+      window.l = layer;
+      this.renderables.push(layer);
     },
     components: {
       BasicObjectsRenderer
@@ -48,7 +49,8 @@
 
 <style>
   .renderer {
-    width: 100%;
-    height: 100%;
+    font-size: 0;
+    overflow: hidden;
+    flex: 1;
   }
 </style>
