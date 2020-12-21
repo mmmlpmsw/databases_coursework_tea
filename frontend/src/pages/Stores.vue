@@ -1,9 +1,15 @@
 <template>
+  <container>
 
+  </container>
 </template>
 
 <script>
-  export default {
+  import Container from "$src/components/Container";
 
+  export default {
+    components: {
+      Container
+    }
   }
 </script>
