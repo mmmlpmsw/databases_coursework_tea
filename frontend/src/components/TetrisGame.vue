@@ -1,4 +1,3 @@
-<!--TODO this may not work-->
 <template>
   <div class="tetris_wr" :class="{ hidden }">
     <transition-expand>
