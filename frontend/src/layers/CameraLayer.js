@@ -5,7 +5,7 @@ export default class CameraLayer extends Layer {
     super(renderables, enabled);
     this._cameraX = 0;
     this._cameraY = 0;
-    this._cameraScale = 0;
+    this._cameraScale = 1;
     this._matrix = new DOMMatrix();
   }
 
@@ -29,6 +29,11 @@ export default class CameraLayer extends Layer {
   scaleCamera(scaleDelta, originX = this._cameraX, originY = this._cameraY) {
     this._cameraScale *= scaleDelta;
     this._matrix.scaleSelf(scaleDelta, scaleDelta, 1, originX, originY, 0);
+  }
+
+  unproject(x, y) {
+    // var aaaa = this._matrix.multiply(new DOMMatrix([x, y, 0, 0, 0, 0]));
+    // return {x: aaaa.a, y: aaaa.b};
   }
   
   render(ctx, idx) {

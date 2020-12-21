@@ -58,7 +58,8 @@
 </script>
 
 <style>
-  .canvas {
+  .canvas,
+  .base-renderer {
     width: 100%;
     height: 100%;
   }

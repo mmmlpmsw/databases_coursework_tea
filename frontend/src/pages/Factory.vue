@@ -1,16 +1,21 @@
 <template>
-  <basic-objects-renderer class="renderer" :event-bus="rendererBus" :renderables="renderables" :max-fps="60"/>
+  <mouse-movable-renderer class="renderer"
+                          :event-bus="rendererBus"
+                          :camera-layer="cameraLayer"
+                          :renderables="renderables"
+                          :max-fps="60"/>
 </template>
 
 <script>
-  import BasicObjectsRenderer from "$src/components/factory/BasicObjectsRenderer";
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
+  import MouseMovableRenderer from "$src/components/factory/MouseMovableRenderer";
 
   export default {
     data: function() {
       return {
         rendererBus: new Vue(),
+        cameraLayer: null,
         renderables: []
       }
     },
@@ -38,11 +43,12 @@
       arr.push(obj);
       arr.push(obj);
       let layer = new CameraLayer(arr);
-      window.l = layer;
+      this.cameraLayer = layer;
+      window.l = layer; // todo
       this.renderables.push(layer);
     },
     components: {
-      BasicObjectsRenderer
+      MouseMovableRenderer
     }
   }
 </script>

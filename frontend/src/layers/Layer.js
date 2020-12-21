@@ -1,4 +1,4 @@
-import Renderable from "$src/render/Renderable";
+import Renderable from "$src/ui/Renderable";
 
 export default class Layer extends Renderable {
   constructor(renderables, enabled = true) {
