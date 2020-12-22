@@ -23,12 +23,12 @@ export default class CameraLayer extends Layer {
     this.cameraY = this.cameraY;
   }
 
-  get cameraX() { return -this._matrix.e; }
-  get cameraY() { return -this._matrix.f; }
+  get cameraX() { return -this._matrix.e*this.cameraScale; }
+  get cameraY() { return -this._matrix.f*this.cameraScale; }
   get cameraScale() { return 1/this._matrix.a; }
 
-  set cameraX(v) { this._matrix.e = -saturate(v*this.cameraScale, this.minCameraX, this.maxCameraX)/this.cameraScale; }
-  set cameraY(v) { this._matrix.f = -saturate(v*this.cameraScale, this.minCameraY, this.maxCameraY)/this.cameraScale; }
+  set cameraX(v) { this._matrix.e = -saturate(v, this.minCameraX, this.maxCameraX)/this.cameraScale; }
+  set cameraY(v) { this._matrix.f = -saturate(v, this.minCameraY, this.maxCameraY)/this.cameraScale; }
   set cameraScale(scale) {
     this._matrix.a = saturate(1/scale, this.minCameraScale, this.maxCameraScale);
     this._matrix.d = this._matrix.a;

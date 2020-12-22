@@ -35,9 +35,10 @@
         if (!this.dragging)
           return;
 
+        let scale = this.cameraLayer.cameraScale;
         let dragDiff = {
-          x: e.offsetX - this.dragBufferPoint.x,
-          y: e.offsetY - this.dragBufferPoint.y
+          x: scale*(e.offsetX - this.dragBufferPoint.x),
+          y: scale*(e.offsetY - this.dragBufferPoint.y)
         };
 
         this.cameraLayer.cameraX -= dragDiff.x;
