@@ -63,11 +63,4 @@ export default class CameraLayer extends Layer {
     super.render(ctx, idx);
     ctx.restore();
   }
-
-  // _updateMatrix() {
-  //   this._matrix = new DOMMatrix();
-  //   this._matrix.translateSelf(this._cameraX, this._cameraY);
-  //   this._matrix.scaleSelf(this._cameraScale, this._cameraScale, this._cameraScale, this._cameraX, this._cameraY, 0);
-  //   this._matrix.invertSelf();
-  // }
 }
