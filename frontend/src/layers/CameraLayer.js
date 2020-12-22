@@ -28,11 +28,35 @@ export default class CameraLayer extends Layer {
 
   scaleCamera(scaleDelta, originX = this._cameraX, originY = this._cameraY) {
     this._cameraScale *= scaleDelta;
-    this._matrix.scaleSelf(scaleDelta, scaleDelta, 1, originX, originY, 0);
+    this._matrix.scaleSelf(scaleDelta, scaleDelta, scaleDelta, originX, originY, 0);
+  }
+
+  get cameraX() {
+    return this._cameraX;
+  }
+
+  get cameraY() {
+    return this._cameraY;
+  }
+
+  get cameraScale() {
+    return this._cameraScale;
+  }
+
+  project(x, y) {
+    let m = this._matrix;
+    return {
+      x: m.a * x + m.c * y + m.e,
+      y: m.b * x + m.d * y + m.f
+    }
   }
 
   unproject(x, y) {
-    return { x: this._matrix.a * x + this._matrix.c * y, y: this._matrix.b * x + this._matrix.d * y };
+    let m = this._matrix.inverse();
+    return {
+      x: m.a * x + m.c * y + m.e,
+      y: m.b * x + m.d * y + m.f
+    }
   }
   
   render(ctx, idx) {
@@ -53,7 +77,7 @@ export default class CameraLayer extends Layer {
   _updateMatrix() {
     this._matrix = new DOMMatrix();
     this._matrix.translateSelf(this._cameraX, this._cameraY);
-    this._matrix.scaleSelf(this._cameraScale, this._cameraScale, 1, this._cameraX, this._cameraY, 0);
+    this._matrix.scaleSelf(this._cameraScale, this._cameraScale, this._cameraScale, this._cameraX, this._cameraY, 0);
     this._matrix.invertSelf();
   }
 }

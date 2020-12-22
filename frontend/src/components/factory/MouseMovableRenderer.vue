@@ -23,7 +23,7 @@
     data() {
       return {
         dragging: false,
-        dragStart: {
+        dragBufferPoint: {
           x: 0, y: 0
         }
       }
@@ -33,15 +33,25 @@
         if (!this.dragging)
           return;
 
-        this.cameraLayer.setCameraPosition(this.dragStart.x + -e.offsetX, this.dragStart.y + -e.offsetY);
+        let scale = this.cameraLayer.cameraScale;
+        let dragDiff = {
+          x: scale*(e.offsetX - this.dragBufferPoint.x),
+          y: scale*(e.offsetY - this.dragBufferPoint.y)
+        };
+
+        this.cameraLayer.moveCamera(
+          -dragDiff.x, -dragDiff.y
+        );
+
+        this.dragBufferPoint.x = e.offsetX;
+        this.dragBufferPoint.y = e.offsetY;
       },
       onMouseDown(e) {
-        let point = this.cameraLayer.unproject(this.cameraLayer._cameraX + e.offsetX, this.cameraLayer._cameraY  + e.offsetY);
-        this.dragStart.x = point.x;
-        this.dragStart.y = point.y;
+        this.dragBufferPoint.x = e.offsetX;
+        this.dragBufferPoint.y = e.offsetY;
         this.dragging = true;
       },
-      onMouseUp(e) {
+      onMouseUp() {
         this.dragging = false;
       }
     },
