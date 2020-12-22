@@ -2,7 +2,8 @@
   <div  class="mouse_renderer"
         @mousemove="onMouseMove"
         @mousedown="onMouseDown"
-        @mouseup="onMouseUp">
+        @mouseup="onMouseUp"
+        @wheel="onMouseWheel">
     <basic-objects-renderer :event-bus="eventBus" :renderables="renderables" :max-fps="maxFps"/>
   </div>
 </template>
@@ -25,7 +26,10 @@
         dragging: false,
         dragBufferPoint: {
           x: 0, y: 0
-        }
+        },
+        scale: 1,
+        minScale: 0.1,
+        maxScale: 10
       }
     },
     methods: {
@@ -53,6 +57,13 @@
       },
       onMouseUp() {
         this.dragging = false;
+      },
+      onMouseWheel(e) {
+        if (e.deltaY > 0) this.scale += 0.05;
+        else this.scale -= 0.05;
+        (this.scale > this.maxScale) ? this.scale = this.maxScale : (this.scale < this.minScale)? this.scale = this.minScale: null;
+        this.cameraLayer.setCameraScale(this.scale);
+        e.preventDefault();
       }
     },
     components: {
