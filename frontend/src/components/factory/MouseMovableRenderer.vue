@@ -3,7 +3,7 @@
         @mousemove="onMouseMove"
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
-        @wheel="onMouseWheel">
+        @wheel.prevent="onMouseWheel">
     <basic-objects-renderer :event-bus="eventBus" :renderables="renderables" :max-fps="maxFps"/>
   </div>
 </template>
@@ -27,9 +27,7 @@
         dragBufferPoint: {
           x: 0, y: 0
         },
-        scale: 1,
-        minScale: 0.1,
-        maxScale: 10
+        scrollSensibility: 0.01
       }
     },
     methods: {
@@ -37,15 +35,13 @@
         if (!this.dragging)
           return;
 
-        let scale = this.cameraLayer.cameraScale;
         let dragDiff = {
-          x: scale*(e.offsetX - this.dragBufferPoint.x),
-          y: scale*(e.offsetY - this.dragBufferPoint.y)
+          x: e.offsetX - this.dragBufferPoint.x,
+          y: e.offsetY - this.dragBufferPoint.y
         };
 
-        this.cameraLayer.moveCamera(
-          -dragDiff.x, -dragDiff.y
-        );
+        this.cameraLayer.cameraX -= dragDiff.x;
+        this.cameraLayer.cameraY -= dragDiff.y;
 
         this.dragBufferPoint.x = e.offsetX;
         this.dragBufferPoint.y = e.offsetY;
@@ -59,11 +55,14 @@
         this.dragging = false;
       },
       onMouseWheel(e) {
-        if (e.deltaY > 0) this.scale += 0.05;
-        else this.scale -= 0.05;
-        (this.scale > this.maxScale) ? this.scale = this.maxScale : (this.scale < this.minScale)? this.scale = this.minScale: null;
-        this.cameraLayer.setCameraScale(this.scale);
-        e.preventDefault();
+        let origin = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        let scaleFactor;
+        if (e.deltaY > 0)
+          scaleFactor = (1/(1 + e.deltaY*this.scrollSensibility));
+        else
+          scaleFactor = 1 - e.deltaY*this.scrollSensibility;
+
+        this.cameraLayer.scaleCamera(scaleFactor, origin.x, origin.y);
       }
     },
     components: {

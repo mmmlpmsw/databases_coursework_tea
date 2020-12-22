@@ -1,46 +1,37 @@
 import Layer from "$src/layers/Layer";
+import { saturate } from "$src/lib/Saturation"
 
 export default class CameraLayer extends Layer {
   constructor(renderables, enabled) {
     super(renderables, enabled);
-    this._cameraX = 0;
-    this._cameraY = 0;
-    this._cameraScale = 1;
     this._matrix = new DOMMatrix();
+
+    this.minCameraX = -100;
+    this.maxCameraX = 100;
+    this.minCameraY = -100;
+    this.maxCameraY = 100;
+    this.minCameraScale = 0.5;
+    this.maxCameraScale = 4;
   }
 
-  setCameraPosition(x, y) {
-    this._cameraX = x;
-    this._cameraY = y;
-    this._updateMatrix();
+  scaleCamera(scaleDelta, originX = this.cameraX, originY = this.cameraY) {
+    let resultScale = saturate(this.cameraScale/scaleDelta, this.minCameraScale, this.maxCameraScale);
+    let saturatedDelta = this.cameraScale/resultScale;
+    this._matrix.scaleSelf(saturatedDelta, saturatedDelta, saturatedDelta, originX, originY, 0);
+
+    this.cameraX = this.cameraX;
+    this.cameraY = this.cameraY;
   }
 
-  setCameraScale(scale) {
-    this._cameraScale = scale;
-    this._updateMatrix();
-  }
+  get cameraX() { return -this._matrix.e; }
+  get cameraY() { return -this._matrix.f; }
+  get cameraScale() { return 1/this._matrix.a; }
 
-  moveCamera(dx, dy) {
-    this._cameraX += dx;
-    this._cameraY += dy;
-    this._matrix.translateSelf(-dx, -dy);
-  }
-
-  scaleCamera(scaleDelta, originX = this._cameraX, originY = this._cameraY) {
-    this._cameraScale *= scaleDelta;
-    this._matrix.scaleSelf(scaleDelta, scaleDelta, scaleDelta, originX, originY, 0);
-  }
-
-  get cameraX() {
-    return this._cameraX;
-  }
-
-  get cameraY() {
-    return this._cameraY;
-  }
-
-  get cameraScale() {
-    return this._cameraScale;
+  set cameraX(v) { this._matrix.e = -saturate(v*this.cameraScale, this.minCameraX, this.maxCameraX)/this.cameraScale; }
+  set cameraY(v) { this._matrix.f = -saturate(v*this.cameraScale, this.minCameraY, this.maxCameraY)/this.cameraScale; }
+  set cameraScale(scale) {
+    this._matrix.a = saturate(1/scale, this.minCameraScale, this.maxCameraScale);
+    this._matrix.d = this._matrix.a;
   }
 
   project(x, y) {
@@ -61,7 +52,6 @@ export default class CameraLayer extends Layer {
   
   render(ctx, idx) {
     ctx.save();
-    ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
     ctx.transform(
       this._matrix.a,
       this._matrix.b,
@@ -74,10 +64,10 @@ export default class CameraLayer extends Layer {
     ctx.restore();
   }
 
-  _updateMatrix() {
-    this._matrix = new DOMMatrix();
-    this._matrix.translateSelf(this._cameraX, this._cameraY);
-    this._matrix.scaleSelf(this._cameraScale, this._cameraScale, this._cameraScale, this._cameraX, this._cameraY, 0);
-    this._matrix.invertSelf();
-  }
+  // _updateMatrix() {
+  //   this._matrix = new DOMMatrix();
+  //   this._matrix.translateSelf(this._cameraX, this._cameraY);
+  //   this._matrix.scaleSelf(this._cameraScale, this._cameraScale, this._cameraScale, this._cameraX, this._cameraY, 0);
+  //   this._matrix.invertSelf();
+  // }
 }
