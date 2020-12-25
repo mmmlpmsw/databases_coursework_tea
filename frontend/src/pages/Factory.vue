@@ -1,9 +1,10 @@
 <template>
-  <mouse-movable-renderer class="renderer"
-                          :event-bus="rendererBus"
-                          :camera-layer="cameraLayer"
-                          :renderables="renderables"
-                          :max-fps="60"/>
+  <interactive-objects-renderer class="renderer"
+                                :event-bus="rendererBus"
+                                :camera-layer="cameraLayer"
+                                :renderables="renderables"
+                                :interactives="interactives"
+                                :max-fps="60"/>
 </template>
 
 <script>
@@ -11,28 +12,32 @@
   import CameraLayer from "$src/layers/CameraLayer";
   import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
   import TesterRenderable from "$src/ui/TesterRenderable";
+  import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
 
   export default {
     data: function() {
       return {
         rendererBus: new Vue(),
         cameraLayer: null,
-        renderables: []
+        renderables: [],
+        interactives: []
       }
     },
     methods: {
-      renderScene() {
+      startRenderingScene() {
         setInterval(() => this.rendererBus.$emit('render'), 0);
       }
     },
     mounted() {
-      this.renderScene();
+      this.startRenderingScene();
+
       let layer = new CameraLayer();
       layer.renderables.push(new TesterRenderable());
       this.cameraLayer = layer;
       this.renderables.push(layer);
     },
     components: {
+      InteractiveObjectsRenderer,
       MouseMovableRenderer
     }
   }
