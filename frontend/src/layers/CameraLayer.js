@@ -2,14 +2,14 @@ import Layer from "$src/layers/Layer";
 import { saturate } from "$src/lib/Saturation"
 
 export default class CameraLayer extends Layer {
-  constructor(renderables, enabled) {
+  constructor(renderables = [], enabled = true) {
     super(renderables, enabled);
     this._matrix = new DOMMatrix();
 
-    this.minCameraX = -100;
-    this.maxCameraX = 100;
-    this.minCameraY = -100;
-    this.maxCameraY = 100;
+    this.minCameraX = -1000;
+    this.maxCameraX = 1000;
+    this.minCameraY = -1000;
+    this.maxCameraY = 1000;
     this.minCameraScale = 0.5;
     this.maxCameraScale = 4;
   }
@@ -52,6 +52,7 @@ export default class CameraLayer extends Layer {
   
   render(ctx, idx) {
     ctx.save();
+    ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
     ctx.transform(
       this._matrix.a,
       this._matrix.b,

@@ -1,7 +1,7 @@
 import Renderable from "$src/ui/Renderable";
 
 export default class Layer extends Renderable {
-  constructor(renderables, enabled = true) {
+  constructor(renderables = [], enabled = true) {
     super();
     this.renderables = renderables;
     this.enabled = enabled;

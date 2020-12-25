@@ -36,6 +36,9 @@
         this.canvas.width  = this.canvas.parentElement.offsetWidth;
         this.canvas.height = this.canvas.parentElement.offsetHeight;
         this.askForRender();
+      },
+      getContext() {
+        return this.ctx;
       }
     },
     created() {

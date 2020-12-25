@@ -4,7 +4,7 @@
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
         @wheel.prevent="onMouseWheel">
-    <basic-objects-renderer :event-bus="eventBus" :renderables="renderables" :max-fps="maxFps"/>
+    <basic-objects-renderer ref="renderer" :event-bus="eventBus" :renderables="renderables" :max-fps="maxFps"/>
   </div>
 </template>
 
@@ -56,10 +56,13 @@
         this.dragging = false;
       },
       onMouseWheel(e) {
-        let origin = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        let rendererCtx = this.$refs.renderer.getContext();
+        let cameraX = e.offsetX - rendererCtx.canvas.width/2;
+        let cameraY = e.offsetY - rendererCtx.canvas.height/2;
+        let origin = this.cameraLayer.unproject(cameraX, cameraY);
         let scaleFactor;
         if (e.deltaY > 0)
-          scaleFactor = (1/(1 + e.deltaY*this.scrollSensibility));
+          scaleFactor = 1/(1 + e.deltaY*this.scrollSensibility);
         else
           scaleFactor = 1 - e.deltaY*this.scrollSensibility;
 

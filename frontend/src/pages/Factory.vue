@@ -9,7 +9,8 @@
 <script>
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
-  import MouseMovableRenderer from "$src/components/factory/MouseMovableRenderer";
+  import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
+  import TesterRenderable from "$src/ui/TesterRenderable";
 
   export default {
     data: function() {
@@ -26,25 +27,9 @@
     },
     mounted() {
       this.renderScene();
-      let obj = {
-        render(ctx, idx) {
-          ctx.fillStyle = 'black';
-          ctx.font = "48px sans-serif";
-          ctx.textBaseline = "top";
-          ctx.fillText(`Test object index ${idx}`, 1, idx*120);
-          ctx.fillText(`Time ${Date.now()}`, 1, idx*120 + 50);
-        }
-      };
-      let arr = [];
-      arr.push(obj);
-      arr.push(obj);
-      arr.push(obj);
-      arr.push(obj);
-      arr.push(obj);
-      arr.push(obj);
-      let layer = new CameraLayer(arr);
+      let layer = new CameraLayer();
+      layer.renderables.push(new TesterRenderable());
       this.cameraLayer = layer;
-      window.l = layer; // todo
       this.renderables.push(layer);
     },
     components: {
