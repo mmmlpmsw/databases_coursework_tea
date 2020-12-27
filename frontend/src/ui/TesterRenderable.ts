@@ -1,11 +1,11 @@
-import Renderable from "$src/ui/Renderable";
-import {drawArrow} from "$src/lib/CanvasUtils";
+import { drawArrow } from "$src/lib/CanvasUtils";
+import Renderable from "./Renderable";
 
 const ARROWS_SIZE = 200;
 
-export default class TesterRenderable extends Renderable {
+export default class TesterRenderable implements Renderable {
 
-  render(ctx:CanvasRenderingContext2D, idx: number) {
+  render(ctx: CanvasRenderingContext2D, idx: number) {
     this.drawAxes(ctx);
   }
 
