@@ -56,10 +56,7 @@
         this.dragging = false;
       },
       onMouseWheel(e) {
-        let rendererCtx = this.$refs.renderer.getContext();
-        let cameraX = e.offsetX - rendererCtx.canvas.width/2;
-        let cameraY = e.offsetY - rendererCtx.canvas.height/2;
-        let origin = this.cameraLayer.unproject(cameraX, cameraY);
+        let origin = this.cameraLayer.unproject(e.offsetX, e.offsetY);
         let scaleFactor;
         if (e.deltaY > 0)
           scaleFactor = 1/(1 + e.deltaY*this.scrollSensibility);
@@ -67,10 +64,17 @@
           scaleFactor = 1 - e.deltaY*this.scrollSensibility;
 
         this.cameraLayer.scaleCamera(scaleFactor, origin.x, origin.y);
-      },
-      getContext() {
-        return this.$refs.renderer.getContext();
       }
+    },
+    mounted() {
+      // Workaround
+      setTimeout(() => {
+        this.eventBus.$on('resize', (e) => {
+          this.cameraLayer.cameraWidth = e.width;
+          this.cameraLayer.cameraHeight = e.height;
+        });
+        this.$refs.renderer.onWindowResize();
+      }, 0);
     },
     components: {
       Stores,

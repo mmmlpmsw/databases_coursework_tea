@@ -12,6 +12,9 @@ export default class CameraLayer extends Layer {
   minCameraScale: number = 0.5;
   maxCameraScale: number = 4;
 
+  cameraWidth: number = 100;
+  cameraHeight: number = 100;
+
   constructor(renderables: Renderable[] = [], enabled: boolean = true) {
     super(renderables, enabled);
   }
@@ -38,6 +41,8 @@ export default class CameraLayer extends Layer {
 
   project(x, y) {
     let m = this.matrix;
+    x += this.cameraWidth/2;
+    y += this.cameraHeight/2;
     return {
       x: m.a * x + m.c * y + m.e,
       y: m.b * x + m.d * y + m.f
@@ -46,6 +51,8 @@ export default class CameraLayer extends Layer {
 
   unproject(x, y) {
     let m = this.matrix.inverse();
+    x -= this.cameraWidth/2;
+    y -= this.cameraHeight/2;
     return {
       x: m.a * x + m.c * y + m.e,
       y: m.b * x + m.d * y + m.f

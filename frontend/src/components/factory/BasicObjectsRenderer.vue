@@ -35,10 +35,11 @@
       onWindowResize() {
         this.canvas.width  = this.canvas.parentElement.offsetWidth;
         this.canvas.height = this.canvas.parentElement.offsetHeight;
+        this.eventBus.$emit('resize', {
+          width: this.canvas.width,
+          height: this.canvas.height
+        });
         this.askForRender();
-      },
-      getContext() {
-        return this.ctx;
       }
     },
     created() {

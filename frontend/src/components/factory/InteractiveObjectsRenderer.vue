@@ -31,11 +31,7 @@
     },
     methods: {
       onMouseMove(e) {
-        let rendererCtx = this.$refs.renderer.getContext();
-        let point = this.cameraLayer.unproject(
-          e.offsetX - rendererCtx.canvas.width/2,
-          e.offsetY - rendererCtx.canvas.height/2
-        );
+        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
 
         this.interactives.forEach(function(item, index, array) {
           if (item.isPointOnItem(point.x, point.y)) {
