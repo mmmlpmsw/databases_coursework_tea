@@ -30,7 +30,14 @@
     },
     methods: {
       onMouseMove(e) {
-        // todo
+        // let x = e.offsetX;
+        // let y = e.offsetY;
+        // this.interactives.forEach(function(item, index, array) {
+        //   if (item.checkClick(x, y)) {
+        //     console.log(1);
+        //   }
+        // });
+
       },
       onMouseDown(e) {
         // todo

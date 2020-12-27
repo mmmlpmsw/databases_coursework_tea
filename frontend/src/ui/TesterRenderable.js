@@ -5,11 +5,11 @@ const ARROWS_SIZE = 200;
 
 export default class TesterRenderable extends Renderable {
 
-  render(ctx, idx) {
+  render(ctx:CanvasRenderingContext2D, idx: number) {
     this.drawAxes(ctx);
   }
 
-  drawAxes(ctx) {
+  drawAxes(ctx: CanvasRenderingContext2D) {
     let transform = ctx.getTransform();
     let lineWidth = 10/(transform.a + transform.d);
 

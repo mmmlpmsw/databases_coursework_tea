@@ -12,6 +12,7 @@
   import CameraLayer from "$src/layers/CameraLayer";
   import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
   import TesterRenderable from "$src/ui/TesterRenderable";
+  import TestButton from "$src/ui/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
 
   export default {
@@ -33,6 +34,7 @@
 
       let layer = new CameraLayer();
       layer.renderables.push(new TesterRenderable());
+      // layer.interactives.push(new TestButton(100, 100));
       this.cameraLayer = layer;
       this.renderables.push(layer);
     },

@@ -54,6 +54,13 @@ module.exports = {
         options: {
           name: '[name].[ext]?[hash]'
         }
+      }, {
+        test: /\.tsx?$/,
+        use: [
+          'babel-loader',
+          'ts-loader'
+        ],
+        exclude: /node_modules/
       }
     ]
   },
@@ -63,7 +70,7 @@ module.exports = {
       '$assets': path.resolve(__dirname, 'assets'),
       '$src': path.resolve(__dirname, 'src')
     },
-    extensions: ['.*', '.vue', '.js']
+    extensions: ['.*', '.vue', '.js', '.ts']
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
