@@ -1,17 +1,32 @@
-import InteractiveBounds from "./InteractiveBounds";
+import HasSize from "$src/ui/HasSize";
+import HasCoordinates from "$src/ui/HasCoordinates";
 
-export default abstract class Interactive {
-  mouseEventBounds: InteractiveBounds;
+export default class Interactive implements HasSize, HasCoordinates {
+  hover: boolean = false;
+  height: number;
+  width: number;
+  x: number;
+  y: number;
 
-  abstract processClick(x, y);
-  abstract processMouseDown(x, y);
-  abstract processMouseUp(x, y);
-  abstract processMouseMove(x, y);
+  constructor(x: number, y: number, width: number, height: number) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
 
-  // checkClick(x, y) {
-  //   return (x >= this.mouseEventBounds.left
-  //     && x <= this.mouseEventBounds.right
-  //     && y >= this.mouseEventBounds.bottom
-  //     && y <= this.mouseEventBounds.top)
-  // }
+
+  processMouseClick(x: number, y: number) {};
+  processMouseDown(x: number, y: number) {};
+  processMouseUp(x: number, y: number) {};
+  processMouseMove(x: number, y: number) {};
+  processMouseLeave(x: number, y: number) {};
+  processMouseEnter(x: number, y: number) {};
+
+  isPointOnItem(x, y) {
+    return (x >= this.x
+      && x <= this.x + this.width
+      && y >= this.y
+      && y <= this.y + this.height)
+  }
 }

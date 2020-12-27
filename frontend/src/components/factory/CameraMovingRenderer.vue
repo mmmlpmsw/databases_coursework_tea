@@ -67,6 +67,9 @@
           scaleFactor = 1 - e.deltaY*this.scrollSensibility;
 
         this.cameraLayer.scaleCamera(scaleFactor, origin.x, origin.y);
+      },
+      getContext() {
+        return this.$refs.renderer.getContext();
       }
     },
     components: {

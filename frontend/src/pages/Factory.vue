@@ -32,9 +32,12 @@
     mounted() {
       this.startRenderingScene();
 
+      let button = new TestButton(0, 0, 100, 100);
+
       let layer = new CameraLayer();
       layer.renderables.push(new TesterRenderable());
-      // layer.interactives.push(new TestButton(100, 100));
+      layer.renderables.push(button);
+      this.interactives.push(button);
       this.cameraLayer = layer;
       this.renderables.push(layer);
     },
