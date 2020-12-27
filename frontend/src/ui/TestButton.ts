@@ -13,6 +13,7 @@ export default class TestButton extends Interactive implements Renderable {
 
     ctx.strokeStyle = 'black';
     ctx.fillStyle = this.hover ? 'rgb(34,255,0)' : 'red';
+    ctx.fillStyle = this.active ? 'rgb(104,101,100)': null;
     ctx.lineCap = "round";
     ctx.lineWidth = lineWidth;
     ctx.fillRect(0, 0, this.width, this.height);

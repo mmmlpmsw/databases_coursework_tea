@@ -50,13 +50,33 @@
 
       },
       onMouseDown(e) {
-        // todo
+        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+
+        this.interactives.forEach(function(item, index, array) {
+          if (item.isPointOnItem(point.x, point.y)) {
+            item.active = true;
+            item.processMouseDown(point.x, point.y);
+          }
+        });
       },
-      onMouseUp() {
-        // todo
+      onMouseUp(e) {
+        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+
+        this.interactives.forEach(function(item, index, array) {
+          if (item.isPointOnItem(point.x, point.y)) {
+            item.active = false;
+            item.processMouseUp(point.x, point.y);
+          }
+        });
       },
-      onMouseClick() {
-        // todo
+      onMouseClick(e) {
+        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+
+        this.interactives.forEach(function(item, index, array) {
+          if (item.isPointOnItem(point.x, point.y)) {
+            item.processMouseClick(point.x, point.y);
+          }
+        });
       }
     }
   }

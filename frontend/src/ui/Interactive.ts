@@ -3,6 +3,7 @@ import HasCoordinates from "$src/ui/HasCoordinates";
 
 export default class Interactive implements HasSize, HasCoordinates {
   hover: boolean = false;
+  active: boolean = false;
   height: number;
   width: number;
   x: number;
