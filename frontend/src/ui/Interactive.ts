@@ -16,7 +16,6 @@ export default class Interactive implements HasSize, HasCoordinates {
     this.height = height;
   }
 
-
   processMouseClick(x: number, y: number) {};
   processMouseDown(x: number, y: number) {};
   processMouseUp(x: number, y: number) {};

@@ -4,7 +4,13 @@
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
         @click="onMouseClick">
-    <camera-moving-renderer ref="renderer" :event-bus="eventBus" :renderables="renderables" :camera-layer="cameraLayer" :max-fps="maxFps"/>
+
+    <camera-moving-renderer ref="renderer"
+                            :event-bus="eventBus"
+                            :renderables="renderables"
+                            :camera-layer="cameraLayer"
+                            :max-fps="maxFps"/>
+
   </div>
 </template>
 
@@ -33,7 +39,7 @@
       onMouseMove(e) {
         let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
 
-        this.interactives.forEach(function(item, index, array) {
+        this.interactives.forEach(item => {
           if (item.isPointOnItem(point.x, point.y)) {
             if (!item.hover) {
               item.hover = true;
@@ -52,7 +58,7 @@
       onMouseDown(e) {
         let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
 
-        this.interactives.forEach(function(item, index, array) {
+        this.interactives.forEach(item => {
           if (item.isPointOnItem(point.x, point.y)) {
             item.active = true;
             item.processMouseDown(point.x, point.y);
@@ -62,7 +68,7 @@
       onMouseUp(e) {
         let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
 
-        this.interactives.forEach(function(item, index, array) {
+        this.interactives.forEach(item => {
           if (item.isPointOnItem(point.x, point.y)) {
             item.active = false;
             item.processMouseUp(point.x, point.y);
@@ -72,7 +78,7 @@
       onMouseClick(e) {
         let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
 
-        this.interactives.forEach(function(item, index, array) {
+        this.interactives.forEach(item => {
           if (item.isPointOnItem(point.x, point.y)) {
             item.processMouseClick(point.x, point.y);
           }

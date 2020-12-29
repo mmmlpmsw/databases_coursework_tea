@@ -14,6 +14,7 @@
   import TesterRenderable from "$src/ui/TesterRenderable";
   import TestButton from "$src/ui/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
+  import AreaBackground from "$src/ui/area/AreaBackground";
 
   export default {
     data: function() {
@@ -32,12 +33,13 @@
     mounted() {
       this.startRenderingScene();
 
-      let button = new TestButton(0, 0, 100, 100);
+      let button = new TestButton(50, 50, 130, 100);
 
       let layer = new CameraLayer();
+      layer.renderables.push(new AreaBackground(1000, 1000));
       layer.renderables.push(new TesterRenderable());
-      layer.renderables.push(button);
-      this.interactives.push(button);
+      // layer.renderables.push(button);
+      // this.interactives.push(button);
       this.cameraLayer = layer;
       this.renderables.push(layer);
     },
