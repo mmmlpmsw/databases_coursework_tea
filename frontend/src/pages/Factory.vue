@@ -1,9 +1,8 @@
 <template>
-  <interactive-objects-renderer class="renderer"
+  <game-specific-renderer class="renderer"
                                 :event-bus="rendererBus"
-                                :camera-layer="cameraLayer"
-                                :renderables="renderables"
-                                :interactives="interactives"
+                                :area-width="1000"
+                                :area-height="1000"
                                 :max-fps="60"/>
 </template>
 
@@ -15,14 +14,12 @@
   import TestButton from "$src/ui/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
   import AreaBackground from "$src/ui/area/AreaBackground";
+  import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
 
   export default {
     data: function() {
       return {
-        rendererBus: new Vue(),
-        cameraLayer: null,
-        renderables: [],
-        interactives: []
+        rendererBus: new Vue()
       }
     },
     methods: {
@@ -32,20 +29,9 @@
     },
     mounted() {
       this.startRenderingScene();
-
-      let button = new TestButton(50, 50, 130, 100);
-
-      let layer = new CameraLayer();
-      layer.renderables.push(new AreaBackground(1000, 1000));
-      layer.renderables.push(new TesterRenderable());
-      // layer.renderables.push(button);
-      // this.interactives.push(button);
-      this.cameraLayer = layer;
-      this.renderables.push(layer);
     },
     components: {
-      InteractiveObjectsRenderer,
-      MouseMovableRenderer
+      GameSpecificRenderer
     }
   }
 </script>

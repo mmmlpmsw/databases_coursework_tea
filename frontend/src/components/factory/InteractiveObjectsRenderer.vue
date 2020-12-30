@@ -87,3 +87,9 @@
     }
   }
 </script>
+
+<style>
+  .interactive_renderer {
+    height: 100%;
+  }
+</style>

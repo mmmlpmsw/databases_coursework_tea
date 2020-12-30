@@ -6,17 +6,19 @@ const GRID_STEP = 100;
 export default class AreaBackground implements Renderable {
   inGameSizeX: number;
   inGameSizeY: number;
+  transformation: DOMMatrix;
 
-  constructor(inGameSizeX: number, inGameSizeY: number) {
+  constructor(inGameSizeX: number, inGameSizeY: number, transformation: DOMMatrix = null) {
     this.inGameSizeX = inGameSizeX;
     this.inGameSizeY = inGameSizeY;
+    this.transformation = transformation || new DOMMatrix();
   }
 
   render(ctx: CanvasRenderingContext2D, idx: number) {
     ctx.save();
     ctx.fillStyle = 'grey';
-    ctx.scale(1, 0.5);
-    ctx.rotate(Math.PI/4);
+    let t = this.transformation;
+    ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
     ctx.fillRect(0, 0, this.inGameSizeX, this.inGameSizeY);
 
     ctx.strokeStyle = 'rgba(0, 0, 0, .5)';
