@@ -14,6 +14,7 @@
   import AreaBackground from "$src/ui/area/AreaBackground";
   import CameraLayer from "$src/layers/CameraLayer";
   import TesterRenderable from "$src/ui/TesterRenderable";
+  import AreaThing from "$src/ui/area/AreaThing";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -24,7 +25,8 @@
       eventBus: Vue,
       maxFps: Number,
       areaWidth: Number,
-      areaHeight: Number
+      areaHeight: Number,
+      areaThings: Array
     },
     data: function() {
       return {
@@ -39,6 +41,10 @@
       layer.renderables.push(new TesterRenderable());
       this.cameraLayer = layer;
       this.renderables.push(layer);
+
+      let test = new AreaThing(200, 200, 120, 120);
+      layer.renderables.push(test);
+      this.interactives.push(test);
     },
     components: {
       InteractiveObjectsRenderer
