@@ -55,7 +55,13 @@ export default class AreaThing extends Interactive implements Renderable {
   }
 
   processMouseMove(x: number, y: number) {
-    this.inGameHover = true; // todo nadya
+    let inGamePoint = new DOMPoint(x, y).matrixTransform(AreaThing.AREA_TRANSFORMATION.inverse());
+    inGamePoint.x -= this.inGameX;
+    inGamePoint.y -= this.inGameY;
+    this.inGameHover =  inGamePoint.x > 0 &&
+                        inGamePoint.y > 0 &&
+                        inGamePoint.x < this.inGameSizeX &&
+                        inGamePoint.y < this.inGameSizeY;
   }
 
   processMouseLeave(x: number, y: number) {
