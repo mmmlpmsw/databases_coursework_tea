@@ -31,7 +31,7 @@ export default class AreaThing extends Interactive implements Renderable {
     this.height = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameSizeX, inGameSizeY)).y;
 
     let visualPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameX, inGameY));
-    this.x = visualPoint.x - this.width/2;
+    this.x = leftPoint.x;
     this.y = visualPoint.y;
     this.inGameX = inGameX;
     this.inGameY = inGameY;

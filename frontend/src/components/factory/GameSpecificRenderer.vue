@@ -45,7 +45,7 @@
       let test = new AreaThing(200, 200, 120, 120);
       layer.renderables.push(test);
       this.interactives.push(test);
-      let test2 = new AreaThing(400, 400, 120, 220);
+      let test2 = new AreaThing(350, 450, 120, 220);
       layer.renderables.push(test2);
       this.interactives.push(test2);
       window.test1 = test; // todo
