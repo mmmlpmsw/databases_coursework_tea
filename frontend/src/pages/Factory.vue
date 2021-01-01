@@ -24,7 +24,11 @@
     },
     methods: {
       startRenderingScene() {
-        setInterval(() => this.rendererBus.$emit('render'), 0);
+        this.render();
+      },
+      render() {
+        this.rendererBus.$emit('render');
+        window.requestAnimationFrame(this.render);
       }
     },
     mounted() {

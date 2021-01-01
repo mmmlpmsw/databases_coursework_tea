@@ -75,20 +75,18 @@ export default class AreaThing extends Interactive implements Renderable {
 
     ctx.fillStyle = 'green';
     if (this.inGameHover)
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'yellow';
 
     ctx.fillRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
 
     ctx.restore();
 
+    let transform = ctx.getTransform();
     if (AreaThing.DEV_DRAW_BOUNDS) {
-      if (this.hover)
-        ctx.setLineDash([4, 2]);
-      else
-        ctx.setLineDash([2, 4]);
+      ctx.setLineDash([2, 2]);
 
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'magenta';
+      ctx.lineWidth = 2/(transform.a + transform.b);
+      ctx.strokeStyle = this.hover ? 'blue' : 'magenta';
       ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
   }
