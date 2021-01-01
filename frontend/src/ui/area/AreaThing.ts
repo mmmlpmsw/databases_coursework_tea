@@ -12,31 +12,46 @@ export default class AreaThing extends Interactive implements Renderable {
 
   protected static DEV_DRAW_BOUNDS = true;
 
-  inGameSizeX: number;
-  inGameSizeY: number;
-  inGameX: number;
-  inGameY: number;
-  private deletable: boolean;
-  private movable: boolean;
+  private _inGameSizeX: number;
+  private _inGameSizeY: number;
+  private _inGameX: number;
+  private _inGameY: number;
+  private deletable: boolean = true;
+  private movable: boolean = true;
   private inGameHover: boolean = false;
 
-  // todo сделать так, чтобы при обновлении inGameSizeX, inGameSizeY, inGameX, inGameY обновлялись x, y, width, height
-  // todo починить визуальные границы (x, y, width, height)
   constructor(inGameX: number, inGameY: number, inGameSizeX: number, inGameSizeY: number) {
     super(0, 0, 0, 0);
+    this._inGameX = inGameX;
+    this._inGameY = inGameY;
+    this._inGameSizeX = inGameSizeX;
+    this._inGameSizeY = inGameSizeY;
+    this.updateBounds();
+  }
 
-    let rightPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameX + inGameSizeX, inGameY));
-    let leftPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameX, inGameY + inGameSizeY));
-    this.width = rightPoint.x - leftPoint.x; // visual x size
-    this.height = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameSizeX, inGameSizeY)).y;
+  get inGameSizeX() { return this._inGameSizeX; }
+  get inGameSizeY() { return this._inGameSizeY; }
+  get inGameX() { return this._inGameX; }
+  get inGameY() { return this._inGameY; }
 
-    let visualPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(inGameX, inGameY));
-    this.x = leftPoint.x;
-    this.y = visualPoint.y;
-    this.inGameX = inGameX;
-    this.inGameY = inGameY;
-    this.inGameSizeX = inGameSizeX;
-    this.inGameSizeY = inGameSizeY;
+  set inGameSizeX(v) {
+    this._inGameSizeX = v;
+    this.updateBounds();
+  }
+
+  set inGameSizeY(v) {
+    this._inGameSizeY = v;
+    this.updateBounds();
+  }
+
+  set inGameX(v) {
+    this._inGameX = v;
+    this.updateBounds();
+  }
+
+  set inGameY(v) {
+    this._inGameY = v;
+    this.updateBounds();
   }
 
   processMouseMove(x: number, y: number) {
@@ -61,10 +76,25 @@ export default class AreaThing extends Interactive implements Renderable {
     ctx.restore();
 
     if (AreaThing.DEV_DRAW_BOUNDS) {
-      ctx.setLineDash([2, 2]);
+      if (this.hover)
+        ctx.setLineDash([4, 2]);
+      else
+        ctx.setLineDash([2, 4]);
+
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'magenta';
       ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
+  }
+
+  private updateBounds() {
+    let rightPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX + this._inGameSizeX, this._inGameY));
+    let leftPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX, this._inGameY + this._inGameSizeY));
+    this.width = rightPoint.x - leftPoint.x; // visual x size
+    this.height = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameSizeX, this._inGameSizeY)).y;
+
+    let visualPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX, this._inGameY));
+    this.x = leftPoint.x;
+    this.y = visualPoint.y;
   }
 }

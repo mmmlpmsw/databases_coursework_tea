@@ -48,8 +48,12 @@
       let test2 = new AreaThing(350, 450, 120, 220);
       layer.renderables.push(test2);
       this.interactives.push(test2);
+      let test3 = new AreaThing(350, 200, 100, 100);
+      layer.renderables.push(test3);
+      this.interactives.push(test3);
       window.test1 = test; // todo
       window.test2 = test2; // todo
+      window.test3 = test3; // todo
     },
     components: {
       InteractiveObjectsRenderer
