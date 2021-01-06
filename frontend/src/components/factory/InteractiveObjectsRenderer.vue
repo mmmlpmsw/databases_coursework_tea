@@ -19,6 +19,7 @@
   import Vue from "vue";
   import CameraLayer from "$src/layers/CameraLayer";
   import Layer from "$src/layers/Layer";
+  import Interactive from "$src/game/Interactive";
 
   export default {
     components: {
@@ -27,63 +28,26 @@
     props: {
       eventBus: Vue,
       rootLayer: Layer,
-      interactives: Array,
+      interactiveRoot: Interactive,
       cameraLayer: CameraLayer,
       maxFps: Number
     },
-    data() {
-      return {
-
-      }
-    },
     methods: {
       onMouseMove(e) {
-        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
-
-        this.interactives.forEach(item => {
-          if (item.isPointOnItem(point.x, point.y)) {
-            if (!item.hover) {
-              item.hover = true;
-              item.processMouseEnter(point.x, point.y);
-            }
-            item.processMouseMove(point.x, point.y);
-          } else {
-            if (item.hover) {
-              item.hover = false;
-              item.processMouseLeave(point.x, point.y);
-            }
-          }
-        });
-
+        let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        this.interactiveRoot.processMouseMove(p.x, p.y);
       },
       onMouseDown(e) {
-        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
-
-        this.interactives.forEach(item => {
-          if (item.isPointOnItem(point.x, point.y)) {
-            item.active = true;
-            item.processMouseDown(point.x, point.y);
-          }
-        });
+        let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        this.interactiveRoot.processMouseDown(p.x, p.y);
       },
       onMouseUp(e) {
-        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
-
-        this.interactives.forEach(item => {
-          if (item.isPointOnItem(point.x, point.y)) {
-            item.active = false;
-            item.processMouseUp(point.x, point.y);
-          }
-        });
+        let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        this.interactiveRoot.processMouseUp(p.x, p.y);
       },
       onMouseClick(e) {
-        let point = this.cameraLayer.unproject(e.offsetX, e.offsetY);
-
-        this.interactives.forEach(item => {
-          if (item.isPointOnItem(point.x, point.y)) {
-            item.processMouseClick(point.x, point.y);
-          }
-        });
+        let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);
+        this.interactiveRoot.processMouseClick(p.x, p.y);
       }
     }
   }

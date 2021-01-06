@@ -1,7 +1,7 @@
 <template>
   <div class="camera_specific_renderer">
     <interactive-objects-renderer :event-bus="eventBus"
-                                  :interactives="interactives"
+                                  :interactive-root="interactiveRoot"
                                   :camera-layer="cameraLayer"
                                   :root-layer="rootLayer"
                                   :max-fps="maxFps"/>
@@ -14,8 +14,9 @@
   import AreaBackground from "$src/game/area/AreaBackground";
   import CameraLayer from "$src/layers/CameraLayer";
   import TesterRenderable from "$src/game/TesterRenderable";
-  import AreaThing from "$src/game/area/AreaThing";
+  import AreaThing from "$src/game/area/thing/AreaThing";
   import Layer from "$src/layers/Layer";
+  import CompositeInteractive from "$src/game/CompositeInteractive";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -39,8 +40,9 @@
     },
     data: function() {
       return {
-        interactives: [],
         areaThings: [],
+
+        interactiveRoot: new CompositeInteractive(),
 
         rootLayer: new Layer(),
         thingsLayer: new Layer(),
@@ -59,26 +61,24 @@
       this.cameraLayer.addRenderable(this.areaHudLayer);
 
       this.areaBackgroundLayer.addRenderable(new AreaBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
-      this.areaBackgroundLayer.addRenderable(new TesterRenderable()); // todo
+      // this.areaBackgroundLayer.addRenderable(new TesterRenderable());
 
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this.onRequestAreaThingControls);
     },
     methods: {
       addAreaThing(areaThing) {
         this.thingsLayer.addRenderable(areaThing);
-        this.interactives.push(areaThing);
+        this.interactiveRoot.addInteractive(areaThing);
         areaThing.eventBus = this.eventBus;
       },
       removeAreaThing(areaThing) {
         areaThing.eventBus = null;
         this.thingsLayer.removeRenderable(areaThing);
-        let index = this.interactives.indexOf(areaThing);
-        if (index !== -1)
-          this.interactives.splice(index, 1);
+        this.interactiveRoot.removeInteractive(areaThing);
       },
       onRequestAreaThingControls(areaThing) {
-        // todo
-        console.log("on request area thing controls");
+        // todo show area thing controls
+        console.log("Area thing controls requested:");
         console.log(areaThing);
       }
     },

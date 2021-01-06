@@ -13,6 +13,8 @@ export default class AreaThing extends Interactive implements Renderable {
 
   public static DEV_DRAW_BOUNDS = false;
   public static REQUEST_AREA_THING_CONTROLS_EVENT = "request_area_thing_controls";
+  public static REQUEST_AREA_THING_REMOVAL_EVENT = "request_area_thing_removal";
+  public static REQUEST_AREA_THING_MOVING_EVENT = "request_area_thing_moving";
 
   private _inGameSizeX: number;
   private _inGameSizeY: number;
@@ -73,7 +75,7 @@ export default class AreaThing extends Interactive implements Renderable {
   }
 
   processMouseClick(x: number, y: number) {
-    if (this.eventBus)
+    if (this.eventBus && this.inGameHover)
       this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this);
   }
 

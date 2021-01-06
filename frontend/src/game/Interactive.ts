@@ -23,10 +23,10 @@ export default class Interactive implements HasSize, HasCoordinates {
   processMouseLeave(x: number, y: number) {};
   processMouseEnter(x: number, y: number) {};
 
-  isPointOnItem(x, y) {
+  isPointOnItem(x: number, y: number) {
     return (x >= this.x
-      && x <= this.x + this.width
+      && x < this.x + this.width
       && y >= this.y
-      && y <= this.y + this.height)
+      && y < this.y + this.height)
   }
 }

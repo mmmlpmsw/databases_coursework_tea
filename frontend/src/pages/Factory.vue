@@ -16,7 +16,7 @@
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
   import AreaBackground from "$src/game/area/AreaBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
-  import AreaThing from "$src/game/area/AreaThing";
+  import AreaThing from "$src/game/area/thing/AreaThing";
 
   export default {
     data: function() {
