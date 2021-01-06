@@ -11,10 +11,10 @@
 <script>
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer.vue";
   import Vue from 'vue';
-  import AreaBackground from "$src/ui/area/AreaBackground";
+  import AreaBackground from "$src/game/area/AreaBackground";
   import CameraLayer from "$src/layers/CameraLayer";
-  import TesterRenderable from "$src/ui/TesterRenderable";
-  import AreaThing from "$src/ui/area/AreaThing";
+  import TesterRenderable from "$src/game/TesterRenderable";
+  import AreaThing from "$src/game/area/AreaThing";
   import Layer from "$src/layers/Layer";
 
   let inGameAreaTransformation = new DOMMatrix()

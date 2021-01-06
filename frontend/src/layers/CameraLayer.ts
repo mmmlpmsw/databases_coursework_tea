@@ -1,6 +1,6 @@
 import Layer from "$src/layers/Layer";
 import { saturate } from "$src/lib/Saturation"
-import Renderable from "$src/ui/Renderable";
+import Renderable from "$src/game/Renderable";
 
 export default class CameraLayer extends Layer {
   private matrix: DOMMatrix = new DOMMatrix();

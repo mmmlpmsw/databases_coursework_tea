@@ -1,4 +1,4 @@
-import Renderable from "$src/ui/Renderable";
+import Renderable from "$src/game/Renderable";
 
 const TEXT_MARGIN = 5;
 const GRID_STEP = 100;

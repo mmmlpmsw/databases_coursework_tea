@@ -1,8 +1,8 @@
 /**
  * Common interface for anything that can be placed on in-game area.
  */
-import Renderable from "$src/ui/Renderable";
-import Interactive from "$src/ui/Interactive";
+import Renderable from "$src/game/Renderable";
+import Interactive from "$src/game/Interactive";
 import {MatrixUtils} from "$src/lib/MatrixUtils";
 import * as Vue from "vue/types/umd";
 

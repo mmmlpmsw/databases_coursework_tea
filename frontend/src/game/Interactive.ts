@@ -1,5 +1,5 @@
-import HasSize from "$src/ui/HasSize";
-import HasCoordinates from "$src/ui/HasCoordinates";
+import HasSize from "$src/game/HasSize";
+import HasCoordinates from "$src/game/HasCoordinates";
 
 export default class Interactive implements HasSize, HasCoordinates {
   hover: boolean = false;

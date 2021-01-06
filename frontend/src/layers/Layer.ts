@@ -1,4 +1,4 @@
-import Renderable from "$src/ui/Renderable";
+import Renderable from "$src/game/Renderable";
 
 export default class Layer implements Renderable {
   private renderables: Renderable[];

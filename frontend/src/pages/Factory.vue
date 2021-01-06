@@ -11,12 +11,12 @@
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
   import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
-  import TesterRenderable from "$src/ui/TesterRenderable";
-  import TestButton from "$src/ui/TestButton";
+  import TesterRenderable from "$src/game/TesterRenderable";
+  import TestButton from "$src/game/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
-  import AreaBackground from "$src/ui/area/AreaBackground";
+  import AreaBackground from "$src/game/area/AreaBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
-  import AreaThing from "$src/ui/area/AreaThing";
+  import AreaThing from "$src/game/area/AreaThing";
 
   export default {
     data: function() {
