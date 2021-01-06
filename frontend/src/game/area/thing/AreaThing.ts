@@ -3,7 +3,6 @@
  */
 import Renderable from "$src/game/Renderable";
 import Interactive from "$src/game/Interactive";
-import {MatrixUtils} from "$src/lib/MatrixUtils";
 import * as Vue from "vue/types/umd";
 
 export default class AreaThing extends Interactive implements Renderable {
@@ -103,12 +102,12 @@ export default class AreaThing extends Interactive implements Renderable {
   }
 
   private updateBounds() {
-    let rightPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX + this._inGameSizeX, this._inGameY));
-    let leftPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX, this._inGameY + this._inGameSizeY));
+    let rightPoint = new DOMPoint(this._inGameX + this._inGameSizeX, this._inGameY).matrixTransform(AreaThing.AREA_TRANSFORMATION);
+    let leftPoint = new DOMPoint(this._inGameX, this._inGameY + this._inGameSizeY).matrixTransform(AreaThing.AREA_TRANSFORMATION);
     this.width = rightPoint.x - leftPoint.x; // visual x size
-    this.height = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameSizeX, this._inGameSizeY)).y;
+    this.height = new DOMPoint(this._inGameSizeX, this._inGameSizeY).matrixTransform(AreaThing.AREA_TRANSFORMATION).y;
 
-    let visualPoint = MatrixUtils.multiply(AreaThing.AREA_TRANSFORMATION, new DOMPoint(this._inGameX, this._inGameY));
+    let visualPoint = new DOMPoint(this._inGameX, this._inGameY).matrixTransform(AreaThing.AREA_TRANSFORMATION);
     this.x = leftPoint.x;
     this.y = visualPoint.y;
   }
