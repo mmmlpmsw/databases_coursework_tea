@@ -1,4 +1,4 @@
-// todo get rid of this
+// todo get rid of this, use DOMPoint.matrixTransform(...) as replacement
 export class MatrixUtils {
   static multiply(matrix: DOMMatrix, point: DOMPoint): DOMPoint {
     return new DOMPoint(
