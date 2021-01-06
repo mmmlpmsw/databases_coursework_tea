@@ -7,7 +7,7 @@
 
     <camera-moving-renderer ref="renderer"
                             :event-bus="eventBus"
-                            :renderables="renderables"
+                            :root-layer="rootLayer"
                             :camera-layer="cameraLayer"
                             :max-fps="maxFps"/>
 
@@ -18,6 +18,7 @@
   import CameraMovingRenderer from "$src/components/factory/CameraMovingRenderer";
   import Vue from "vue";
   import CameraLayer from "$src/layers/CameraLayer";
+  import Layer from "$src/layers/Layer";
 
   export default {
     components: {
@@ -25,7 +26,7 @@
     },
     props: {
       eventBus: Vue,
-      renderables: Array,
+      rootLayer: Layer,
       interactives: Array,
       cameraLayer: CameraLayer,
       maxFps: Number

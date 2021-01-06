@@ -7,10 +7,11 @@
 <script>
   import { throttle } from 'throttle-debounce';
   import Vue from 'vue';
+  import Layer from "$src/layers/Layer";
 
   export default {
     props: {
-      renderables: Array,
+      rootLayer: Layer,
       eventBus: Vue,
       maxFps: Number
     },
@@ -23,8 +24,7 @@
     methods: {
       render() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (let i = 0, n = this.renderables.length; i < n; i++)
-          this.renderables[i].render(this.ctx, i);
+        this.rootLayer.render(this.ctx, 0);
       },
       onRenderEvent() {
         throw Error("Got 'render' event but renderer is not initialized");

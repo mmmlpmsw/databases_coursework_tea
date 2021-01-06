@@ -1,7 +1,8 @@
 import Renderable from "$src/ui/Renderable";
 
 export default class Layer implements Renderable {
-  renderables: Renderable[];
+  private renderables: Renderable[];
+
   enabled: boolean;
 
   constructor(renderables = [], enabled = true) {
@@ -15,5 +16,15 @@ export default class Layer implements Renderable {
 
     for (let i = 0, n = this.renderables.length; i < n; i++)
       this.renderables[i].render(ctx, i);
+  }
+
+  addRenderable(renderable: Renderable) {
+    this.renderables.push(renderable);
+  }
+
+  removeRenderable(renderable: Renderable) {
+    let index = this.renderables.indexOf(renderable);
+    if (index != -1)
+      this.renderables.splice(index, 1);
   }
 }

@@ -4,7 +4,7 @@
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
         @wheel.prevent="onMouseWheel">
-    <basic-objects-renderer ref="renderer" :event-bus="eventBus" :renderables="renderables" :max-fps="maxFps"/>
+    <basic-objects-renderer ref="renderer" :event-bus="eventBus" :root-layer="rootLayer" :max-fps="maxFps"/>
   </div>
 </template>
 
@@ -13,11 +13,12 @@
   import Vue from 'vue';
   import Stores from "$src/pages/Stores";
   import CameraLayer from "$src/layers/CameraLayer";
+  import Layer from "$src/layers/Layer";
 
   export default {
     props: {
       eventBus: Vue,
-      renderables: Array,
+      rootLayer: Layer,
       cameraLayer: CameraLayer,
       maxFps: Number
     },

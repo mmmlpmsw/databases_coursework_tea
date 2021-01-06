@@ -4,13 +4,15 @@
 import Renderable from "$src/ui/Renderable";
 import Interactive from "$src/ui/Interactive";
 import {MatrixUtils} from "$src/lib/MatrixUtils";
+import * as Vue from "vue/types/umd";
 
 export default class AreaThing extends Interactive implements Renderable {
   protected static AREA_TRANSFORMATION = new DOMMatrix()
     .scale(1, 0.5)
     .rotate(45);
 
-  protected static DEV_DRAW_BOUNDS = true;
+  public static DEV_DRAW_BOUNDS = false;
+  public static REQUEST_AREA_THING_CONTROLS_EVENT = "request_area_thing_controls";
 
   private _inGameSizeX: number;
   private _inGameSizeY: number;
@@ -19,6 +21,8 @@ export default class AreaThing extends Interactive implements Renderable {
   private deletable: boolean = true;
   private movable: boolean = true;
   private inGameHover: boolean = false;
+
+  public eventBus: Vue = null;
 
   constructor(inGameX: number, inGameY: number, inGameSizeX: number, inGameSizeY: number) {
     super(0, 0, 0, 0);
@@ -66,6 +70,11 @@ export default class AreaThing extends Interactive implements Renderable {
 
   processMouseLeave(x: number, y: number) {
     this.inGameHover = false;
+  }
+
+  processMouseClick(x: number, y: number) {
+    if (this.eventBus)
+      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this);
   }
 
   render(ctx: CanvasRenderingContext2D, idx: number) {

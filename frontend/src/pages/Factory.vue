@@ -1,5 +1,6 @@
 <template>
   <game-specific-renderer class="renderer"
+                                ref="renderer"
                                 :event-bus="rendererBus"
                                 :area-width="1000"
                                 :area-height="1000"
@@ -15,11 +16,13 @@
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
   import AreaBackground from "$src/ui/area/AreaBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
+  import AreaThing from "$src/ui/area/AreaThing";
 
   export default {
     data: function() {
       return {
-        rendererBus: new Vue()
+        rendererBus: new Vue(),
+        renderer: null
       }
     },
     methods: {
@@ -33,6 +36,14 @@
     },
     mounted() {
       this.startRenderingScene();
+
+      this.renderer = this.$refs['renderer'];
+      this.renderer.addAreaThing(new AreaThing(200, 200, 120, 120));
+      this.renderer.addAreaThing(new AreaThing(350, 450, 120, 220));
+      this.renderer.addAreaThing(new AreaThing(350, 200, 100, 100));
+      // window.test1 = test; // todo
+      // window.test2 = test2; // todo
+      // window.test3 = test3; // todo
     },
     components: {
       GameSpecificRenderer
