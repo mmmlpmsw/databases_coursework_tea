@@ -187,4 +187,17 @@ create table if not exists delivery_truck (
     check ( order_id is not null and delivery_by is not null or order_id is null and delivery_by is null)
 );
 
+create table if not exists "user" (
+    id serial primary key,
+    login varchar(255) unique not null,
+    name varchar(255) not null default 'Anonymous',
+    password_hash varchar(88) not null, -- 512 bits in base64
+    money bigint not null default 0
+);
+
+-- create table if not exists user_area_item (
+--     user_id int not null references "user" on update cascade on delete cascade
+--     -- todo
+-- );
+
 reassign owned by nadya to coursework_admin;
