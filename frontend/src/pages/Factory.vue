@@ -1,7 +1,7 @@
 <template>
   <game-specific-renderer class="renderer"
                                 ref="renderer"
-                                :event-bus="rendererBus"
+                                :event-bus="eventBus"
                                 :area-width="1000"
                                 :area-height="1000"
                                 :max-fps="60"/>
@@ -21,7 +21,7 @@
   export default {
     data: function() {
       return {
-        rendererBus: new Vue(),
+        eventBus: new Vue(),
         renderer: null
       }
     },
@@ -29,21 +29,36 @@
       startRenderingScene() {
         this.render();
       },
+      startEventListening() {
+        this.eventBus.$on(AreaThing.REQUEST_AREA_THING_REMOVAL_EVENT, this.onAreaThingRemovalRequest);
+        this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_EVENT, this.onAreaThingMovingEvent);
+      },
+      onAreaThingRemovalRequest(areaThing) {
+        this.renderer.removeAreaThing(areaThing);
+      },
+      onAreaThingMovingEvent(areaThing) {
+        console.log("Area thing moving requested"); // todo
+        console.log(areaThing);
+      },
       render() {
-        this.rendererBus.$emit('render');
+        this.eventBus.$emit('render');
         window.requestAnimationFrame(this.render);
       }
     },
     mounted() {
-      this.startRenderingScene();
-
       this.renderer = this.$refs['renderer'];
-      this.renderer.addAreaThing(new AreaThing(200, 200, 120, 120));
-      this.renderer.addAreaThing(new AreaThing(350, 450, 120, 220));
-      this.renderer.addAreaThing(new AreaThing(350, 200, 100, 100));
-      // window.test1 = test; // todo
-      // window.test2 = test2; // todo
-      // window.test3 = test3; // todo
+
+      this.startRenderingScene();
+      this.startEventListening();
+
+      let things = [
+        new AreaThing(200, 200, 120, 120),
+        new AreaThing(350, 450, 120, 220),
+        new AreaThing(350, 200, 100, 100)
+      ];
+      things.forEach(this.renderer.addAreaThing);
+      window._eventbus = this.eventBus; // todo
+      window._things = things; // todo
     },
     components: {
       GameSpecificRenderer
