@@ -14,31 +14,34 @@ export default class CompositeInteractive extends Interactive {
   }
 
   processMouseClick(x: number, y: number) {
-    this.toEveryPointedChildren(x, y, c => c.processMouseClick(x, y));
+    return this.rayTraceAndCall(x, y, c => c.processMouseClick(x, y));
   };
 
   processMouseDown(x: number, y: number) {
-    this.toEveryPointedChildren(x, y, c => {
+    return this.rayTraceAndCall(x, y, c => {
       c.active = true;
       c.processMouseDown(x, y);
     })
   };
 
   processMouseUp(x: number, y: number) {
-    this.toEveryPointedChildren(x, y, c => {
+    return this.rayTraceAndCall(x, y, c => {
       c.active = false;
       c.processMouseUp(x, y);
     })
   };
 
   processMouseMove(x: number, y: number) {
+    let rayTracingDone = false;
+
     this.children.forEach(item => {
-      if (item.isPointOnItem(x, y)) {
+      if (item.isPointOnItem(x, y) && !rayTracingDone) {
         if (!item.hover) {
           item.hover = true;
           item.processMouseEnter(x, y);
         }
-        item.processMouseMove(x, y);
+        if (!item.processMouseMove(x, y))
+          rayTracingDone = true;
       } else {
         if (item.hover) {
           item.hover = false;
@@ -46,6 +49,8 @@ export default class CompositeInteractive extends Interactive {
         }
       }
     });
+
+    return !rayTracingDone;
   };
 
   processMouseLeave(x: number, y: number) {
@@ -55,13 +60,16 @@ export default class CompositeInteractive extends Interactive {
         item.hover = false;
         item.processMouseLeave(x, y);
       }
-    })
+    });
   };
 
-  private toEveryPointedChildren(x: number, y: number, callback: Function) {
+  private rayTraceAndCall(x: number, y: number, callback: Function): boolean {
     this.children.forEach(c => {
-      if (c.isPointOnItem(x, y))
-        callback.call(this, c);
+      if (c.isPointOnItem(x, y)) {
+        if (!callback.call(this, c))
+          return false;
+      }
     });
+    return true;
   }
 }

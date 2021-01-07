@@ -27,17 +27,21 @@ export default class TestButton extends Interactive implements Renderable {
 
   processMouseDown(x: number, y: number) {
     console.log("Mouse down");
+    return false;
   }
 
   processMouseUp(x: number, y: number) {
     console.log("Mouse up");
+    return false;
   }
 
   processMouseMove(x: number, y: number) {
     console.log("Mouse move");
+    return false;
   }
 
   processMouseClick(x: number, y: number) {
     console.log("Mouse click");
+    return false;
   }
 }

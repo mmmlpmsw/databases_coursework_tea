@@ -17,19 +17,25 @@
   import AreaThing from "$src/game/area/thing/AreaThing";
   import Layer from "$src/layers/Layer";
   import CompositeInteractive from "$src/game/CompositeInteractive";
+  import AreaThingControls from "$src/game/area/thing/controls/AreaThingControls";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
     .rotate(45);
 
   /**
-   * Layers structure:
+   * Rendering layers structure:
    * root
    * - screen-fixed HUD layer
    * - camera Layer
    *    - area HUD layer
    *    - area things layer
    *    - area background layer
+   *
+   * Interactive layers structure:
+   * root
+   * - hud layer
+   * - things layer
    */
   export default {
     props: {
@@ -43,6 +49,8 @@
         areaThings: [],
 
         interactiveRoot: new CompositeInteractive(),
+        thingsInteractive: new CompositeInteractive(),
+        hudInteractive: new CompositeInteractive(),
 
         rootLayer: new Layer(),
         thingsLayer: new Layer(),
@@ -60,6 +68,9 @@
       this.cameraLayer.addRenderable(this.thingsLayer);
       this.cameraLayer.addRenderable(this.areaHudLayer);
 
+      this.interactiveRoot.addInteractive(this.hudInteractive);
+      this.interactiveRoot.addInteractive(this.thingsInteractive);
+
       this.areaBackgroundLayer.addRenderable(new AreaBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
       // this.areaBackgroundLayer.addRenderable(new TesterRenderable());
 
@@ -68,18 +79,23 @@
     methods: {
       addAreaThing(areaThing) {
         this.thingsLayer.addRenderable(areaThing);
-        this.interactiveRoot.addInteractive(areaThing);
+        this.thingsInteractive.addInteractive(areaThing);
         areaThing.eventBus = this.eventBus;
       },
       removeAreaThing(areaThing) {
         areaThing.eventBus = null;
         this.thingsLayer.removeRenderable(areaThing);
-        this.interactiveRoot.removeInteractive(areaThing);
+        this.thingsInteractive.removeInteractive(areaThing);
       },
       onRequestAreaThingControls(areaThing) {
-        // todo show area thing controls
-        console.log("Area thing controls requested:");
-        console.log(areaThing);
+        let that = this;
+        let controls = new AreaThingControls(areaThing, this.eventBus, function() {
+          that.areaHudLayer.removeRenderable(this);
+          that.hudInteractive.removeInteractive(this);
+        });
+        controls.hover = true; // Assuming mouse is on the controls object when areaThing clicked
+        this.areaHudLayer.addRenderable(controls);
+        this.hudInteractive.addInteractive(controls);
       }
     },
     components: {

@@ -67,6 +67,7 @@ export default class AreaThing extends Interactive implements Renderable {
                         inGamePoint.y > 0 &&
                         inGamePoint.x < this.inGameSizeX &&
                         inGamePoint.y < this.inGameSizeY;
+    return !this.inGameHover;
   }
 
   processMouseLeave(x: number, y: number) {
@@ -76,6 +77,7 @@ export default class AreaThing extends Interactive implements Renderable {
   processMouseClick(x: number, y: number) {
     if (this.eventBus && this.inGameHover)
       this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this);
+    return !this.inGameHover;
   }
 
   render(ctx: CanvasRenderingContext2D, idx: number) {
