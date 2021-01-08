@@ -1,7 +1,7 @@
 <template>
   <div class="camera_specific_renderer">
     <interactive-objects-renderer :event-bus="eventBus"
-                                  :interactive-root="interactiveRoot"
+                                  :interactive-root="rootInteractive"
                                   :camera-layer="cameraLayer"
                                   :root-layer="rootLayer"
                                   :max-fps="maxFps"/>
@@ -11,13 +11,18 @@
 <script>
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer.vue";
   import Vue from 'vue';
-  import AreaBackground from "$src/game/area/AreaBackground";
+  import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import CameraLayer from "$src/layers/CameraLayer";
   import TesterRenderable from "$src/game/TesterRenderable";
   import AreaThing from "$src/game/area/thing/AreaThing";
   import Layer from "$src/layers/Layer";
   import CompositeInteractive from "$src/game/CompositeInteractive";
   import AreaThingControls from "$src/game/area/thing/controls/AreaThingControls";
+  import StaticBackgroundRenderer from "$src/game/StaticBackgroundRenderer";
+  import RightWall from "$src/game/area/RightWall";
+  import LeftWall from "$src/game/area/LeftWall";
+
+  const STATIC_BACKGROUND = new StaticBackgroundRenderer("rgb(50, 50, 50)");
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -31,6 +36,7 @@
    *    - area HUD layer
    *    - area things layer
    *    - area background layer
+   * - static background
    *
    * Interactive layers structure:
    * root
@@ -48,7 +54,7 @@
       return {
         areaThings: [],
 
-        interactiveRoot: new CompositeInteractive(),
+        rootInteractive: new CompositeInteractive(),
         thingsInteractive: new CompositeInteractive(),
         hudInteractive: new CompositeInteractive(),
 
@@ -62,17 +68,25 @@
     },
     mounted() {
       // Constructing layers structure
+      this.rootLayer.addRenderable(STATIC_BACKGROUND);
       this.rootLayer.addRenderable(this.cameraLayer);
       this.rootLayer.addRenderable(this.screenFixedHudLayer);
       this.cameraLayer.addRenderable(this.areaBackgroundLayer);
       this.cameraLayer.addRenderable(this.thingsLayer);
       this.cameraLayer.addRenderable(this.areaHudLayer);
 
-      this.interactiveRoot.addInteractive(this.hudInteractive);
-      this.interactiveRoot.addInteractive(this.thingsInteractive);
+      this.rootInteractive.addInteractive(this.hudInteractive);
+      this.rootInteractive.addInteractive(this.thingsInteractive);
 
-      this.areaBackgroundLayer.addRenderable(new AreaBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
-      // this.areaBackgroundLayer.addRenderable(new TesterRenderable());
+      // todo сделать красивый пол, называть его AreaFloor и вставить вместо AreaTesterBackground
+      this.areaBackgroundLayer.addRenderable(new AreaTesterBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
+      this.areaBackgroundLayer.addRenderable(new RightWall()); // todo сделать красивую стенку
+      this.areaBackgroundLayer.addRenderable(new LeftWall());
+
+      // For testing purposes
+      // let tester = new TesterRenderable();
+      // this.areaBackgroundLayer.addRenderable(tester);
+      // this.rootInteractive.addInteractive(tester);
 
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this.onRequestAreaThingControls);
     },

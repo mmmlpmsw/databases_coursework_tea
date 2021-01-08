@@ -3,7 +3,7 @@ import Renderable from "$src/game/Renderable";
 const TEXT_MARGIN = 5;
 const GRID_STEP = 100;
 
-export default class AreaBackground implements Renderable {
+export default class AreaTesterBackground implements Renderable {
   inGameSizeX: number;
   inGameSizeY: number;
   transformation: DOMMatrix;

@@ -14,7 +14,7 @@
   import TesterRenderable from "$src/game/TesterRenderable";
   import TestButton from "$src/game/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
-  import AreaBackground from "$src/game/area/AreaBackground";
+  import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
   import AreaThing from "$src/game/area/thing/AreaThing";
 
