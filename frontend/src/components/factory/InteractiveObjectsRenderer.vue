@@ -6,6 +6,7 @@
         @click="onMouseClick">
 
     <camera-moving-renderer ref="renderer"
+                            :cursor="cursor"
                             :event-bus="eventBus"
                             :root-layer="rootLayer"
                             :camera-layer="cameraLayer"
@@ -32,10 +33,16 @@
       cameraLayer: CameraLayer,
       maxFps: Number
     },
+    data() {
+      return {
+        cursor: "default"
+      }
+    },
     methods: {
       onMouseMove(e) {
         let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);
         this.interactiveRoot.processMouseMove(p.x, p.y);
+        this.cursor = this.interactiveRoot.cursor;
       },
       onMouseDown(e) {
         let p = this.cameraLayer.unproject(e.offsetX, e.offsetY);

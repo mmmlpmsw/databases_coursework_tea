@@ -24,6 +24,7 @@ export default class AreaThing extends Interactive implements Renderable {
   private inGameHover: boolean = false;
 
   public eventBus: Vue = null;
+  public selected = false;
 
   constructor(inGameX: number, inGameY: number, inGameSizeX: number, inGameSizeY: number) {
     super(0, 0, 0, 0);
@@ -86,7 +87,7 @@ export default class AreaThing extends Interactive implements Renderable {
     ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
 
     ctx.fillStyle = 'green';
-    if (this.inGameHover)
+    if (this.inGameHover || this.selected)
       ctx.fillStyle = 'yellow';
 
     ctx.fillRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);

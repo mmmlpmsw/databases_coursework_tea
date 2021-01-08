@@ -33,6 +33,7 @@ export default class CompositeInteractive extends Interactive {
 
   processMouseMove(x: number, y: number) {
     let rayTracingDone = false;
+    this.cursor = Interactive.CURSOR_DEFAULT;
 
     this.children.forEach(item => {
       if (item.isPointOnItem(x, y) && !rayTracingDone) {
@@ -40,6 +41,9 @@ export default class CompositeInteractive extends Interactive {
           item.hover = true;
           item.processMouseEnter(x, y);
         }
+
+        this.cursor = item.cursor;
+
         if (!item.processMouseMove(x, y))
           rayTracingDone = true;
       } else {

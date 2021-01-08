@@ -1,6 +1,6 @@
 <template>
   <div class="base-renderer">
-    <canvas class="canvas" ref="canvas"/>
+    <canvas class="canvas" ref="canvas" :style="{ cursor }"/>
   </div>
 </template>
 
@@ -13,7 +13,11 @@
     props: {
       rootLayer: Layer,
       eventBus: Vue,
-      maxFps: Number
+      maxFps: Number,
+      cursor: {
+        type: String,
+        default: "default"
+      }
     },
     data: function() {
       return {

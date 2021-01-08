@@ -2,6 +2,11 @@ import HasSize from "$src/game/HasSize";
 import HasCoordinates from "$src/game/HasCoordinates";
 
 export default class Interactive implements HasSize, HasCoordinates {
+  public static CURSOR_DEFAULT = "default";
+  public static CURSOR_POINTER = "pointer";
+
+  private _cursor = Interactive.CURSOR_DEFAULT;
+
   hover = false;
   active = false;
   height: number;
@@ -23,6 +28,9 @@ export default class Interactive implements HasSize, HasCoordinates {
   processMouseMove(x: number, y: number): boolean { return true };
   processMouseLeave(x: number, y: number) {};
   processMouseEnter(x: number, y: number) {};
+
+  get cursor() { return this._cursor }
+  set cursor(v) { this._cursor = v }
 
   isPointOnItem(x: number, y: number) {
     return ((

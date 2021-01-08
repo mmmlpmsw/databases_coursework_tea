@@ -4,7 +4,7 @@
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
         @wheel.prevent="onMouseWheel">
-    <basic-objects-renderer ref="renderer" :event-bus="eventBus" :root-layer="rootLayer" :max-fps="maxFps"/>
+    <basic-objects-renderer ref="renderer" :event-bus="eventBus" :root-layer="rootLayer" :max-fps="maxFps" :cursor="cursor"/>
   </div>
 </template>
 
@@ -20,6 +20,7 @@
       eventBus: Vue,
       rootLayer: Layer,
       cameraLayer: CameraLayer,
+      cursor: String,
       maxFps: Number
     },
     data() {
