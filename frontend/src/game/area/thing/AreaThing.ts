@@ -15,6 +15,12 @@ export default class AreaThing extends Interactive implements Renderable {
   public static REQUEST_AREA_THING_REMOVAL_EVENT = "request_area_thing_removal";
   public static REQUEST_AREA_THING_MOVING_EVENT = "request_area_thing_moving";
 
+  public static HOVER_BORDERS_COLOR = "rgba(255, 255, 0, 0.5)";
+  public static HOVER_LINE_WIDTH = 2;
+
+  public static SELECTED_BORDERS_COLOR = "yellow";
+  public static SELECTED_LINE_WIDTH = 3;
+
   private _inGameSizeX: number;
   private _inGameSizeY: number;
   private _inGameX: number;
@@ -86,11 +92,20 @@ export default class AreaThing extends Interactive implements Renderable {
     let t = AreaThing.AREA_TRANSFORMATION;
     ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
 
-    ctx.fillStyle = 'green';
-    if (this.inGameHover || this.selected)
-      ctx.fillStyle = 'yellow';
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.25)';
+    ctx.lineWidth = 2;
+
+    ctx.strokeStyle = "transparent";
+    if (this.selected) {
+      ctx.strokeStyle = AreaThing.SELECTED_BORDERS_COLOR;
+      ctx.lineWidth = AreaThing.SELECTED_LINE_WIDTH;
+    } else if (this.inGameHover) {
+      ctx.strokeStyle = AreaThing.HOVER_BORDERS_COLOR;
+      ctx.lineWidth = AreaThing.HOVER_LINE_WIDTH;
+    }
 
     ctx.fillRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
+    ctx.strokeRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
 
     ctx.restore();
 
