@@ -19,10 +19,9 @@
   import CompositeInteractive from "$src/game/CompositeInteractive";
   import AreaThingControls from "$src/game/area/thing/controls/AreaThingControls";
   import StaticBackgroundRenderer from "$src/game/StaticBackgroundRenderer";
-  import RightWall from "$src/game/area/RightWall";
-  import LeftWall from "$src/game/area/LeftWall";
-
-  const STATIC_BACKGROUND = new StaticBackgroundRenderer("rgb(50, 50, 50)");
+  import {SkyRenderer} from "$src/game/SkyRenderer";
+  import StaticBuildingRenderer from "$src/game/area/StaticBuildingRenderer";
+  import CloudsRenderer from "$src/game/CloudsRenderer";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -33,9 +32,11 @@
    * root
    * - screen-fixed HUD layer
    * - camera Layer
+   *    - front clouds layer
    *    - area HUD layer
    *    - area things layer
    *    - area background layer
+   *      - back clouds layer
    * - static background
    *
    * Interactive layers structure:
@@ -59,29 +60,32 @@
         hudInteractive: new CompositeInteractive(),
 
         rootLayer: new Layer(),
-        thingsLayer: new Layer(),
-        areaHudLayer: new Layer(),
-        areaBackgroundLayer: new Layer(),
         screenFixedHudLayer: new Layer(),
-        cameraLayer: new CameraLayer()
+        cameraLayer: new CameraLayer(),
+        frontCloudsLayer: new CloudsRenderer(-4000, 4000, 1300, 2000, 10, -0.3, -0.1),
+        areaHudLayer: new Layer(),
+        thingsLayer: new Layer(),
+        areaBackgroundLayer: new Layer(),
+        backCloudsLayer: new CloudsRenderer(-10000, 10000, 1300, 2000, 40, 0.01, 0.4),
       }
     },
     mounted() {
       // Constructing layers structure
-      this.rootLayer.addRenderable(STATIC_BACKGROUND);
       this.rootLayer.addRenderable(this.cameraLayer);
       this.rootLayer.addRenderable(this.screenFixedHudLayer);
       this.cameraLayer.addRenderable(this.areaBackgroundLayer);
       this.cameraLayer.addRenderable(this.thingsLayer);
       this.cameraLayer.addRenderable(this.areaHudLayer);
+      this.cameraLayer.addRenderable(this.frontCloudsLayer);
 
       this.rootInteractive.addInteractive(this.hudInteractive);
       this.rootInteractive.addInteractive(this.thingsInteractive);
 
       // todo сделать красивый пол, называть его AreaFloor и вставить вместо AreaTesterBackground
+      this.areaBackgroundLayer.addRenderable(new SkyRenderer(-30000, -15000, 30000, 15000));
+      this.areaBackgroundLayer.addRenderable(this.backCloudsLayer);
+      this.areaBackgroundLayer.addRenderable(new StaticBuildingRenderer());
       this.areaBackgroundLayer.addRenderable(new AreaTesterBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
-      this.areaBackgroundLayer.addRenderable(new RightWall()); // todo сделать красивую стенку
-      this.areaBackgroundLayer.addRenderable(new LeftWall());
 
       // For testing purposes
       // let tester = new TesterRenderable();
@@ -107,7 +111,7 @@
           that.areaHudLayer.removeRenderable(this);
           that.hudInteractive.removeInteractive(this);
         });
-        controls.hover = true; // Assuming mouse is on the controls object when areaThing clicked
+        controls.hover = true; // Assuming mouse is on the controls object when areaThing is clicked
         this.areaHudLayer.addRenderable(controls);
         this.hudInteractive.addInteractive(controls);
       }
