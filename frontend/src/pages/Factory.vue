@@ -35,6 +35,7 @@
       },
       onAreaThingRemovalRequest(areaThing) {
         this.renderer.removeAreaThing(areaThing);
+        // todo message for server
       },
       onAreaThingMovingEvent(areaThing) {
         console.log("Area thing moving requested"); // todo
@@ -51,14 +52,13 @@
       this.startRenderingScene();
       this.startEventListening();
 
+      // todo get area things from server
       let things = [
         new AreaThing(200, 200, 120, 120),
         new AreaThing(350, 450, 120, 220),
         new AreaThing(350, 200, 100, 100)
       ];
       things.forEach(this.renderer.addAreaThing);
-      window._eventbus = this.eventBus; // todo
-      window._things = things; // todo
     },
     components: {
       GameSpecificRenderer

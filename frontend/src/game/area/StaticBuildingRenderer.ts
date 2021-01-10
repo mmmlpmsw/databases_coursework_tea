@@ -10,13 +10,14 @@ export default class StaticBuildingRenderer extends StaticImageRenderer {
   }
 
   constructor() {
-    super(
-      StaticBuildingRenderer.IMAGE,
-      -StaticBuildingRenderer.IMAGE.width/2,
-      StaticBuildingRenderer.IMAGE_Y_OFFSET,
-      StaticBuildingRenderer.IMAGE.width,
-      StaticBuildingRenderer.IMAGE.height
-    );
+    super(new Image(), 0, 0, 0, 0);
+    StaticBuildingRenderer.IMAGE.onload = () => {
+      this.image = StaticBuildingRenderer.IMAGE;
+      this.x = -StaticBuildingRenderer.IMAGE.width/2;
+      this.y = StaticBuildingRenderer.IMAGE_Y_OFFSET;
+      this.width = StaticBuildingRenderer.IMAGE.width;
+      this.height = StaticBuildingRenderer.IMAGE.height;
+    };
   }
 }
 
