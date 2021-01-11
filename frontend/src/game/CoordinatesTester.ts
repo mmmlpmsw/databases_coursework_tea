@@ -9,7 +9,7 @@ const GRID_MIN = -5000;
 const GRID_MAX = 5000;
 const GRID_STEP = 100;
 
-export default class TesterRenderable extends Interactive implements Renderable {
+export default class CoordinatesTester extends Interactive implements Renderable {
 
   private mouseX: number;
   private mouseY: number;
