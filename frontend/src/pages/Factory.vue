@@ -12,7 +12,6 @@
   import CameraLayer from "$src/layers/CameraLayer";
   import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
   import TesterRenderable from "$src/game/TesterRenderable";
-  import TestButton from "$src/game/TestButton";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
@@ -31,13 +30,14 @@
       },
       startEventListening() {
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_REMOVAL_EVENT, this.onAreaThingRemovalRequest);
-        this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_EVENT, this.onAreaThingMovingEvent);
+        this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onAreaThingMovingRequest);
       },
       onAreaThingRemovalRequest(areaThing) {
         this.renderer.removeAreaThing(areaThing);
         // todo message for server
       },
-      onAreaThingMovingEvent(areaThing) {
+      onAreaThingMovingRequest(areaThing) {
+        // todo сюда должны прийти готовые координаты и отправка на сервер. предполагается, что areaThing уже сдвинут в нужное место
         console.log("Area thing moving requested"); // todo
         console.log(areaThing);
       },
