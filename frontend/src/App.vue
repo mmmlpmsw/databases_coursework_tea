@@ -1,6 +1,6 @@
 <template>
   <div id="root" :theme-dark="$store.state.darkTheme">
-    <a-header/>
+<!--    <a-header/>-->
     <router-view/>
     <cheats/>
   </div>
