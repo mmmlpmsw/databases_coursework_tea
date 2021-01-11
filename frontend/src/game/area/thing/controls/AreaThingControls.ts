@@ -20,7 +20,7 @@ export default class AreaThingControls extends CompositeInteractive implements R
 
   private buttons = [
     new AreaThingControlsMoveButton(() => {
-      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_EVENT, this.areaThing);
+      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_START_EVENT, this.areaThing);
       this.closeControls();
     }),
     new AreaThingControlsRemoveButton(() => {
