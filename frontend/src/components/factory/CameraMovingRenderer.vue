@@ -11,9 +11,11 @@
 <script>
   import BasicObjectsRenderer from "$src/components/factory/BasicObjectsRenderer";
   import Vue from 'vue';
-  import Stores from "$src/pages/Stores";
   import CameraLayer from "$src/layers/CameraLayer";
   import Layer from "$src/layers/Layer";
+
+  export let REQUEST_CAMERA_LOCK = "request_camera_lock";
+  export let REQUEST_CAMERA_UNLOCK = "request_camera_unlock";
 
   export default {
     props: {
@@ -29,12 +31,13 @@
         dragBufferPoint: {
           x: 0, y: 0
         },
+        locked: false,
         scrollSensibility: 0.01
       }
     },
     methods: {
       onMouseMove(e) {
-        if (!this.dragging)
+        if (!this.dragging || this.locked)
           return;
 
         let scale = this.cameraLayer.cameraScale;
@@ -50,9 +53,11 @@
         this.dragBufferPoint.y = e.offsetY;
       },
       onMouseDown(e) {
-        this.dragBufferPoint.x = e.offsetX;
-        this.dragBufferPoint.y = e.offsetY;
-        this.dragging = true;
+        if (!this.locked) {
+          this.dragBufferPoint.x = e.offsetX;
+          this.dragBufferPoint.y = e.offsetY;
+          this.dragging = true;
+        }
       },
       onMouseUp() {
         this.dragging = false;
@@ -77,9 +82,11 @@
         });
         this.$refs.renderer.onWindowResize();
       }, 0);
+
+      this.eventBus.$on(REQUEST_CAMERA_LOCK,  () => this.locked = true);
+      this.eventBus.$on(REQUEST_CAMERA_UNLOCK, () => this.locked = false);
     },
     components: {
-      Stores,
       BasicObjectsRenderer
     }
   }

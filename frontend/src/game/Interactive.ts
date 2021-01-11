@@ -4,6 +4,7 @@ import HasCoordinates from "$src/game/HasCoordinates";
 export default class Interactive implements HasSize, HasCoordinates {
   public static CURSOR_DEFAULT = "default";
   public static CURSOR_POINTER = "pointer";
+  public static CURSOR_MOVE = "move";
 
   private _cursor = Interactive.CURSOR_DEFAULT;
 
@@ -14,7 +15,7 @@ export default class Interactive implements HasSize, HasCoordinates {
   x: number;
   y: number;
 
-  constructor(x: number, y: number, width: number, height: number) {
+  constructor(x?: number, y?: number, width?: number, height?: number) {
     this.x = x;
     this.y = y;
     this.width = width;

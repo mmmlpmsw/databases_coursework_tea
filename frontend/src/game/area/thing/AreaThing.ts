@@ -13,7 +13,8 @@ export default class AreaThing extends Interactive implements Renderable {
   public static DEV_DRAW_BOUNDS = false;
   public static REQUEST_AREA_THING_CONTROLS_EVENT = "request_area_thing_controls";
   public static REQUEST_AREA_THING_REMOVAL_EVENT = "request_area_thing_removal";
-  public static REQUEST_AREA_THING_MOVING_EVENT = "request_area_thing_moving";
+  public static REQUEST_AREA_THING_MOVING_START_EVENT = "request_area_thing_moving_start";
+  public static REQUEST_AREA_THING_MOVING_DONE_EVENT = "request_area_thing_moving_done";
 
   public static HOVER_BORDERS_COLOR = "rgba(255, 255, 0, 0.5)";
   public static HOVER_LINE_WIDTH = 2;

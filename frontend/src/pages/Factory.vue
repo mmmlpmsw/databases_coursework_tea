@@ -11,7 +11,7 @@
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
   import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
-  import TesterRenderable from "$src/game/TesterRenderable";
+  import CoordinatesTester from "$src/game/CoordinatesTester";
   import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";

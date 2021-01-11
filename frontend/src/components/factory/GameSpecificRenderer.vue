@@ -13,15 +13,17 @@
   import Vue from 'vue';
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import CameraLayer from "$src/layers/CameraLayer";
-  import TesterRenderable from "$src/game/TesterRenderable";
+  import CoordinatesTester from "$src/game/CoordinatesTester";
   import AreaThing from "$src/game/area/thing/AreaThing";
   import Layer from "$src/layers/Layer";
   import CompositeInteractive from "$src/game/CompositeInteractive";
   import AreaThingControls from "$src/game/area/thing/controls/AreaThingControls";
-  import StaticBackgroundRenderer from "$src/game/StaticBackgroundRenderer";
-  import {SkyRenderer} from "$src/game/SkyRenderer";
+  import StaticBackgroundRenderer from "$src/game/environment/StaticBackgroundRenderer";
+  import {SkyRenderer} from "$src/game/environment/SkyRenderer";
   import StaticBuildingRenderer from "$src/game/area/StaticBuildingRenderer";
-  import CloudsRenderer from "$src/game/CloudsRenderer";
+  import CloudsRenderer from "$src/game/environment/CloudsRenderer";
+  import SwitchingInteractive from "$src/game/SwitchingInteractive";
+  import AreaThingMover from "$src/game/area/thing/moving/AreaThingMover";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -30,19 +32,25 @@
   /**
    * Rendering layers structure:
    * root
-   * - screen-fixed HUD layer
-   * - camera Layer
-   *    - front clouds layer
-   *    - area HUD layer
-   *    - area things layer
-   *    - area background layer
-   *      - back clouds layer
+   * - screen-fixed HUD
+   * - camera
+   *    - front clouds
+   *    - area HUD
+   *    - area things
+   *    - mover
+   *    - area background
+   *      - area tester background
+   *      - static building
+   *      - back clouds
+   *      - sky
    * - static background
    *
    * Interactive layers structure:
    * root
-   * - hud layer
-   * - things layer
+   * - hud
+   * - switchable things
+   *    - things
+   *    - mover
    */
   export default {
     props: {
@@ -54,9 +62,11 @@
     data: function() {
       return {
         areaThings: [],
+        areaThingMover: null,
 
         rootInteractive: new CompositeInteractive(),
         thingsInteractive: new CompositeInteractive(),
+        switchableThingsInteractive: null,
         hudInteractive: new CompositeInteractive(),
 
         rootLayer: new Layer(),
@@ -70,29 +80,32 @@
       }
     },
     mounted() {
+      this.areaThingMover = new AreaThingMover(this.eventBus, this.areaThings, inGameAreaTransformation);
+
       // Constructing layers structure
       this.rootLayer.addRenderable(this.cameraLayer);
       this.rootLayer.addRenderable(this.screenFixedHudLayer);
       this.cameraLayer.addRenderable(this.areaBackgroundLayer);
+      this.cameraLayer.addRenderable(this.areaThingMover);
       this.cameraLayer.addRenderable(this.thingsLayer);
       this.cameraLayer.addRenderable(this.areaHudLayer);
       this.cameraLayer.addRenderable(this.frontCloudsLayer);
-
-      this.rootInteractive.addInteractive(this.hudInteractive);
-      this.rootInteractive.addInteractive(this.thingsInteractive);
-
-      // todo сделать красивый пол, называть его AreaFloor и вставить вместо AreaTesterBackground
       this.areaBackgroundLayer.addRenderable(new SkyRenderer(-30000, -15000, 30000, 15000));
       this.areaBackgroundLayer.addRenderable(this.backCloudsLayer);
       this.areaBackgroundLayer.addRenderable(new StaticBuildingRenderer());
-      this.areaBackgroundLayer.addRenderable(new AreaTesterBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation));
+      this.areaBackgroundLayer.addRenderable(new AreaTesterBackground(this.areaWidth, this.areaHeight, inGameAreaTransformation)); // todo сделать красивый пол, называть его AreaFloor и вставить вместо AreaTesterBackground
 
-      // For testing purposes
-      // let tester = new TesterRenderable();
-      // this.areaBackgroundLayer.addRenderable(tester);
-      // this.rootInteractive.addInteractive(tester);
+      this.switchableThingsInteractive = new SwitchingInteractive("default", {
+        default: this.thingsInteractive,
+        mover: this.areaThingMover
+      });
+
+      this.rootInteractive.addInteractive(this.hudInteractive);
+      this.rootInteractive.addInteractive(this.switchableThingsInteractive);
 
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this.onRequestAreaThingControls);
+      this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_START_EVENT, this.onRequestAreaThingMovingStart);
+      this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onRequestAreaThingMovingDone);
     },
     methods: {
       addAreaThing(areaThing) {
@@ -104,6 +117,18 @@
         areaThing.eventBus = null;
         this.thingsLayer.removeRenderable(areaThing);
         this.thingsInteractive.removeInteractive(areaThing);
+      },
+      onRequestAreaThingMovingStart(areaThing) {
+        // Workaround
+        setTimeout(() => {
+          this.switchableThingsInteractive.switch("mover");
+          this.thingsLayer.removeRenderable(areaThing);
+          this.areaThingMover.move(areaThing);
+        }, 0);
+      },
+      onRequestAreaThingMovingDone(areaThing) {
+        this.switchableThingsInteractive.switch("default");
+        this.thingsLayer.addRenderable(areaThing);
       },
       onRequestAreaThingControls(areaThing) {
         let that = this;

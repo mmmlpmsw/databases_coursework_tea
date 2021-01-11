@@ -1,5 +1,5 @@
 import Layer from "$src/layers/Layer";
-import CloudRenderer from "$src/game/CloudRenderer";
+import CloudRenderer from "$src/game/environment/CloudRenderer";
 
 export default class CloudsRenderer extends Layer {
   private static readonly CLOUD_IMAGES_NUM = 6;
