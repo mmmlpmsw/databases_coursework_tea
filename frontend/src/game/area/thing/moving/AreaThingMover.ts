@@ -44,7 +44,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     super();
     this.eventBus = eventBus;
     this.otherAreaThings = otherAreaThings;
-    this.transformation = inGameTransformation.inverse();
+    this.transformation = inGameTransformation;
     this.bound = bound;
     this.buttons.forEach(b => this.addInteractive(b));
   }
@@ -75,7 +75,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     if (this.target.isPointOnItem(x, y)) {
       this.eventBus.$emit("request_camera_lock");
       this.dragging = true;
-      this.draggingOrigin = new DOMPoint(x, y).matrixTransform(this.transformation);
+      this.draggingOrigin = new DOMPoint(x, y).matrixTransform(this.transformation.inverse());
       this.draggingOrigin.x -= this.target.inGameX;
       this.draggingOrigin.y -= this.target.inGameY;
     }
@@ -85,7 +85,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
   processMouseMove(x: number, y: number): boolean {
     super.processMouseMove(x, y);
 
-    let inGamePoint = new DOMPoint(x, y).matrixTransform(this.transformation);
+    let inGamePoint = new DOMPoint(x, y).matrixTransform(this.transformation.inverse());
     inGamePoint.x -= this.target.inGameX;
     inGamePoint.y -= this.target.inGameY;
     let inGameHover = inGamePoint.x > 0 &&
@@ -96,7 +96,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
       this.cursor = AreaThingMover.CURSOR_MOVE;
 
     if (this.dragging) {
-      let inGamePoint = new DOMPoint(x, y).matrixTransform(this.transformation);
+      let inGamePoint = new DOMPoint(x, y).matrixTransform(this.transformation.inverse());
       this.target.inGameX = saturate(inGamePoint.x - this.draggingOrigin.x, 0, 1000 - this.target.inGameSizeX);
       this.target.inGameY = saturate(inGamePoint.y - this.draggingOrigin.y, 0, 1000 - this.target.inGameSizeY);
       this.target.inGameX -= this.target.inGameX % this.bound;
