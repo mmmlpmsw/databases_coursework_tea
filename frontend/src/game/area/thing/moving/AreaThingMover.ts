@@ -28,20 +28,21 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
   private buttonsSpacing = 8;
   private buttonsTopMargin = 8;
 
-  private buttons = [
-    new AreaThingMoverApplyButton(() => {
-      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
-      this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
-      this.target = null;
-    }),
-    new AreaThingMoverCancelButton(() => {
-      this.target.inGameX = this.oldX;
-      this.target.inGameY = this.oldY;
-      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
-      this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
-      this.target = null;
-    })
-  ];
+  private applyButton = new AreaThingMoverApplyButton(() => {
+    this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
+    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
+    this.target = null;
+  });
+
+  private cancelButton = new AreaThingMoverCancelButton(() => {
+    this.target.inGameX = this.oldX;
+    this.target.inGameY = this.oldY;
+    this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
+    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
+    this.target = null;
+  });
+
+  private buttons = [this.applyButton, this.cancelButton];
 
   constructor(eventBus: Vue, allAreaThings: AreaThing[], inGameTransformation: DOMMatrix, bound: number = 10) {
     super();
@@ -81,7 +82,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     this.target = areaThing;
     this.oldX = this.target.inGameX;
     this.oldY = this.target.inGameY;
-    this.rearrangeButtons();
+    this.updateButtons();
   }
 
   processMouseDown(x: number, y: number): boolean {
@@ -123,7 +124,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     super.processMouseUp(x, y);
     this.eventBus.$emit("request_camera_unlock");
     this.dragging = false;
-    this.rearrangeButtons();
+    this.updateButtons();
     return true;
   }
 
@@ -146,7 +147,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     return result;
   }
 
-  private rearrangeButtons() {
+  private updateButtons() {
     let buttonsWidthSum = this.buttons.map(c => c.width).reduce((a, b) => a + b);
 
     let totalWidthSum = buttonsWidthSum + this.buttonsSpacing * (this.buttons.length - 1);
@@ -157,5 +158,6 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
       c.y = this.target.y + this.target.height + this.buttonsTopMargin;
       xPointer += c.width + this.buttonsSpacing;
     });
+    this.applyButton.enabled = this.findIntersections(this.target).length == 0;
   }
 }
