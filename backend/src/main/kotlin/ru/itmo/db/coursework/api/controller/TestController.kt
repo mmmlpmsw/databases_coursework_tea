@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/test", method = [ RequestMethod.GET])
+@RequestMapping("/test")
 class TestController {
     @GetMapping
     fun test(): String {

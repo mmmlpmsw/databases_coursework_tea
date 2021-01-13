@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.core.env.Environment
 import org.springframework.core.env.StandardEnvironment
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -20,6 +21,7 @@ import javax.sql.DataSource
 @Configuration
 @PropertySource("classpath:app.properties")
 @ComponentScan("ru.itmo.db.coursework")
+@EnableJpaRepositories("ru.itmo.db.coursework")
 open class AppConfig {
     @Autowired
     val env: Environment = StandardEnvironment()
