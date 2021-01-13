@@ -11,6 +11,14 @@ export default class CommonAreaHudButton extends Interactive implements Renderab
   private readonly activeColor: string;
   private readonly callback: Function;
 
+  private _enabled: boolean;
+
+  public get enabled() { return this._enabled }
+  public set enabled(v) {
+    this._enabled = v;
+    this.cursor = v ? Interactive.CURSOR_POINTER : Interactive.CURSOR_DEFAULT;
+  }
+
   constructor(
     buttonSize: number,
     imageSize: number,
@@ -28,13 +36,18 @@ export default class CommonAreaHudButton extends Interactive implements Renderab
     this.hoverColor = hoverColor;
     this.activeColor = activeColor;
     this.callback = callback;
-    this.cursor = Interactive.CURSOR_POINTER;
+    this.enabled = true;
   }
 
   render(ctx: CanvasRenderingContext2D, idx: number) {
-    if (this.active)
+    ctx.save();
+
+    if (!this.enabled)
+      ctx.globalAlpha = 0.5;
+
+    if (this.enabled && this.active)
       ctx.fillStyle = this.activeColor;
-    else if (this.hover)
+    else if (this.enabled && this.hover)
       ctx.fillStyle = this.hoverColor;
     else
       ctx.fillStyle = this.defaultColor;
@@ -42,7 +55,6 @@ export default class CommonAreaHudButton extends Interactive implements Renderab
     fillRoundRect(ctx, this.x, this.y, this.width, this.height, 2);
 
     let padding = (this.buttonSize - this.imageSize)/2;
-    ctx.save();
     ctx.translate(this.x + padding, this.y + padding);
     ctx.scale(this.imageSize, this.imageSize);
     ctx.fillStyle = 'black';
@@ -51,7 +63,8 @@ export default class CommonAreaHudButton extends Interactive implements Renderab
   }
 
   processMouseClick(x: number, y: number): boolean {
-    this.callback.call(this);
+    if (this.enabled)
+      this.callback.call(this);
     return false;
   }
 }
