@@ -4,13 +4,16 @@ import * as Vue from "vue/types/umd";
 import AreaThingMoverApplyButton from "$src/game/area/thing/moving/AreaThingMoverApplyButton";
 import AreaThingMoverCancelButton from "$src/game/area/thing/moving/AreaThingMoverCancelButton";
 import CompositeInteractive from "$src/game/CompositeInteractive";
-import {saturate} from "$src/lib/Saturation";
+import { saturate } from "$src/lib/Saturation";
+
+let BOUNDS_RECT_COLOR_DEFAULT = "rgba(0, 255, 0, 0.5)";
+let BOUNDS_RECT_COLOR_INTERSECT = "rgba(255, 0, 0, 0.5)";
 
 export default class AreaThingMover extends CompositeInteractive implements Renderable {
   private readonly transformation: DOMMatrix;
 
   private target: AreaThing = null;
-  private otherAreaThings: AreaThing[];
+  private allAreaThings: AreaThing[];
   private eventBus: Vue;
 
   private readonly bound;
@@ -40,10 +43,10 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     })
   ];
 
-  constructor(eventBus: Vue, otherAreaThings: AreaThing[], inGameTransformation: DOMMatrix, bound: number = 10) {
+  constructor(eventBus: Vue, allAreaThings: AreaThing[], inGameTransformation: DOMMatrix, bound: number = 10) {
     super();
     this.eventBus = eventBus;
-    this.otherAreaThings = otherAreaThings;
+    this.allAreaThings = allAreaThings;
     this.transformation = inGameTransformation;
     this.bound = bound;
     this.buttons.forEach(b => this.addInteractive(b));
@@ -52,6 +55,17 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
   render(ctx: CanvasRenderingContext2D, idx: number) {
     ctx.save();
     if (this.target) {
+
+      ctx.save();
+
+      ctx.setTransform(ctx.getTransform().multiply(this.transformation));
+      let intersections = this.findIntersections(this.target);
+      ctx.fillStyle = intersections.length == 0 ? BOUNDS_RECT_COLOR_DEFAULT : BOUNDS_RECT_COLOR_INTERSECT;
+      ctx.fillRect(this.target.inGameX, this.target.inGameY, this.target.inGameSizeX, this.target.inGameSizeY);
+      intersections.forEach(i => ctx.fillRect(i.inGameX, i.inGameY, i.inGameSizeX, i.inGameSizeY));
+
+      ctx.restore();
+
       ctx.globalAlpha = 0.5;
       this.target.render(ctx, idx);
 
@@ -115,6 +129,21 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
 
   isPointOnItem(x: number, y: number): boolean {
     return true;
+  }
+
+  private findIntersections(a: AreaThing): AreaThing[] {
+    let result: AreaThing[] = [];
+    let between = (x, min, max) => x >= min && x < max;
+    for (let b of this.allAreaThings) {
+      if (a == b) continue;
+      let xIntersects = between(a.inGameX, b.inGameX, b.inGameX + b.inGameSizeX) ||
+                        between(b.inGameX, a.inGameX, a.inGameX + a.inGameSizeX);
+      let yIntersects = between(a.inGameY, b.inGameY, b.inGameY + b.inGameSizeY) ||
+                        between(b.inGameY, a.inGameY, a.inGameY + a.inGameSizeY);
+      if (xIntersects && yIntersects)
+        result.push(b);
+    }
+    return result;
   }
 
   private rearrangeButtons() {

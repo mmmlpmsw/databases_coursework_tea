@@ -111,12 +111,16 @@
       addAreaThing(areaThing) {
         this.thingsLayer.addRenderable(areaThing);
         this.thingsInteractive.addInteractive(areaThing);
+        this.areaThings.push(areaThing);
         areaThing.eventBus = this.eventBus;
       },
       removeAreaThing(areaThing) {
         areaThing.eventBus = null;
         this.thingsLayer.removeRenderable(areaThing);
         this.thingsInteractive.removeInteractive(areaThing);
+        let index = this.areaThings.indexOf(areaThing);
+        if (index !== -1)
+          this.areaThings.splice(index, 1);
       },
       onRequestAreaThingMovingStart(areaThing) {
         // Workaround
