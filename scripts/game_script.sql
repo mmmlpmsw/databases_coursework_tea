@@ -291,7 +291,19 @@ $$
         insert into tea_instance (user_id, tea_id, amount) values (_user_id, _tea_id, _amount);
     end
 $$ language plpgsql;
--- todo trigger удалять строку, когда amount = 0
+
+create or replace function _trigger_delete_user_tea_instance() returns trigger as $$
+begin
+    if new.amount = 0 then
+        delete from tea_instance where user_id = new.user_id and tea_id = new.tea_id;
+        return NULL; -- do not execute other triggers
+    end if;
+    return new;
+end;
+$$ language plpgSQL;
+
+create trigger delete_user_tea_instance after update on tea_instance
+    for each row execute procedure _trigger_delete_user_tea_instance();
 
 create or replace function buy_tea (_user_id integer, _tea_id integer, _amount integer)
 returns boolean as
@@ -319,7 +331,19 @@ $$
         insert into circuit_board_instance(user_id, model_id, amount) values (_user_id, _model_id, _amount);
     end
 $$ language plpgsql;
--- todo trigger удалять строку, когда amount = 0
+
+create or replace function _trigger_delete_user_circuit_board_instance() returns trigger as $$
+begin
+    if new.amount = 0 then
+        delete from circuit_board_instance where user_id = new.user_id and model_id = new.model_id;
+        return NULL; -- do not execute other triggers
+    end if;
+    return new;
+end;
+$$ language plpgSQL;
+
+create trigger delete_user_circuit_board_instance after update on circuit_board_instance
+    for each row execute procedure _trigger_delete_user_circuit_board_instance();
 
 create or replace function insert_playing_field_item (_user_id integer, _machine_id integer,
                                                       _x integer, _y integer)
@@ -348,5 +372,28 @@ $$
         else
             return false;
         end if;
+    end
+$$ language plpgsql;
+
+
+create table if not exists circuit_board_instance
+(
+    user_id integer references "user" on update cascade on delete cascade,
+    model_id integer references circuit_board on update cascade,
+    amount integer not null
+);
+
+create or replace function sell_user_circuit_board_instance (_user_id integer, _model_id integer,
+                                        _amount integer)
+returns void as
+$$
+    declare
+        money_amount integer := 0;
+        model_price integer := 0;
+    begin
+        select money from "user" where id = _user_id into money_amount;
+        select sell_price from circuit_board where id = _model_id into model_price;
+        update circuit_board_instance set amount = amount - _amount where user_id = _user_id and model_id = _model_id;
+        update "user" set money = money + _amount * model_price where id = _user_id;
     end
 $$ language plpgsql;
