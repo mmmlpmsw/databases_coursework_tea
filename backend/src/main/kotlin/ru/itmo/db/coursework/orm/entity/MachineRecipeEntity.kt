@@ -9,9 +9,8 @@ data class MachineRecipeEntity (
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "machine_id")
-        var machineId: MachineEntity? = null,
+        @Column(name = "machine_id")
+        var machineId: Int? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "circuit_board_id")

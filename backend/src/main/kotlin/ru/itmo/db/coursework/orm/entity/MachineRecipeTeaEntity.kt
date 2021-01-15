@@ -7,9 +7,8 @@ import javax.persistence.*
 @Table(name = "machine_recipe_tea")
 data class MachineRecipeTeaEntity(
         @Id
-        @ManyToOne
-        @JoinColumn(name = "machine_recipe_id")
-        var machineRecipe: MachineRecipeEntity? = null,
+        @Column(name = "machine_recipe_id")
+        var machineRecipeId: Int? = null,
 
         @Id
         @ManyToOne
