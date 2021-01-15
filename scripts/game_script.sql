@@ -92,23 +92,24 @@ $$
     end;
 $$ language plpgsql;
 
-select insert_tea('Черный чай', 10, '');
-select insert_tea('Зеленый чай', 20, '');
-select insert_tea('Красный чай', 30, '');
-select insert_tea('Персиковый чай', 50, '');
-select insert_tea('Ананасовый чай', 60, '');
-select insert_tea('Чай со смородиной', 100, '');
-select insert_tea('Чай с шиповником', 130, '');
-select insert_tea('Чай с имбирем', 160, '');
-select insert_tea('Белый чай', 200, '');
-select insert_tea('Желтый чай', 300, '');
-select insert_tea('Ройбуш', 400, '');
-select insert_tea('Чай с манго', 1050, '');
-select insert_tea('Чай с личи', 1200, '');
-select insert_tea('Чай с черникой', 1000, '');
-select insert_tea('Чай с лавандой', 3800, '');
-select insert_tea('Чай с ромашкой', 2400, '');
-select insert_tea('Чай с кипреем', 4400, '');
+insert into tea (name, price, description) VALUES
+('Черный чай', 10, ''),
+('Зеленый чай', 20, ''),
+('Красный чай', 30, ''),
+('Персиковый чай', 50, ''),
+('Ананасовый чай', 60, ''),
+('Чай со смородиной', 100, ''),
+('Чай с шиповником', 130, ''),
+('Чай с имбирем', 160, ''),
+('Белый чай', 200, ''),
+('Желтый чай', 300, ''),
+('Ройбуш', 400, ''),
+('Чай с манго', 1050, ''),
+('Чай с личи', 1200, ''),
+('Чай с черникой', 1000, ''),
+('Чай с лавандой', 3800, ''),
+('Чай с ромашкой', 2400, ''),
+('Чай с кипреем', 4400, '');
 
 create or replace function insert_machine (_name varchar, _width integer, _height integer, _price integer)
 returns void as
@@ -118,12 +119,13 @@ $$
     end;
 $$ language plpgsql;
 
-select insert_machine('Machine 1', 30, 30, 100);
-select insert_machine('Machine 2', 50, 70, 800);
-select insert_machine('Machine 3', 60, 80, 3000);
-select insert_machine('Machine 4', 80, 100, 8000);
-select insert_machine('Machine 5', 100, 100, 20000);
-select insert_machine('Machine 6', 120, 140, 80000);
+insert into machine (name, size_x, size_y, price) values
+('Machine 1', 30, 30, 100),
+('Machine 2', 50, 70, 800),
+('Machine 3', 60, 80, 3000),
+('Machine 4', 80, 100, 8000),
+('Machine 5', 100, 100, 20000),
+('Machine 6', 120, 140, 80000);
 
 create or replace function insert_circuit_board (_name varchar, _price integer)
 returns void as
@@ -133,29 +135,30 @@ $$
     end;
 $$ language plpgsql;
 
-select insert_circuit_board('Лазерная указка', 20);
-select insert_circuit_board('Коммутирующие приборы',30);
-select insert_circuit_board('Печатающие головки',60);
+insert into circuit_board (name, sell_price) values
+('Лазерная указка', 20),
+('Коммутирующие приборы',30),
+('Печатающие головки',60),
 
-select insert_circuit_board('Настольный вентилятор', 90);
-select insert_circuit_board('Пульт', 100);
-select insert_circuit_board('Калькулятор', 120);
+('Настольный вентилятор', 90),
+('Пульт', 100),
+('Калькулятор', 120),
 
-select insert_circuit_board('Машинка на радиоупр.', 230);
-select insert_circuit_board('Микроконтроллер', 420);
-select insert_circuit_board('DVD-привод', 660);
+('Машинка на радиоупр.', 230),
+('Микроконтроллер', 420),
+('DVD-привод', 660),
 
-select insert_circuit_board('Панель', 940);
-select insert_circuit_board('Системы контроля', 800);
-select insert_circuit_board('Вариометр', 4);
+('Панель', 940),
+('Системы контроля', 800),
+('Вариометр', 4),
 
-select insert_circuit_board('Холодильник', 3100);
-select insert_circuit_board('Утюг', 1200);
-select insert_circuit_board('Робот-пылесос', 5500);
+('Холодильник', 3100),
+('Утюг', 1200),
+('Робот-пылесос', 5500),
 
-select insert_circuit_board('Одноплатный комп.', 7300);
-select insert_circuit_board('Принтер', 6800);
-select insert_circuit_board('Проектор', 9800);
+('Одноплатный комп.', 7300),
+('Принтер', 6800),
+('Проектор', 9800);
 
 create or replace function insert_recipe (_machine_id integer, _circuit_board_id integer, _work_time integer)
 returns void as
@@ -166,29 +169,14 @@ $$
     end;
 $$ language plpgsql;
 
-select insert_recipe(1, 1, 300);
-select insert_recipe(1,2, 480);
-select insert_recipe(1,3, 600);
-
-select insert_recipe(2,4, 720);
-select insert_recipe(2,5, 900);
-select insert_recipe(2,6, 1380);
-
-select insert_recipe(3,7, 1920);
-select insert_recipe(3,8, 3060);
-select insert_recipe(3,9, 3240);
-
-select insert_recipe(4,10, 67 * 60);
-select insert_recipe(4,11, 61 * 60);
-select insert_recipe(4,12, 2520);
-
-select insert_recipe(5, 13, 75 * 60);
-select insert_recipe(5,14, 62 * 60);
-select insert_recipe(5,15, 84 * 60);
-
-select insert_recipe(6,16, 102 * 60);
-select insert_recipe(6,17, 90 * 60);
-select insert_recipe(6,18, 116 * 60);
+insert into machine_recipe (machine_id, circuit_board_id, work_time)
+values
+(1, 1, 300), (1,2, 480), (1,3, 600),
+(2,4, 720), (2,5, 900), (2,6, 1380),
+(3,7, 1920), (3,8, 3060), (3,9, 3240),
+(4,10, 67 * 60), (4,11, 61 * 60), (4,12, 2520),
+(5, 13, 75 * 60), (5,14, 62 * 60), (5,15, 84 * 60),
+(6,16, 102 * 60), (6,17, 90 * 60), (6,18, 116 * 60);
 
 create or replace function insert_recipe_tea (_machine_recipe_id integer, _tea_id integer, _amount integer)
 returns void as
@@ -199,46 +187,48 @@ $$
     end;
 $$ language plpgsql;
 
-select insert_recipe_tea(1, 1, 1);
-select insert_recipe_tea(2, 1, 2);
-select insert_recipe_tea(3, 1, 1);
-select insert_recipe_tea(3, 2, 2);
-select insert_recipe_tea(4, 5, 1);
-select insert_recipe_tea(4, 2, 1);
-select insert_recipe_tea(5, 4, 1);
-select insert_recipe_tea(5, 3, 2);
-select insert_recipe_tea(6, 3, 1);
-select insert_recipe_tea(6, 1, 2);
-select insert_recipe_tea(6, 2, 2);
-select insert_recipe_tea(7, 6, 1);
-select insert_recipe_tea(7, 2, 2);
-select insert_recipe_tea(7, 4, 1);
-select insert_recipe_tea(8, 7, 2);
-select insert_recipe_tea(8, 6, 1);
-select insert_recipe_tea(8, 1, 2);
-select insert_recipe_tea(9, 8, 3);
-select insert_recipe_tea(9, 7, 1);
-select insert_recipe_tea(10, 11, 1);
-select insert_recipe_tea(10, 9, 2);
-select insert_recipe_tea(11, 11, 1);
-select insert_recipe_tea(11, 10, 1);
-select insert_recipe_tea(11, 4, 1);
-select insert_recipe_tea(12, 3, 4);
-select insert_recipe_tea(12, 10, 2);
-select insert_recipe_tea(13, 9, 2);
-select insert_recipe_tea(13, 13, 2);
-select insert_recipe_tea(14, 7, 1);
-select insert_recipe_tea(14, 14, 1);
-select insert_recipe_tea(15, 13, 3);
-select insert_recipe_tea(15, 12, 1);
-select insert_recipe_tea(15, 8, 4);
-select insert_recipe_tea(16, 15, 1);
-select insert_recipe_tea(16, 16, 1);
-select insert_recipe_tea(16, 8, 4);
-select insert_recipe_tea(17, 16, 2);
-select insert_recipe_tea(17, 11, 3);
-select insert_recipe_tea(18, 17, 2);
-select insert_recipe_tea(18, 10, 2);
+insert into machine_recipe_tea (machine_recipe_id, tea_id, amount)
+values
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 1),
+(3, 2, 2),
+(4, 5, 1),
+(4, 2, 1),
+(5, 4, 1),
+(5, 3, 2),
+(6, 3, 1),
+(6, 1, 2),
+(6, 2, 2),
+(7, 6, 1),
+(7, 2, 2),
+(7, 4, 1),
+(8, 7, 2),
+(8, 6, 1),
+(8, 1, 2),
+(9, 8, 3),
+(9, 7, 1),
+(10, 11, 1),
+(10, 9, 2),
+(11, 11, 1),
+(11, 10, 1),
+(11, 4, 1),
+(12, 3, 4),
+(12, 10, 2),
+(13, 9, 2),
+(13, 13, 2),
+(14, 7, 1),
+(14, 14, 1),
+(15, 13, 3),
+(15, 12, 1),
+(15, 8, 4),
+(16, 15, 1),
+(16, 16, 1),
+(16, 8, 4),
+(17, 16, 2),
+(17, 11, 3),
+(18, 17, 2),
+(18, 10, 2);
 
 create or replace function insert_user (_login varchar, _name varchar,
                                         _password_hash varchar, _money bigint, _level integer)
