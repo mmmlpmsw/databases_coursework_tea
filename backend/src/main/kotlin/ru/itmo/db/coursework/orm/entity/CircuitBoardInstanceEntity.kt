@@ -1,23 +1,28 @@
 package ru.itmo.db.coursework.orm.entity
 
+import ru.itmo.db.coursework.orm.entity.id.CircuitBoardInstanceEntityId
 import javax.persistence.*
 
 
 @Entity
-@Table(name = "tea_instance")
+@Table(name = "circuit_board_instance")
+@IdClass(CircuitBoardInstanceEntityId::class)
 data class CircuitBoardInstanceEntity (
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Int? = null,
+//        @Id
+//        @Column(name = "id")
+//        @GeneratedValue(strategy = GenerationType.IDENTITY)
+//        var id: Int? = null,
 
+        @Id
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
+        @JoinColumn(name = "user_id", referencedColumnName = "id")
         var userId: UserEntity? = null,
 
+        @Id
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
+        @JoinColumn(name = "model_id", referencedColumnName = "id")
         var modelId: CircuitBoardEntity? = null,
 
-        @Column(nullable = false)
+        @Column(name = "amount", nullable = false)
         var amount: Int? = null
 )

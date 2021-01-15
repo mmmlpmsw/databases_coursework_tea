@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/")
 class TestController {
-    @GetMapping
+    @GetMapping("test")
     fun test(): String {
         return "Hello! Today is ${Date()}"
     }

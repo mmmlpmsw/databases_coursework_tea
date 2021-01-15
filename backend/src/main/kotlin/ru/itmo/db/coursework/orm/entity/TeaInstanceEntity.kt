@@ -1,22 +1,23 @@
 package ru.itmo.db.coursework.orm.entity
 
+import ru.itmo.db.coursework.orm.entity.id.TeaInstanceEntityId
+import java.io.Serializable
 import javax.persistence.*
 
 @Entity
 @Table(name = "tea_instance")
+@IdClass(TeaInstanceEntityId::class)
 data class TeaInstanceEntity (
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Int? = null,
-
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
-        var userId: UserEntity? = null,
+        @JoinColumn(name = "user_id")
+        var user: UserEntity? = null,
 
+        @Id
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
-        var teaId: TeaEntity? = null,
+        @JoinColumn(name = "tea_id")
+        var tea: TeaEntity? = null,
 
-        @Column(nullable = false)
+        @Column(name = "amount", nullable = false)
         var amount: Int? = null
-)
+): Serializable

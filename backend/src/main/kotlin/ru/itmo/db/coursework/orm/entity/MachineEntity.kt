@@ -6,26 +6,23 @@ import javax.persistence.*
 @Table(name = "machine")
 data class MachineEntity (
         @Id
+        @Column(name = "id")
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "name", nullable = false)
         var name: String? = null,
 
-        @Column(nullable = false)
+        @Column(name = "size_x", nullable = false)
         var sizeX: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "size_y", nullable = false)
         var sizeY: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "price", nullable = false)
         var price: Long? = null,
 
-        @OneToMany(
-                targetEntity = MachineRecipeEntity::class,
-                cascade = [CascadeType.ALL],
-                fetch = FetchType.EAGER,
-                mappedBy = "machine_id"
-        )
-        var recipies: Set<MachineRecipeEntity>? = null
+        @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @JoinColumn(name = "machine_id")
+        var recipes: Set<MachineRecipeEntity> = emptySet()
 )

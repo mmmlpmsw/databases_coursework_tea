@@ -10,15 +10,23 @@ data class MachineRecipeEntity (
         var id: Int? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
-        var circuitBoardId: CircuitBoardEntity? = null,
+        @JoinColumn(name = "machine_id")
+        var machineId: MachineEntity? = null,
 
-        @Column(nullable = false)
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "circuit_board_id")
+        var circuitBoard: CircuitBoardEntity? = null,
+
+        @Column(name = "circuit_board_amount", nullable = false)
         var circuitBoardAmount: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "work_time", nullable = false)
         var workTime: Long? = null,
 
-        @Column(nullable = false)
-        var price: Long? = null
+        @Column(name = "price", nullable = false)
+        var price: Long? = null,
+
+        @OneToMany
+        @JoinColumn(name = "machine_recipe_id")
+        var teas: Set<MachineRecipeTeaEntity> = emptySet()
 )

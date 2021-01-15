@@ -6,17 +6,19 @@ import javax.persistence.*
 @Table(name = "user")
 data class UserEntity (
         @Id
+        @Column(name = "id")
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
 
-        @Column(unique = true, nullable = false)
+        @Column(name = "login", unique = true, nullable = false)
         var login: String? = null,
 
-        @Column(nullable = false)
+        @Column(name = "name", nullable = false)
         var name: String? = null,
 
         @Column(name = "password_hash", nullable = false)
         var passwordHash: String? = null,
 
+        @Column(name = "money")
         var money: Long = 0
 )

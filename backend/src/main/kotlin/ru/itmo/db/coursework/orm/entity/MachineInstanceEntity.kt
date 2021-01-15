@@ -6,27 +6,28 @@ import javax.persistence.*
 @Table(name = "machine_instance")
 data class MachineInstanceEntity (
         @Id
+        @Column(name = "id")
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
+        @JoinColumn(name = "user_id", referencedColumnName = "id")
         var userId: UserEntity? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
+        @JoinColumn(name = "machine_id", referencedColumnName = "id")
         var machineId: MachineEntity? = null,
 
-        @Column(nullable = false)
+        @Column(name = "area_x", nullable = false)
         var areaX: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "area_y", nullable = false)
         var areaY: Int? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(referencedColumnName = "id")
+        @JoinColumn(name = "current_recipe_id", referencedColumnName = "id")
         var currentRecipeId: MachineRecipeEntity? = null,
 
-        @Column(nullable = true)
+        @Column(name = "current_recipe_completion_time", nullable = true)
         var currentRecipeCompletionTime: Long? = null
 )

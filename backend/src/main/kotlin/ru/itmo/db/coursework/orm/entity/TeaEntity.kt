@@ -6,15 +6,16 @@ import javax.persistence.*
 @Table(name = "tea")
 data class TeaEntity(
         @Id
+        @Column(name = "id")
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
 
-        @Column(nullable = false)
+        @Column(name = "name", nullable = false)
         var name: String? = null,
 
-        @Column(nullable = false)
+        @Column(name = "price", nullable = false)
         var price: Long? = null,
 
-        @Column(nullable = false)
+        @Column(name = "description", nullable = false)
         var description: String? = null
 )
