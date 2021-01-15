@@ -23,16 +23,17 @@ class MachineRecipeEntityMapper @Autowired constructor(
         )
     })
 
-    fun toEntity(model: MachineRecipe) = with(model, {
+    fun toEntity(model: MachineRecipe, machineId: Int) = with(model, {
         val result = MachineRecipeEntity(
                 id = id,
+                machineId = machineId,
                 circuitBoard = circuitBoardEntityMapper.toEntity(circuitBoard),
                 circuitBoardAmount = circuitBoardAmount,
                 workTime = workTime,
                 price = price
         )
         result.teas = teas.keys.stream().map {
-            MachineRecipeTeaEntity(result, teaEntityMapper.toEntity(it), teas[it])
+            MachineRecipeTeaEntity(id, teaEntityMapper.toEntity(it), teas[it])
         }.collect(Collectors.toSet())
         result
     })

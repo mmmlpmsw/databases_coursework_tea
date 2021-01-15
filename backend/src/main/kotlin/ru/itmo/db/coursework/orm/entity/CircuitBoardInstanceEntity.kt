@@ -8,11 +8,6 @@ import javax.persistence.*
 @Table(name = "circuit_board_instance")
 @IdClass(CircuitBoardInstanceEntityId::class)
 data class CircuitBoardInstanceEntity (
-//        @Id
-//        @Column(name = "id")
-//        @GeneratedValue(strategy = GenerationType.IDENTITY)
-//        var id: Int? = null,
-
         @Id
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", referencedColumnName = "id")

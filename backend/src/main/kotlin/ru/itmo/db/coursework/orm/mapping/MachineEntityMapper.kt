@@ -27,7 +27,7 @@ class MachineEntityMapper @Autowired constructor(
                 sizeX = sizeX,
                 sizeY = sizeY,
                 price = price,
-                recipes = recipes.map(machineRecipeEntityMapper::toEntity).toSet()
+                recipes = recipes.map{ machineRecipeEntityMapper.toEntity(it, model.id) }.toSet()
         )
     })
 }

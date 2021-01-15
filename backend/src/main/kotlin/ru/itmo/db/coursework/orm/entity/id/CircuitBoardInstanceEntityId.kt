@@ -5,6 +5,6 @@ import ru.itmo.db.coursework.orm.entity.UserEntity
 import java.io.Serializable
 
 data class CircuitBoardInstanceEntityId (
-        var userId: UserEntity,
-        var modelId: CircuitBoardEntity
+        var userId: UserEntity? = null,
+        var modelId: CircuitBoardEntity? = null
 ): Serializable

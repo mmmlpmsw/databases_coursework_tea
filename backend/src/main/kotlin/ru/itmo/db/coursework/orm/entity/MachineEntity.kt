@@ -1,5 +1,7 @@
 package ru.itmo.db.coursework.orm.entity
 
+import org.hibernate.annotations.Cache
+import org.hibernate.annotations.CacheConcurrencyStrategy
 import javax.persistence.*
 
 @Entity
@@ -22,7 +24,7 @@ data class MachineEntity (
         @Column(name = "price", nullable = false)
         var price: Long? = null,
 
-        @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @OneToMany(fetch = FetchType.EAGER)
         @JoinColumn(name = "machine_id")
         var recipes: Set<MachineRecipeEntity> = emptySet()
 )

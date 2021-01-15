@@ -5,6 +5,6 @@ import ru.itmo.db.coursework.orm.entity.UserEntity
 import java.io.Serializable
 
 data class TeaInstanceEntityId (
-        var tea: TeaEntity,
-        var user: UserEntity
+        var tea: TeaEntity? = null,
+        var user: UserEntity? = null
 ): Serializable
