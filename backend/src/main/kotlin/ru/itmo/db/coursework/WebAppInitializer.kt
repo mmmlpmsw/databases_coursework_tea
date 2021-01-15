@@ -12,7 +12,7 @@ class WebAppInitializer : WebApplicationInitializer {
         val context = AnnotationConfigWebApplicationContext()
         context.register(AppConfig::class.java)
         container.addListener(ContextLoaderListener(context))
-        val appServlet = container.addServlet("dispatcher", DispatcherServlet(GenericWebApplicationContext()))
+        val appServlet = container.addServlet("servlet", DispatcherServlet(context))
         appServlet.setLoadOnStartup(1)
         appServlet.addMapping("/")
     }

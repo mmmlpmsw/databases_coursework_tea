@@ -25,7 +25,7 @@ create table if not exists "user" (
 create table if not exists tea (
     id serial primary key,
     name varchar(255) not null,
-    price integer not null default 0,
+    price bigint not null default 0,
     description text
 );
 
@@ -34,13 +34,13 @@ create table if not exists machine (
    name varchar(255) not null,
    size_x integer not null default 0,
    size_y integer not null default 0,
-   price integer not null default 0
+   price bigint not null default 0
 );
 
 create table if not exists circuit_board (
     id serial primary key,
     name varchar(255) not null,
-    sell_price integer not null default 0
+    sell_price bigint not null default 0
 );
 
 create table if not exists machine_recipe (
@@ -49,7 +49,7 @@ create table if not exists machine_recipe (
     circuit_board_id integer references circuit_board on update cascade,
     circuit_board_amount integer not null default 1,
     work_time bigint not null default 0,
-    price integer not null default 0
+    price bigint not null default 0
 );
 
 create table if not exists machine_recipe_tea (
@@ -300,7 +300,7 @@ returns boolean as
 $$
     declare
         money_amount integer := 0;
-        tea_price integer := 0;
+        tea_price bigint := 0;
     begin
         select money from "user" where id = _user_id into money_amount;
         select price from tea where id = _tea_id into tea_price;
@@ -351,7 +351,7 @@ returns boolean as
 $$
     declare
         money_amount integer := 0;
-        machine_price integer := 0;
+        machine_price bigint := 0;
     begin
         select money from "user" where id = _user_id into money_amount;
         select price from machine where id = _machine_id into machine_price;
@@ -379,7 +379,7 @@ returns void as
 $$
     declare
         money_amount integer := 0;
-        model_price integer := 0;
+        model_price bigint := 0;
     begin
         select money from "user" where id = _user_id into money_amount;
         select sell_price from circuit_board where id = _model_id into model_price;
