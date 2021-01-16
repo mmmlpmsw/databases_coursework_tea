@@ -1,7 +1,5 @@
 package ru.itmo.db.coursework.orm.entity
 
-import org.hibernate.annotations.Cache
-import org.hibernate.annotations.CacheConcurrencyStrategy
 import javax.persistence.*
 
 @Entity
