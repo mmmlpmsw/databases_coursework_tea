@@ -6,9 +6,10 @@ import ru.itmo.db.coursework.model.User
 import ru.itmo.db.coursework.orm.mapping.UserEntityMapper
 import ru.itmo.db.coursework.orm.repository.UserRepository
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
-class UserOrmService @Autowired constructor(
+open class UserOrmService @Autowired constructor(
         private val userRepository: UserRepository,
         private val userEntityMapper: UserEntityMapper
 ) {
@@ -17,4 +18,13 @@ class UserOrmService @Autowired constructor(
                     .map(userEntityMapper::fromEntity)
                     .orElse(null)
     )
+
+    @Transactional
+    open fun addNewUserIfNotExists(user: User): Boolean {
+        if (!userRepository.existsByLogin(user.login)) {
+            userRepository.save(userEntityMapper.toEntity(user).copy(id = null))
+            return true
+        }
+        return false
+    }
 }

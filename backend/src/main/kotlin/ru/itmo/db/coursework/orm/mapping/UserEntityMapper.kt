@@ -12,7 +12,7 @@ class UserEntityMapper {
                 id = id!!,
                 login = login!!,
                 name = name!!,
-                passwordHash = Base64.getDecoder().decode(passwordHash),
+                passwordHash = passwordHash!!,
                 money = money
         )
     })
@@ -22,7 +22,7 @@ class UserEntityMapper {
                 id = id,
                 login = login,
                 name = name,
-                passwordHash = Base64.getEncoder().encodeToString(passwordHash),
+                passwordHash = passwordHash,
                 money = money
         )
     })
