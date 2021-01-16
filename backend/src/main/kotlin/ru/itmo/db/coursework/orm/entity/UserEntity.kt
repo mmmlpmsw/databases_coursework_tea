@@ -3,7 +3,7 @@ package ru.itmo.db.coursework.orm.entity
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 data class UserEntity (
         @Id
         @Column(name = "id")

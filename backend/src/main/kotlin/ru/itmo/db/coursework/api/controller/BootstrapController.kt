@@ -1,6 +1,7 @@
 package ru.itmo.db.coursework.api.controller
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -11,13 +12,14 @@ import ru.itmo.db.coursework.orm.service.MachineOrmService
 
 @RestController
 @RequestMapping("/bootstrap")
-class BootstrapController @Autowired constructor(
+open class BootstrapController @Autowired constructor(
         private val machineOrmService: MachineOrmService,
         private val machineDtoMapper: MachineDtoMapper
 ) {
     @GetMapping
     @ResponseBody
-    fun bootstrap() = BootstrapDto(
+    @PreAuthorize("hasAuthority('USER')")
+    open fun bootstrap() = BootstrapDto(
             machines = machineOrmService.getAllMachines().map(machineDtoMapper::toDto)
     )
 }

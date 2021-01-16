@@ -8,4 +8,5 @@ import java.util.*
 @Repository
 interface UserRepository : CrudRepository<UserEntity, Int> {
     fun findByLogin(login: String): Optional<UserEntity>
+    fun existsByLogin(login: String): Boolean
 }
