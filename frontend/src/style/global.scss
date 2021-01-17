@@ -31,4 +31,8 @@ body {
 a {
   text-decoration: none;
   color: #5797ff;
+
+  &:focus {
+    text-decoration: underline;
+  }
 }
