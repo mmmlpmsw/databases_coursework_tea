@@ -4,7 +4,7 @@
                                 :event-bus="eventBus"
                                 :area-width="1000"
                                 :area-height="1000"
-                                :max-fps="60"/>
+                                :max-fps="40"/>
 </template>
 
 <script>

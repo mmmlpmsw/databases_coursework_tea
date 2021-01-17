@@ -10,5 +10,5 @@ class MachineOrmService @Autowired constructor(
         private val machineRepository: MachineRepository,
         private val machineEntityMapper: MachineEntityMapper
 ) {
-    fun getAllMachines() = machineRepository.findAll().map(machineEntityMapper::fromEntity).toSet()
+    fun getAll() = machineRepository.findAll().map(machineEntityMapper::fromEntity).toSet()
 }

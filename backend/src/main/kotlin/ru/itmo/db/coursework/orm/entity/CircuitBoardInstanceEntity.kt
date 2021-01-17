@@ -11,12 +11,12 @@ data class CircuitBoardInstanceEntity (
         @Id
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", referencedColumnName = "id")
-        var userId: UserEntity? = null,
+        var user: UserEntity? = null,
 
         @Id
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "model_id", referencedColumnName = "id")
-        var modelId: CircuitBoardEntity? = null,
+        var model: CircuitBoardEntity? = null,
 
         @Column(name = "amount", nullable = false)
         var amount: Int? = null
