@@ -12,11 +12,11 @@ data class MachineInstanceEntity (
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", referencedColumnName = "id")
-        var userId: UserEntity? = null,
+        var user: UserEntity? = null,
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "machine_id", referencedColumnName = "id")
-        var machineId: MachineEntity? = null,
+        var machine: MachineEntity? = null,
 
         @Column(name = "area_x", nullable = false)
         var areaX: Int? = null,
@@ -26,7 +26,7 @@ data class MachineInstanceEntity (
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "current_recipe_id", referencedColumnName = "id")
-        var currentRecipeId: MachineRecipeEntity? = null,
+        var currentRecipe: MachineRecipeEntity? = null,
 
         @Column(name = "current_recipe_completion_time", nullable = true)
         var currentRecipeCompletionTime: Long? = null

@@ -7,5 +7,5 @@ import ru.itmo.db.coursework.orm.entity.id.CircuitBoardInstanceEntityId
 
 @Repository
 interface CircuitBoardInstanceRepository: CrudRepository<CircuitBoardInstanceEntity, CircuitBoardInstanceEntityId> {
-    fun findAllByUserId(userId: Int)
+    fun findAllByUserId(userId: Int): List<CircuitBoardInstanceEntity>
 }
