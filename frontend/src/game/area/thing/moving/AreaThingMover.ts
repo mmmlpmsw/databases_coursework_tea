@@ -58,13 +58,11 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     if (this.target) {
 
       ctx.save();
-
       ctx.setTransform(ctx.getTransform().multiply(this.transformation));
       let intersections = this.findIntersections(this.target);
       ctx.fillStyle = intersections.length == 0 ? BOUNDS_RECT_COLOR_DEFAULT : BOUNDS_RECT_COLOR_INTERSECT;
       ctx.fillRect(this.target.inGameX, this.target.inGameY, this.target.inGameSizeX, this.target.inGameSizeY);
       intersections.forEach(i => ctx.fillRect(i.inGameX, i.inGameY, i.inGameSizeX, i.inGameSizeY));
-
       ctx.restore();
 
       ctx.globalAlpha = 0.5;
