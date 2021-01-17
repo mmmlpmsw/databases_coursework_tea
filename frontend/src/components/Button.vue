@@ -36,11 +36,15 @@
 
     &[green] {
       background-color: #adffc3;
-      border: 1px #82bf91 solid;
+      border-color: #82bf91;
 
       &:active {
         background-color: #79b389;
       }
+    }
+
+    &:focus {
+      border-color: #5b8565;
     }
   }
 </style>
