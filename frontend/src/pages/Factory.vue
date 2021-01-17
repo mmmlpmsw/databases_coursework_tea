@@ -1,30 +1,40 @@
 <template>
-  <game-specific-renderer class="renderer"
-                                ref="renderer"
-                                :event-bus="eventBus"
-                                :area-width="1000"
-                                :area-height="1000"
-                                :max-fps="40"/>
+  <div class="factory_page">
+    <game-specific-renderer class="renderer"
+                            ref="renderer"
+                            :class="{ dialog_mode: dialogMode }"
+                            :event-bus="eventBus"
+                            :area-width="1000"
+                            :area-height="1000"
+                            :max-fps="40"/>
+    <login-dialog :event-bus="eventBus"/>
+  </div>
 </template>
 
 <script>
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
-  import MouseMovableRenderer from "$src/components/factory/CameraMovingRenderer";
+  import MouseMovableRenderer from "$src/components/rendering/CameraMovingRenderer";
   import CoordinatesTester from "$src/game/CoordinatesTester";
-  import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer";
+  import InteractiveObjectsRenderer from "$src/components/rendering/InteractiveObjectsRenderer";
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
-  import GameSpecificRenderer from "$src/components/factory/GameSpecificRenderer";
+  import GameSpecificRenderer from "$src/components/rendering/GameSpecificRenderer";
   import AreaThing from "$src/game/area/thing/AreaThing";
+  import LoginDialog from '$src/components/LoginDialog';
+  import EventBusConstants from "$src/util/EventBusConstants";
 
   export default {
     data: function() {
       return {
+        dialogMode: false,
         eventBus: new Vue(),
         renderer: null
       }
     },
     methods: {
+      initGame() {
+        this.startEventListening();
+      },
       startRenderingScene() {
         this.render();
       },
@@ -46,30 +56,36 @@
         window.requestAnimationFrame(this.render);
       }
     },
+    created() {
+      this.eventBus.$on(EventBusConstants.DIALOG_OPENED, () => this.dialogMode = true);
+      this.eventBus.$on(EventBusConstants.DIALOG_CLOSED, () => this.dialogMode = false);
+    },
     mounted() {
       this.renderer = this.$refs['renderer'];
 
       this.startRenderingScene();
-      this.startEventListening();
-
-      // todo get area things from server
-      let things = [
-        new AreaThing(200, 200, 120, 120),
-        new AreaThing(350, 450, 120, 220),
-        new AreaThing(350, 200, 100, 100)
-      ];
-      things.forEach(this.renderer.addAreaThing);
     },
     components: {
-      GameSpecificRenderer
+      GameSpecificRenderer,
+      LoginDialog
     }
   }
 </script>
 
-<style>
+<style scoped>
+  .factory_page {
+    height: 100%;
+  }
+
   .renderer {
     font-size: 0;
     overflow: hidden;
     flex: 1;
+  }
+
+  /* used */
+  .dialog_mode {
+    pointer-events: none;
+    filter: brightness(0.8);
   }
 </style>

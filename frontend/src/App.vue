@@ -1,6 +1,5 @@
 <template>
-  <div id="root" :theme-dark="$store.state.darkTheme">
-<!--    <a-header/>-->
+  <div id="root">
     <router-view/>
     <cheats/>
   </div>
@@ -19,6 +18,8 @@
   import Orders from "$src/pages/Orders";
   import NotFound from "$src/pages/NotFound";
 
+  import createGameStore from '$src/game/GameStore'
+
   import i18n_ru_RU from '$assets/i18n/ru_RU.js';
   import i18n_en_US from '$assets/i18n/en_US.js';
 
@@ -28,7 +29,7 @@
 
   let router = initRouter();
   let i18n = initI18n();
-  let store = initGlobalStore();
+  let store = createGameStore();
 
   function initRouter() {
     const routes = [
@@ -59,19 +60,6 @@
       locale: locale,
       fallbackLocale: 'en_US',
       messages
-    });
-  }
-
-  function initGlobalStore() {
-    return new Vuex.Store({
-      state: {
-        darkTheme: false
-      },
-      mutations: {
-        switchTheme(state) {
-          state.darkTheme = !state.darkTheme;
-        }
-      }
     });
   }
 
