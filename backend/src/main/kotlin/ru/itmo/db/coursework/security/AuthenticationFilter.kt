@@ -12,14 +12,15 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-private const val TOKEN_HEADER = "x-auth-token"
-
-class AuthFilter(matcher: RequestMatcher): AbstractAuthenticationProcessingFilter(matcher) {
+class AuthenticationFilter(matcher: RequestMatcher): AbstractAuthenticationProcessingFilter(matcher) {
+    companion object {
+        private const val TOKEN_HEADER = "x-auth-token"
+    }
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain) {
         val token: String? = getTokenValue(request as HttpServletRequest)
-
+//        println("filter token: $token")
         // This filter only applies if the header is present
         if (token.isNullOrEmpty()) {
             chain.doFilter(request, response)
@@ -33,6 +34,7 @@ class AuthFilter(matcher: RequestMatcher): AbstractAuthenticationProcessingFilte
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication? {
         val tokenValue = getTokenValue(request)
+//        println("auth token: $tokenValue")
         if (tokenValue.isNullOrEmpty())
             return null
 
