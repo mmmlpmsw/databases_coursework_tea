@@ -122,7 +122,7 @@
 
   [state-wrong='true'] {
     border: 1px solid rgba(255, 0, 0, .5);
-    box-shadow: 0 0 2px red;
+    /*box-shadow: 0 0 2px red;*/
   }
 
   .err_msg {
