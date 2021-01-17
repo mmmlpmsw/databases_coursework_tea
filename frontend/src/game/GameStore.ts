@@ -1,4 +1,4 @@
-import Vuex from "vuex";
+import Vuex, {Store} from "vuex";
 import User from "$src/game/model/User";
 import Machine from "$src/game/model/Machine";
 import Tea from "$src/game/model/Tea";
@@ -8,10 +8,9 @@ import MachineInstance from "$src/game/model/MachineInstance";
 import TeaInstance from "$src/game/model/TeaInstance";
 import CircuitBoardInstance from "$src/game/model/CircuitBoardInstance";
 
-export default function createGameStore() {
+export default function createGameStore(): Store<any> {
   return new Vuex.Store({
     state: {
-      apiToken: null,
       game: {
         user: null as User,
         machines: [] as Machine[],
@@ -23,9 +22,6 @@ export default function createGameStore() {
       }
     },
     mutations: {
-      setApiToken(state, token) {
-        state.apiToken = token
-      },
       doBootstrap(state, bootstrap: Bootstrap) {
         state.game.user = bootstrap.user;
         state.game.machines = bootstrap.machines;

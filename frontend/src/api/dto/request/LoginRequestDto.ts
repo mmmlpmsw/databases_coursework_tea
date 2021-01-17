@@ -1,0 +1,3 @@
+export default class LoginRequestDto {
+  constructor(public username: string, public password: string) {}
+}

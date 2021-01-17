@@ -1,5 +1,5 @@
 <template>
-  <div class="login_dialog">
+  <div class="login_dialog" v-if="enabled">
 
     <form class="login_prompt vertical" v-if="mode === 'login'">
       <div class="title">Вход</div>
@@ -10,7 +10,7 @@
                   :type="field.type"
                   v-model="field.value"
                   :error-hint="field.errorHint"/>
-      <game-button green>Играть!</game-button>
+      <game-button type="submit" green @click="loginClicked">Играть!</game-button>
       <a class="link" @click="mode = 'registration'">Регистрация</a>
     </form>
 
@@ -23,7 +23,7 @@
                   :hint="field.hint"
                   v-model="field.value"
                   :error-hint="field.errorHint"/>
-      <game-button green>Зарегистрироваться!</game-button>
+      <game-button type="submit" green @click="registerClicked">Зарегистрироваться!</game-button>
       <a class="link" @click="mode = 'login'">У меня уже есть аккаунт</a>
     </form>
   </div>
@@ -35,6 +35,9 @@
   import TextInput from "$src/components/TextInput";
   import Button from "$src/components/Button";
   import TransitionExpand from "$src/components/TransitionExpand";
+  import LoginRequestDto from "$src/api/dto/request/LoginRequestDto";
+  import TokenDto from "$src/api/dto/TokenDto";
+  import Api from "$src/api/Api";
 
   export default {
     props: {
@@ -42,19 +45,26 @@
     },
     data() {
       return {
+        enabled: true,
         mode: 'login',
         login: {
           form: {
             login: {
               hint: "Логин",
               value: '',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите логин"
+              }
             },
             password: {
               hint: "Пароль",
               value: '',
               type: 'password',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите пароль"
+              }
             }
           }
         },
@@ -90,6 +100,38 @@
       this.eventBus.$emit(EventBusConstants.DIALOG_OPENED)
     },
     methods: {
+      loginClicked() {
+        if (this.validateLogin()) {
+          this.$api.call(
+            "/login",
+            new LoginRequestDto(
+              this.login.form.login.value,
+              this.login.form.password.value,
+            ),
+            (result) => {alert('token:' + result.token)},
+            (error) => {alert("отвал жопы")}
+          )
+        }
+      },
+      registerClicked() {
+        if (this.validateRegister()) {
+          // todo
+        }
+      },
+      validateLogin() {
+        let valid = true;
+        for (const [key, field] of Object.entries(this.login.form)) {
+          field.errorHint = null;
+          if (field.validation.notEmpty && field.value === '') {
+            field.errorHint = field.validation.notEmpty;
+            valid = false
+          }
+        }
+        return valid;
+      },
+      validateRegister() {
+
+      },
       close() {
         this.eventBus.$emit(EventBusConstants.DIALOG_CLOSED)
       }
@@ -121,7 +163,7 @@
 
   .title {
     text-align: center;
-    font-size: 24px;
+    font-size: 32px;
     margin-bottom: 10px;
   }
 

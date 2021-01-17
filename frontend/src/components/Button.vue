@@ -1,5 +1,5 @@
 <template>
-  <button :type="type" @click="$emit('click')"><slot/></button>
+  <button :type="type" @click.prevent="$emit('click')"><slot/></button>
 </template>
 
 <script>

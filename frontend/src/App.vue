@@ -22,10 +22,12 @@
 
   import i18n_ru_RU from '$assets/i18n/ru_RU.js';
   import i18n_en_US from '$assets/i18n/en_US.js';
+  import { ApiPlugin } from "$src/api/Api";
 
   Vue.use(VueRouter);
   Vue.use(VueI18n);
   Vue.use(Vuex);
+  Vue.use(ApiPlugin);
 
   let router = initRouter();
   let i18n = initI18n();
