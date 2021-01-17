@@ -13,7 +13,7 @@ class AuthenticationToken : AbstractAuthenticationToken {
         isAuthenticated = false
     }
 
-    constructor(token: String, userId: Int) : super(setOf(GrantedAuthority { "USER" })) {
+    constructor(token: String, userId: Int, authorities: Set<GrantedAuthority>) : super(authorities) {
         this.token = token
         this.userId = userId
         isAuthenticated = true

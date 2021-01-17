@@ -44,7 +44,10 @@ open class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.cors().and().headers().disable()
             .authenticationProvider(authenticationProvider)
-            .authorizeRequests().antMatchers("/login").permitAll().antMatchers("/**").authenticated()
+            .authorizeRequests()
+            .antMatchers("/login").permitAll()
+            .antMatchers("/register").permitAll()
+            .antMatchers("/**").authenticated()
             .and().addFilterBefore(createCustomFilter(), BasicAuthenticationFilter::class.java)
             .csrf().disable()
     }

@@ -19,6 +19,8 @@ open class UserOrmService @Autowired constructor(
                     .orElse(null)
     )
 
+    fun getById(id: Int) = userRepository.findById(id).map(userEntityMapper::fromEntity)
+
     @Transactional
     open fun addNewUserIfNotExists(user: User): Boolean {
         if (!userRepository.existsByLogin(user.login)) {
