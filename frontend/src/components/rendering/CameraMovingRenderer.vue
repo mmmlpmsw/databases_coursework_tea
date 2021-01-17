@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import BasicObjectsRenderer from "$src/components/factory/BasicObjectsRenderer";
+  import BasicObjectsRenderer from "$src/components/rendering/BasicObjectsRenderer";
   import Vue from 'vue';
   import CameraLayer from "$src/layers/CameraLayer";
   import Layer from "$src/layers/Layer";

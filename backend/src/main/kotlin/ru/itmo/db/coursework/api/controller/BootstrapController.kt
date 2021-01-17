@@ -7,13 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import ru.itmo.db.coursework.api.dto.BootstrapDto
-import ru.itmo.db.coursework.api.mapping.CircuitBoardDtoMapper
-import ru.itmo.db.coursework.api.mapping.MachineDtoMapper
-import ru.itmo.db.coursework.api.mapping.TeaDtoMapper
-import ru.itmo.db.coursework.api.mapping.UserDtoMapper
-import ru.itmo.db.coursework.orm.service.CircuitBoardOrmService
-import ru.itmo.db.coursework.orm.service.MachineOrmService
-import ru.itmo.db.coursework.orm.service.TeaOrmService
+import ru.itmo.db.coursework.api.mapping.*
+import ru.itmo.db.coursework.orm.service.*
 import ru.itmo.db.coursework.service.UserService
 
 @RestController
@@ -26,15 +21,27 @@ open class BootstrapController @Autowired constructor(
     private val teaOrmService: TeaOrmService,
     private val teaDtoMapper: TeaDtoMapper,
     private val circuitBoardOrmService: CircuitBoardOrmService,
-    private val circuitBoardDtoMapper: CircuitBoardDtoMapper
+    private val circuitBoardDtoMapper: CircuitBoardDtoMapper,
+    private val machineInstanceOrmService: MachineInstanceOrmService,
+    private val machineInstanceDtoMapper: MachineInstanceDtoMapper,
+    private val teaInstanceOrmService: TeaInstanceOrmService,
+    private val teaInstanceDtoMapper: TeaInstanceDtoMapper,
+    private val circuitBoardInstanceOrmService: CircuitBoardInstanceOrmService,
+    private val circuitBoardInstanceDtoMapper: CircuitBoardInstanceDtoMapper
 ) {
     @GetMapping
     @ResponseBody
     @PreAuthorize("hasAuthority('USER')")
-    open fun bootstrap() = BootstrapDto(
-        currentUser = userDtoMapper.toDto(userService.getCurrentUser()),
-        machines = machineOrmService.getAll().map(machineDtoMapper::toDto),
-        teas = teaOrmService.getAll().map(teaDtoMapper::toDto),
-        circuitBoards = circuitBoardOrmService.getAll().map(circuitBoardDtoMapper::toDto)
-    )
+    open fun bootstrap(): BootstrapDto {
+        val currentUser = userService.getCurrentUser()
+        return BootstrapDto(
+            currentUser = userDtoMapper.toDto(currentUser),
+            machines = machineOrmService.getAll().map(machineDtoMapper::toDto),
+            teas = teaOrmService.getAll().map(teaDtoMapper::toDto),
+            circuitBoards = circuitBoardOrmService.getAll().map(circuitBoardDtoMapper::toDto),
+            machineInstances = machineInstanceOrmService.getAllByUser(currentUser.id).map(machineInstanceDtoMapper::toDto),
+            teaInstances = teaInstanceOrmService.getAllByUser(currentUser.id).map(teaInstanceDtoMapper::toDto),
+            circuitBoardInstances = circuitBoardInstanceOrmService.getAllByUser(currentUser.id).map(circuitBoardInstanceDtoMapper::toDto)
+        )
+    }
 }

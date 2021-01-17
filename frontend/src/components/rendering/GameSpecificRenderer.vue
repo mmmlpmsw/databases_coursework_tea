@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import InteractiveObjectsRenderer from "$src/components/factory/InteractiveObjectsRenderer.vue";
+  import InteractiveObjectsRenderer from "$src/components/rendering/InteractiveObjectsRenderer.vue";
   import Vue from 'vue';
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import CameraLayer from "$src/layers/CameraLayer";
@@ -81,6 +81,7 @@
     },
     mounted() {
       this.areaThingMover = new AreaThingMover(this.eventBus, this.areaThings, inGameAreaTransformation);
+      this.cameraLayer.cameraY = 350;
 
       // Constructing layers structure
       this.rootLayer.addRenderable(this.cameraLayer);

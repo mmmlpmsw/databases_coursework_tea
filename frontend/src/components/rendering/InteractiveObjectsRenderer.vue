@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import CameraMovingRenderer from "$src/components/factory/CameraMovingRenderer";
+  import CameraMovingRenderer from "$src/components/rendering/CameraMovingRenderer";
   import Vue from "vue";
   import CameraLayer from "$src/layers/CameraLayer";
   import Layer from "$src/layers/Layer";

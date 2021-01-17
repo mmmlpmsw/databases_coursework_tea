@@ -2,7 +2,7 @@ import Layer from "$src/layers/Layer";
 import CloudRenderer from "$src/game/environment/CloudRenderer";
 
 export default class CloudsRenderer extends Layer {
-  private static readonly CLOUD_IMAGES_NUM = 6;
+  private static readonly CLOUD_IMAGES_NUM = 5;
   private static readonly FOG_IMAGES_NUM = 6;
   private cloudImages = [];
   private fogs = [];

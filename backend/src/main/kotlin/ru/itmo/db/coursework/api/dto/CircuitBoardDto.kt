@@ -5,6 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class CircuitBoardDto (
     val id: Int? = null,
     val name: String? = null,
-    @JsonProperty("sell_price")
+    @get:JsonProperty("sell_price")
     val sellPrice: Long? = null
 )
