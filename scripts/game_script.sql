@@ -204,13 +204,12 @@ $$
     end
 $$ language plpgsql;
 
-create or replace function update_machine_instance_coordinates (_user_id integer, _machine_id integer,
-                                                      _x integer, _y integer, _x_old integer, _y_old integer)
-returns void as
+create or replace function update_machine_instance_coordinates (_machine_id integer, _x integer, _y integer)
+returns int as
 $$
     begin
-        update machine_instance set area_x = _x where user_id = _user_id and machine_id = _machine_id and area_x = _x_old and area_y = _y_old;
-        update machine_instance set area_y = _y where user_id = _user_id and machine_id = _machine_id and area_x = _x_old and area_y = _y_old;
+        update machine_instance set area_x = _x, area_y = _y where id = _machine_id;
+        return 0;
     end
 $$ language plpgsql;
 
