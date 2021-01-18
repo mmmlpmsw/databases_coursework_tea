@@ -7,7 +7,7 @@ import ru.itmo.db.coursework.model.MachineInstance
 @Configuration
 open class GameConfig {
     @Bean
-    open fun defaultRegistrationMoney() = 0 // todo решить, сколько денег дать при регистрации
+    open fun defaultRegistrationMoney(): Long = 0 // todo решить, сколько денег дать при регистрации
 
     @Bean
     open fun defaultRegistrationMachines(): Set<MachineInstance> = setOf() // todo решить, сколько и какие машины дать при регистрации
