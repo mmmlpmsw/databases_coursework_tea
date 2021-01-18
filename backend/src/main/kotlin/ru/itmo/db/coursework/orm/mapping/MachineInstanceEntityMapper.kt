@@ -27,7 +27,7 @@ class MachineInstanceEntityMapper {
             machine = MachineEntity(id = machineId),
             areaX = areaX,
             areaY = areaY,
-            currentRecipe = MachineRecipeEntity(id = currentRecipeId),
+            currentRecipe = if (currentRecipeId != null) MachineRecipeEntity(id = currentRecipeId) else null,
             currentRecipeCompletionTime = currentRecipeCompletionTime
         )
     })
