@@ -195,7 +195,7 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .login_dialog {
     border-radius: 10px;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.25);

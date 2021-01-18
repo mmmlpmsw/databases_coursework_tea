@@ -44,6 +44,8 @@
 
         setTimeout(() => {
           element.style.height = '0';
+          element.style.paddingTop = '0';
+          element.style.paddingBottom = '0';
         });
       },
     },
@@ -52,7 +54,7 @@
 
 <style scoped>
   * {
-    will-change: height;
+    will-change: height, padding-top, padding-bottom;
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000px;
@@ -60,12 +62,17 @@
 
   .expand-enter-active,
   .expand-leave-active {
-    transition: height 300ms ease-in-out;
+    transition:
+      height 300ms ease-in-out,
+      padding-top 300ms ease-in-out,
+      padding-bottom 300ms ease-in-out;
     overflow: hidden;
   }
 
   .expand-enter,
   .expand-leave-to {
     height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 </style>

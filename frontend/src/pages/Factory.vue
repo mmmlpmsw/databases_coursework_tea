@@ -90,7 +90,7 @@
     /* used */
     &.dialog_mode {
       pointer-events: none;
-      filter: brightness(0.5) blur(5px);
+      filter: brightness(0.75);
     }
   }
 </style>
