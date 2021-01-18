@@ -74,23 +74,14 @@ create table if not exists tea_instance (
     tea_id integer references tea on update cascade,
     amount integer not null,
     primary key (user_id, tea_id)
-); -- удалять строку, когда amount = 0
+);
 
 create table if not exists circuit_board_instance
 (
     user_id integer references "user" on update cascade on delete cascade,
     model_id integer references circuit_board on update cascade,
     amount integer not null
-); -- удалять строку, когда amount = 0
-
-
-create or replace function insert_tea (_name varchar, _price integer, _description text)
-returns void as
-$$
-    begin
-        insert into tea (name, price, description) VALUES (_name, _price, _description);
-    end;
-$$ language plpgsql;
+);
 
 insert into tea (name, price, description) VALUES
 ('Черный чай', 10, ''),
@@ -111,14 +102,6 @@ insert into tea (name, price, description) VALUES
 ('Чай с ромашкой', 2400, ''),
 ('Чай с кипреем', 4400, '');
 
-create or replace function insert_machine (_name varchar, _width integer, _height integer, _price integer)
-returns void as
-$$
-    begin
-        insert into machine (name, size_x, size_y, price) values (_name, _width, _height, _price);
-    end;
-$$ language plpgsql;
-
 insert into machine (name, size_x, size_y, price) values
 ('Machine 1', 30, 30, 100),
 ('Machine 2', 50, 70, 800),
@@ -126,14 +109,6 @@ insert into machine (name, size_x, size_y, price) values
 ('Machine 4', 80, 100, 8000),
 ('Machine 5', 100, 100, 20000),
 ('Machine 6', 120, 140, 80000);
-
-create or replace function insert_circuit_board (_name varchar, _price integer)
-returns void as
-$$
-    begin
-        insert into circuit_board (name, sell_price) values (_name, _price);
-    end;
-$$ language plpgsql;
 
 insert into circuit_board (name, sell_price) values
 ('Лазерная указка', 20),
@@ -160,15 +135,6 @@ insert into circuit_board (name, sell_price) values
 ('Принтер', 6800),
 ('Проектор', 9800);
 
-create or replace function insert_recipe (_machine_id integer, _circuit_board_id integer, _work_time integer)
-returns void as
-$$
-    begin
-        insert into machine_recipe (machine_id, circuit_board_id, work_time)
-        values (_machine_id, _circuit_board_id, _work_time);
-    end;
-$$ language plpgsql;
-
 insert into machine_recipe (machine_id, circuit_board_id, work_time)
 values
 (1, 1, 300), (1,2, 480), (1,3, 600),
@@ -177,15 +143,6 @@ values
 (4,10, 67 * 60), (4,11, 61 * 60), (4,12, 2520),
 (5, 13, 75 * 60), (5,14, 62 * 60), (5,15, 84 * 60),
 (6,16, 102 * 60), (6,17, 90 * 60), (6,18, 116 * 60);
-
-create or replace function insert_recipe_tea (_machine_recipe_id integer, _tea_id integer, _amount integer)
-returns void as
-$$
-    begin
-        insert into machine_recipe_tea (machine_recipe_id, tea_id, amount)
-        values (_machine_recipe_id, _tea_id, _amount);
-    end;
-$$ language plpgsql;
 
 insert into machine_recipe_tea (machine_recipe_id, tea_id, amount)
 values
@@ -229,23 +186,6 @@ values
 (17, 11, 3),
 (18, 17, 2),
 (18, 10, 2);
-
-create or replace function insert_user (_login varchar, _name varchar,
-                                        _password_hash varchar, _money bigint, _level integer)
-returns void as
-$$
-    begin
-        insert into "user" (login, name, password_hash, money/*, level*/) values (_login, _name, _password_hash, _money/*, _level*/);
-    end
-$$ language plpgsql;
-
-create or replace function update_user_money (_id integer, _login varchar, _money bigint)
-returns void as
-$$
-    begin
-        update "user" set money = _money where id = _id and login = _login;
-    end
-$$ language plpgsql;
 
 -- create or replace function update_user_level (_id integer, _login varchar, _level bigint)
 -- returns void as
@@ -314,14 +254,6 @@ $$
     end
 $$ language plpgsql;
 
-create or replace function insert_circuit_board_instance (_user_id integer, _model_id integer, _amount integer)
-returns void as
-$$
-    begin
-        insert into circuit_board_instance(user_id, model_id, amount) values (_user_id, _model_id, _amount);
-    end
-$$ language plpgsql;
-
 create or replace function _trigger_delete_user_circuit_board_instance() returns trigger as $$
 begin
     if new.amount = 0 then
@@ -364,14 +296,6 @@ $$
         end if;
     end
 $$ language plpgsql;
-
-
-create table if not exists circuit_board_instance
-(
-    user_id integer references "user" on update cascade on delete cascade,
-    model_id integer references circuit_board on update cascade,
-    amount integer not null
-);
 
 create or replace function sell_user_circuit_board_instance (_user_id integer, _model_id integer,
                                         _amount integer)
