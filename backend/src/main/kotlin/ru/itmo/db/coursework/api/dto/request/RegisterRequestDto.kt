@@ -1,7 +1,9 @@
 package ru.itmo.db.coursework.api.dto.request
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class RegisterRequestDto (
-    val login: String? = null,
-    val name: String? = null,
-    val password: String? = null
+    @JsonProperty("login")      val login: String,
+    @JsonProperty("name")       val name: String,
+    @JsonProperty("password")   val password: String
 )

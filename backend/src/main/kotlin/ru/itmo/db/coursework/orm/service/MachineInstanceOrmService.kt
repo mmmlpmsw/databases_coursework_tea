@@ -24,6 +24,10 @@ class MachineInstanceOrmService @Autowired constructor(
     fun addAll(instances: MutableIterable<MachineInstance>, userId: Int): MutableIterable<MachineInstanceEntity> =
         machineInstanceRepository.saveAll(instances.map {machineInstanceEntityMapper.toEntity(it, userId)})
 
+    fun removeInstance(instanceId: Int) {
+        machineInstanceRepository.deleteById(instanceId)
+    }
+
     fun setInstancePosition(machineInstanceId: Int, x: Int, y: Int) {
         val allEntities = machineInstanceRepository.findAll()
         val instance = machineInstanceRepository.findById(machineInstanceId)

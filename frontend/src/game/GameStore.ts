@@ -22,6 +22,9 @@ export default function createGameStore(): Store<GameState> {
       setMachineInstancePosition(state: GameState, data: {instanceId: number, x: number, y: number}) {
         state.game.machineInstances[data.instanceId].areaX = data.x;
         state.game.machineInstances[data.instanceId].areaY = data.y;
+      },
+      removeMachineInstance(state: GameState, instanceId: number) {
+        delete state.game.machineInstances[instanceId]
       }
     }
   })

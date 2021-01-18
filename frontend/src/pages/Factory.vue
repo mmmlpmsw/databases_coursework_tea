@@ -20,11 +20,12 @@
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import GameSpecificRenderer from "$src/components/rendering/GameSpecificRenderer";
   import AreaThing from "$src/game/area/thing/AreaThing";
-  import LoginDialog from '$src/components/LoginDialog';
+  import LoginDialog from '$src/components/dialogs/LoginDialog';
   import EventBusConstants from "$src/util/EventBusConstants";
   import MachineAreaThing from "$src/game/area/thing/MachineAreaThing";
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
   import MachineInstance from "$src/game/model/MachineInstance";
+  import MachineInstanceRemoveRequestDto from "$src/api/dto/request/MachineInstanceRemoveRequestDto";
 
   export default {
     data: function() {
@@ -52,8 +53,19 @@
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onAreaThingMovingRequest);
       },
       onAreaThingRemovalRequest(areaThing) {
+        let instance = this.instanceByAreaThing[areaThing];
         this.renderer.removeAreaThing(areaThing);
-        // todo message for server
+        this.$api.post(
+          '/area/remove',
+          new MachineInstanceRemoveRequestDto(instance.id),
+          () => this.$store.commit("removeMachineInstance", instance.id),
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+            // revert changes
+            this.renderer.addAreaThing(areaThing);
+          }
+        );
       },
       onAreaThingMovingRequest(areaThing) {
         let instance = this.instanceByAreaThing[areaThing];
@@ -79,8 +91,6 @@
             areaThing.inGameY = instance.areaY;
           }
         );
-        console.log("Area thing moving requested"); // todo
-        console.log(areaThing);
       },
       render() {
         this.eventBus.$emit('render');

@@ -12,6 +12,12 @@
             </message-panel>
           </transition-expand>
 
+          <transition-expand>
+            <message-panel green v-if="commonInfoHint">
+              {{commonInfoHint}}
+            </message-panel>
+          </transition-expand>
+
           <text-input class="input"
                       v-for="field in login.form"
                       :key="field.id"
@@ -61,6 +67,7 @@
   import BootstrapDtoMapper from "$src/api/mapping/BootstrapDtoMapper";
   import MessagePanel from "$src/components/MessagePanel";
   import LoadingScreenContainer from "$src/components/LoadingScreenContainer";
+  import RegisterRequestDto from "$src/api/dto/request/RegisterRequestDto";
 
   export default {
     props: {
@@ -77,6 +84,7 @@
         mode: 'login',
         loading: false,
         commonErrorHint: null,
+        commonInfoHint: null,
         login: {
           form: {
             login: {
@@ -103,24 +111,40 @@
             name: {
               hint: 'Имя',
               value: '',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите имя"
+              }
             },
             login: {
               hint: 'Логин',
               value: '',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите логин"
+              }
             },
             password: {
               hint: 'Пароль',
               value: '',
               type: 'password',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите пароль",
+                checkEquals: {
+                  fieldName: "confirmPassword",
+                  message: "Пароли не совпадают"
+                }
+              }
             },
             confirmPassword: {
               hint: 'Повторите пароль',
               value: '',
               type: 'password',
-              errorHint: null
+              errorHint: null,
+              validation: {
+                notEmpty: "Введите повтор пароля"
+              }
             }
           }
         }
@@ -149,7 +173,13 @@
         if (this.validateRegister()) {
           this.loading = true;
           this.commonErrorHint = null;
-          // todo
+          this.$api.post(
+            "/register",
+            new RegisterRequestDto(this.registration.form.login.value, this.registration.form.name.value, this.registration.form.password.value),
+            this.onRegisterSuccess,
+            () => this.commonErrorHint = "Не удалось зарегистрироваться D:",
+            () => this.loading = false
+          );
         }
       },
       validateLogin() {
@@ -164,7 +194,21 @@
         return valid;
       },
       validateRegister() {
-
+        let valid = true;
+        for (const [key, field] of Object.entries(this.registration.form)) {
+          field.errorHint = null;
+          if (field.validation.notEmpty && field.value === '') {
+            field.errorHint = field.validation.notEmpty;
+            valid = false
+          } else if (
+            field.validation.checkEquals &&
+            field.value !== this.registration.form[field.validation.checkEquals.fieldName].value
+          ) {
+            field.errorHint = field.validation.checkEquals.message;
+            valid = false
+          }
+        }
+        return valid;
       },
       onLoginSuccess(tokenHolder) {
         this.$api.token = tokenHolder.token;
@@ -180,6 +224,10 @@
         this.$store.commit('doBootstrap', BootstrapDtoMapper.fromDto(bootstrap));
         this.eventBus.$emit(EventBusConstants.LOGGED_IN);
         this.close();
+      },
+      onRegisterSuccess() {
+        this.mode = 'login';
+        this.commonInfoHint = "Теперь вы можете войти"
       },
       close() {
         this.enabled = false;
