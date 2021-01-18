@@ -1,6 +1,8 @@
 <template>
-  <div class="message_panel" :red="red" :green="green" :blue="blue">
-    <slot></slot>
+  <div class="message_panel_wr" :red="red" :green="green" :blue="blue">
+    <div class="message_panel">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -11,12 +13,15 @@
 </script>
 
 <style scoped lang="scss">
-  .message_panel {
+  .message_panel_wr {
     border-width: 1px;
     border-style: solid;
     border-color: #2b2b2b;
     background-color: rgba(255, 255, 255, 1);
-    padding: 10px;
+
+    .message_panel{
+      padding: 10px;
+    }
 
     &[red] {
       background-color: rgb(255, 139, 137);
