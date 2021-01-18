@@ -1,3 +1,3 @@
 export default class ErrorDto {
-  errorCode: string
+  constructor(public error_core: string) {}
 }

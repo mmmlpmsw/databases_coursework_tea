@@ -9,15 +9,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import java.util.*
 import javax.sql.DataSource
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import java.lang.Exception
 
-
-@Import(WebSecurityConfig::class)
+@Import(WebSecurityConfig::class, GameConfig::class)
 @EnableWebMvc
 @Configuration
 @PropertySource("classpath:app.properties")

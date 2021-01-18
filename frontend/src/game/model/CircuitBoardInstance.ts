@@ -1,4 +1,6 @@
 export default class CircuitBoardInstance {
-  modelId: number;
-  amount: number;
+  constructor(
+    public modelId: number,
+    public amount: number
+  ) {}
 }

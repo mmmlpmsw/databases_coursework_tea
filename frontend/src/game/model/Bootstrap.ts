@@ -7,11 +7,13 @@ import TeaInstance from "$src/game/model/TeaInstance";
 import CircuitBoardInstance from "$src/game/model/CircuitBoardInstance";
 
 export default class Bootstrap {
-  user: User;
-  machines: Machine[];
-  teas: Tea[];
-  circuitBoards: CircuitBoard[];
-  machineInstances: MachineInstance[];
-  teaInstances: TeaInstance[];
-  circuitBoardInstance: CircuitBoardInstance[]
+  constructor(
+    public user: User,
+    public machines: Machine[],
+    public teas: Tea[],
+    public circuitBoards: CircuitBoard[],
+    public machineInstances: MachineInstance[],
+    public teaInstances: TeaInstance[],
+    public circuitBoardInstance: CircuitBoardInstance[]
+  ) {}
 }

@@ -76,7 +76,7 @@
         areaHudLayer: new Layer(),
         thingsLayer: new Layer(),
         areaBackgroundLayer: new Layer(),
-        backCloudsLayer: new CloudsRenderer(-10000, 10000, 1300, 2000, 40, 0.01, 0.4),
+        backCloudsLayer: new CloudsRenderer(-10000, 10000, 1300, 2000, 30, 0.01, 0.4),
       }
     },
     mounted() {

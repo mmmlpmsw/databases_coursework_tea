@@ -6,7 +6,7 @@
                             :event-bus="eventBus"
                             :area-width="1000"
                             :area-height="1000"
-                            :max-fps="40"/>
+                            :max-fps="60"/>
     <login-dialog :event-bus="eventBus"/>
   </div>
 </template>
@@ -53,7 +53,10 @@
       },
       render() {
         this.eventBus.$emit('render');
-        window.requestAnimationFrame(this.render);
+        if (!this.dialogMode)
+          window.requestAnimationFrame(this.render);
+        else
+          setTimeout(() => window.requestAnimationFrame(this.render), 150)
       }
     },
     created() {
@@ -72,7 +75,7 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .factory_page {
     height: 100%;
   }
@@ -80,12 +83,14 @@
   .renderer {
     font-size: 0;
     overflow: hidden;
+    transition: filter 300ms;
+    filter: brightness(1);
     flex: 1;
-  }
 
-  /* used */
-  .dialog_mode {
-    pointer-events: none;
-    filter: brightness(0.8);
+    /* used */
+    &.dialog_mode {
+      pointer-events: none;
+      filter: brightness(0.75);
+    }
   }
 </style>

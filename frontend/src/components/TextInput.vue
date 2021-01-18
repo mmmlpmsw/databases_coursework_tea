@@ -61,8 +61,7 @@
 
 <style lang="scss" scoped>
   .wrapper {
-    margin-bottom: 10px;
-    margin-top: -10px;
+    margin-top: -8px;
     display: inline-block;
   }
 
@@ -112,7 +111,7 @@
     border-radius: 99px;
     top: 30px;
     left: 8px;
-    padding: 5px;
+    padding: 0 5px 5px;
 
     &.jump {
       top: 9px;
