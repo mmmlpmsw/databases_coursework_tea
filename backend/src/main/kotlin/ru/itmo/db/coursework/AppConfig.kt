@@ -13,11 +13,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import java.util.*
 import javax.sql.DataSource
 
-
-
-
-
-@Import(WebSecurityConfig::class)
+@Import(WebSecurityConfig::class, GameConfig::class)
 @EnableWebMvc
 @Configuration
 @PropertySource("classpath:app.properties")

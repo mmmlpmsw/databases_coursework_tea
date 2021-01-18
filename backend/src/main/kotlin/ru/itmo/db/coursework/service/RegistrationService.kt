@@ -10,10 +10,11 @@ import ru.itmo.db.coursework.orm.service.exception.ServiceException
 @Service
 class RegistrationService @Autowired constructor(
     private val userOrmService: UserOrmService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val defaultRegistrationMoney: Long
 ) {
     fun register(name: String, login: String, password: String) {
-        val user = User(0, login, name, passwordEncoder.encode(password), 0)
+        val user = User(0, login, name, passwordEncoder.encode(password), defaultRegistrationMoney)
         if (!userOrmService.addNewUserIfNotExists(user))
             throw ServiceException("login_exists")
     }
