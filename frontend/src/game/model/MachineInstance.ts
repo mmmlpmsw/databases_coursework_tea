@@ -1,8 +1,10 @@
 export default class MachineInstance {
-  id: number;
-  machineId: number;
-  areaX: number;
-  areaY: number;
-  currentRecipeId: number;
-  currentRecipeIdCompletionTime: Date
+  constructor(
+    public id: number,
+    public machineId: number,
+    public areaX: number,
+    public areaY: number,
+    public currentRecipeId: number,
+    public currentRecipeIdCompletionTime: Date
+  ) {}
 }

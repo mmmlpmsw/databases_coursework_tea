@@ -1,4 +1,6 @@
 export default class TeaInstance {
-  teaId: number;
-  amount: number;
+  constructor(
+    public teaId: number,
+    public amount: number
+  ) {}
 }

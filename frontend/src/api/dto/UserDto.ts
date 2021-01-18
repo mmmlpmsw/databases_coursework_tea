@@ -1,4 +1,4 @@
-export default class User {
+export default class UserDto {
   constructor(
     public id: number,
     public login: string,

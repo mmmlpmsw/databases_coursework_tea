@@ -1,7 +1,7 @@
-export default class CircuitBoard {
+export default class CircuitBoardDto {
   constructor(
     public id: number,
     public name: string,
-    public sellPrice: number
+    public sell_price: number
   ) {}
 }
