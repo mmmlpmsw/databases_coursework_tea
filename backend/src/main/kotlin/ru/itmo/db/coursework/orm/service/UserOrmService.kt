@@ -27,10 +27,10 @@ open class UserOrmService @Autowired constructor(
     @Transactional
     open fun addNewUserIfNotExists(user: User): Boolean {
         if (!userRepository.existsByLogin(user.login)) {
-            userRepository.save(userEntityMapper.toEntity(user).copy(id = null))
+            val userEntity = userRepository.save(userEntityMapper.toEntity(user).copy(id = null))
+            machineInstanceOrmService.addAll(defaultRegistrationMachines.toMutableSet(), userEntity.id!!)
             return true
         }
-        machineInstanceOrmService.addAll(defaultRegistrationMachines.toMutableSet(), user.id);
         return false
     }
 }
