@@ -15,6 +15,6 @@ class RegistrationController @Autowired constructor(
 ) {
     @PostMapping
     fun register(@RequestBody req: RegisterRequestDto) {
-        registrationService.register(req.name!!, req.login!!, req.password!!)
+        registrationService.register(req.name, req.login, req.password)
     }
 }
