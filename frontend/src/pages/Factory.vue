@@ -20,7 +20,7 @@
   import AreaTesterBackground from "$src/game/area/AreaTesterBackground";
   import GameSpecificRenderer from "$src/components/rendering/GameSpecificRenderer";
   import AreaThing from "$src/game/area/thing/AreaThing";
-  import LoginDialog from '$src/components/LoginDialog';
+  import LoginDialog from '$src/components/dialogs/LoginDialog';
   import EventBusConstants from "$src/util/EventBusConstants";
   import MachineAreaThing from "$src/game/area/thing/MachineAreaThing";
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";

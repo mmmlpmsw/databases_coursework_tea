@@ -14,8 +14,8 @@ open class GameConfig {
             setOf(MachineInstance(
                 id = 1,
                 machineId = 1,
-                areaX = 0,
-                areaY = 0
+                areaX = 400,
+                areaY = 400
         ))
 
 }
