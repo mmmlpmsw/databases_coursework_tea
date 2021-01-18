@@ -22,17 +22,26 @@
   import AreaThing from "$src/game/area/thing/AreaThing";
   import LoginDialog from '$src/components/LoginDialog';
   import EventBusConstants from "$src/util/EventBusConstants";
+  import MachineAreaThing from "$src/game/area/thing/MachineAreaThing";
+  import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
+  import MachineInstance from "$src/game/model/MachineInstance";
 
   export default {
     data: function() {
       return {
         dialogMode: false,
         eventBus: new Vue(),
-        renderer: null
+        renderer: null,
+        instanceByAreaThing: {}
       }
     },
     methods: {
       initGame() {
+        for (const [key, value] of Object.entries(this.$store.state.game.machineInstances)) {
+          let thing = new MachineAreaThing(this.$store, value);
+          this.instanceByAreaThing[thing] = value;
+          this.renderer.addAreaThing(thing);
+        }
         this.startEventListening();
       },
       startRenderingScene() {
@@ -47,7 +56,29 @@
         // todo message for server
       },
       onAreaThingMovingRequest(areaThing) {
-        // todo сюда должны прийти готовые координаты и отправка на сервер. предполагается, что areaThing уже сдвинут в нужное место
+        let instance = this.instanceByAreaThing[areaThing];
+        this.$api.post(
+          '/area/position',
+          new MachineInstancePositionDto(
+            instance.id,
+            Math.floor(areaThing.inGameX),
+            Math.floor(areaThing.inGameY)
+          ),
+          () => {
+            this.$store.commit("setMachineInstancePosition", {
+              instanceId: instance.id,
+              x: areaThing.inGameX,
+              y: areaThing.inGameY
+            })
+          },
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+            // revert to old position
+            areaThing.inGameX = instance.areaX;
+            areaThing.inGameY = instance.areaY;
+          }
+        );
         console.log("Area thing moving requested"); // todo
         console.log(areaThing);
       },
@@ -62,6 +93,7 @@
     created() {
       this.eventBus.$on(EventBusConstants.DIALOG_OPENED, () => this.dialogMode = true);
       this.eventBus.$on(EventBusConstants.DIALOG_CLOSED, () => this.dialogMode = false);
+      this.eventBus.$on(EventBusConstants.LOGGED_IN, this.initGame);
     },
     mounted() {
       this.renderer = this.$refs['renderer'];

@@ -14,6 +14,6 @@ export default class Bootstrap {
     public circuitBoards: CircuitBoard[],
     public machineInstances: MachineInstance[],
     public teaInstances: TeaInstance[],
-    public circuitBoardInstance: CircuitBoardInstance[]
+    public circuitBoardInstances: CircuitBoardInstance[]
   ) {}
 }

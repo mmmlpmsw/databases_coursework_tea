@@ -178,6 +178,7 @@
       },
       onBootstrapSuccess(bootstrap) {
         this.$store.commit('doBootstrap', BootstrapDtoMapper.fromDto(bootstrap));
+        this.eventBus.$emit(EventBusConstants.LOGGED_IN);
         this.close();
       },
       close() {
