@@ -1,5 +1,6 @@
 <template>
   <div class="factory_page">
+    <user-money-component/>
     <game-specific-renderer class="renderer"
                             ref="renderer"
                             :class="{ dialog_mode: dialogMode }"
@@ -26,6 +27,7 @@
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
   import MachineInstance from "$src/game/model/MachineInstance";
   import MachineInstanceRemoveRequestDto from "$src/api/dto/request/MachineInstanceRemoveRequestDto";
+  import UserMoneyComponent from "$src/components/UserMoneyComponent";
 
   export default {
     data: function() {
@@ -111,6 +113,7 @@
       this.startRenderingScene();
     },
     components: {
+      UserMoneyComponent,
       GameSpecificRenderer,
       LoginDialog
     }
