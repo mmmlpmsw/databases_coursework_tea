@@ -1,8 +1,13 @@
 package ru.itmo.db.coursework.orm.entity
 
+import org.hibernate.annotations.Cache
+import org.hibernate.annotations.CacheConcurrencyStrategy
+import java.io.Serializable
 import javax.persistence.*
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "machine_recipe")
 data class MachineRecipeEntity (
         @Id
@@ -12,7 +17,7 @@ data class MachineRecipeEntity (
         @Column(name = "machine_id")
         var machineId: Int? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne
         @JoinColumn(name = "circuit_board_id")
         var circuitBoard: CircuitBoardEntity? = null,
 
@@ -26,6 +31,7 @@ data class MachineRecipeEntity (
         var price: Long? = null,
 
         @OneToMany
+        @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
         @JoinColumn(name = "machine_recipe_id")
         var teas: Set<MachineRecipeTeaEntity> = emptySet()
-)
+): Serializable

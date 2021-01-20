@@ -36,9 +36,16 @@ open class AppConfig {
     @Bean
     open fun hibernateProperties(): Properties {
         val properties = Properties()
+        properties["hibernate.jdbc.batch_size"] = "100"
         properties["hibernate.dialect"] = env.getRequiredProperty("db.hibernate.dialect")
         properties["hibernate.show_sql"] = env.getRequiredProperty("db.hibernate.show_sql")
         properties["hibernate.hbm2ddl.auto"] = env.getRequiredProperty("db.hibernate.hbm2ddl.auto")
+        properties["hibernate.cache.provider_class"] = "org.hibernate.cache.EhCacheProvider"
+        properties["hibernate.cache.region.factory_class"] = "org.hibernate.cache.ehcache.EhCacheRegionFactory"
+        properties["hibernate.query.in_clause_parameter_padding"] = "true"
+        properties["hibernate.cache.use_structured_entries"] = "true"
+        properties["hibernate.cache.use_second_level_cache"] = "true"
+        properties["hibernate.cache.use_query_cache"] = "true"
         return properties
     }
 
