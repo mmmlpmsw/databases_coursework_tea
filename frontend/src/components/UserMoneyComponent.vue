@@ -1,17 +1,16 @@
 <template>
-    <div v-if="this.$store.state.user !== null">
-      <p>
-        {{this.$store.state.user.login}}
-        {{this.$store.state.user.money}}
-      </p>
-
-    </div>
+  <div v-if="this.$store.state.user">
+    <p>
+      {{this.$store.state.user.login}}
+      {{this.$store.state.user.money}}
+    </p>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "UserMoneyComponent",
-    }
+  export default {
+
+  }
 </script>
 
 <style scoped>

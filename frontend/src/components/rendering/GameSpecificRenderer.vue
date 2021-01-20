@@ -20,7 +20,7 @@
   import AreaThingControls from "$src/game/area/thing/controls/AreaThingControls";
   import StaticBackgroundRenderer from "$src/game/environment/StaticBackgroundRenderer";
   import {SkyRenderer} from "$src/game/environment/SkyRenderer";
-  import StaticBuildingRenderer from "$src/game/area/StaticBuildingRenderer";
+  import StaticBuildingRenderer from "$src/game/environment/StaticBuildingRenderer";
   import CloudsRenderer from "$src/game/environment/CloudsRenderer";
   import SwitchingInteractive from "$src/game/SwitchingInteractive";
   import AreaThingMover from "$src/game/area/thing/moving/AreaThingMover";

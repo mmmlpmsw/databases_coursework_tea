@@ -61,7 +61,7 @@ export default class CloudsRenderer extends Layer {
       let cloud = new CloudRenderer(
         CloudsRenderer.random(this.minX - img.width, this.maxX),
         CloudsRenderer.random(this.minY, this.maxY),
-        CloudsRenderer.random(1, 1.5),
+        CloudsRenderer.random(2, 2.5),
         CloudsRenderer.random(this.minParallax, this.maxParallax),
         img
       );
