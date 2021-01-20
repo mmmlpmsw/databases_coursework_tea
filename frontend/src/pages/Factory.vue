@@ -1,6 +1,5 @@
 <template>
   <div class="factory_page">
-    <user-money-component/>
     <game-specific-renderer class="renderer"
                             ref="renderer"
                             :class="{ dialog_mode: dialogMode }"
@@ -8,6 +7,11 @@
                             :area-width="1000"
                             :area-height="1000"
                             :max-fps="60"/>
+    <div class="hud_container_wr">
+      <container class="hud_container">
+        <user-money/>
+      </container>
+    </div>
     <login-dialog :event-bus="eventBus"/>
   </div>
 </template>
@@ -27,7 +31,8 @@
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
   import MachineInstance from "$src/game/model/MachineInstance";
   import MachineInstanceRemoveRequestDto from "$src/api/dto/request/MachineInstanceRemoveRequestDto";
-  import UserMoneyComponent from "$src/components/UserMoneyComponent";
+  import UserMoney from "$src/components/UserMoney";
+  import Container from "$src/components/Container"
 
   export default {
     data: function() {
@@ -113,9 +118,10 @@
       this.startRenderingScene();
     },
     components: {
-      UserMoneyComponent,
+      UserMoney,
       GameSpecificRenderer,
-      LoginDialog
+      LoginDialog,
+      Container
     }
   }
 </script>
@@ -136,6 +142,27 @@
     &.dialog_mode {
       pointer-events: none;
       filter: brightness(0.75);
+    }
+  }
+
+  .hud_container_wr {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+
+    pointer-events: none;
+    * {
+      pointer-events: all;
+    }
+  }
+
+  .hud_container {
+    pointer-events: none;
+
+    * {
+      pointer-events: all;
     }
   }
 </style>
