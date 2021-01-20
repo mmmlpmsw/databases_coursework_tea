@@ -7,11 +7,16 @@
                             :area-width="1000"
                             :area-height="1000"
                             :max-fps="60"/>
+
     <div class="hud_container_wr">
       <container class="hud_container">
         <user-money/>
+        <game-hud-button-panel :event-bus="eventBus"/>
       </container>
     </div>
+
+    <shop-dialog :event-bus="eventBus"/>
+    <inventory-dialog :event-bus="eventBus"/>
     <login-dialog :event-bus="eventBus"/>
   </div>
 </template>
@@ -31,8 +36,12 @@
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
   import MachineInstance from "$src/game/model/MachineInstance";
   import MachineInstanceRemoveRequestDto from "$src/api/dto/request/MachineInstanceRemoveRequestDto";
-  import UserMoney from "$src/components/UserMoney";
-  import Container from "$src/components/Container"
+  import UserMoney from "$src/components/game/UserMoney";
+  import Container from "$src/components/Container";
+  import Button from "$src/components/Button";
+  import GameHudButtonPanel from "$src/components/game/GameHudButtonsPanel"
+  import ShopDialog from "$src/components/dialogs/ShopDialog";
+  import InventoryDialog from "$src/components/dialogs/InventoryDialog";
 
   export default {
     data: function() {
@@ -118,10 +127,14 @@
       this.startRenderingScene();
     },
     components: {
+      InventoryDialog,
+      ShopDialog,
       UserMoney,
       GameSpecificRenderer,
+      GameHudButtonPanel,
       LoginDialog,
-      Container
+      Container,
+      GameButton: Button
     }
   }
 </script>

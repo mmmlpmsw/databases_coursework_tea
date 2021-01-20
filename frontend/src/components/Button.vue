@@ -12,6 +12,7 @@
 
 <style scoped lang="scss">
   button {
+    font-size: 20px;
     padding: 10px 15px;
     border-radius: 4px;
     border: 1px #bbb solid;
