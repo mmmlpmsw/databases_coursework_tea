@@ -1,57 +1,59 @@
 <template>
-  <transition-expand>
-    <div class="login_dialog" v-if="enabled">
-      <loading-screen-container :loading="loading">
+  <div class="login_dialog_wrapper" :class="{ enabled }">
+    <transition-expand>
+      <div class="login_dialog" v-if="enabled">
+        <loading-screen-container :loading="loading">
 
-        <form class="login_prompt vertical" v-if="mode === 'login'">
-          <div class="title">Вход</div>
+          <form class="login_prompt vertical" v-if="mode === 'login'">
+            <div class="title">Вход</div>
 
-          <transition-expand>
-            <message-panel red v-if="commonErrorHint">
-              {{commonErrorHint}}
-            </message-panel>
-          </transition-expand>
+            <transition-expand>
+              <message-panel red v-if="commonErrorHint">
+                {{commonErrorHint}}
+              </message-panel>
+            </transition-expand>
 
-          <transition-expand>
-            <message-panel green v-if="commonInfoHint">
-              {{commonInfoHint}}
-            </message-panel>
-          </transition-expand>
+            <transition-expand>
+              <message-panel green v-if="commonInfoHint">
+                {{commonInfoHint}}
+              </message-panel>
+            </transition-expand>
 
-          <text-input class="input"
-                      v-for="field in login.form"
-                      :key="field.id"
-                      :hint="field.hint"
-                      :type="field.type"
-                      v-model="field.value"
-                      :error-hint="field.errorHint"/>
-          <game-button class="button" type="submit" green @click="loginClicked">Играть!</game-button>
-          <a class="link" @click="mode = 'registration'">Регистрация</a>
-        </form>
+            <text-input class="input"
+                        v-for="field in login.form"
+                        :key="field.id"
+                        :hint="field.hint"
+                        :type="field.type"
+                        v-model="field.value"
+                        :error-hint="field.errorHint"/>
+            <game-button class="button" type="submit" green @click="loginClicked">Играть!</game-button>
+            <a class="link" @click="mode = 'registration'">Регистрация</a>
+          </form>
 
-        <form class="registration_prompt vertical" v-if="mode === 'registration'">
-          <div class="title">Регистрация</div>
+          <form class="registration_prompt vertical" v-if="mode === 'registration'">
+            <div class="title">Регистрация</div>
 
-          <transition-expand>
-            <message-panel red v-if="commonErrorHint">
-              {{commonErrorHint}}
-            </message-panel>
-          </transition-expand>
+            <transition-expand>
+              <message-panel red v-if="commonErrorHint">
+                {{commonErrorHint}}
+              </message-panel>
+            </transition-expand>
 
-          <text-input class="input"
-                      v-for="field in registration.form"
-                      :key="field.id"
-                      :type="field.type"
-                      :hint="field.hint"
-                      v-model="field.value"
-                      :error-hint="field.errorHint"/>
-          <game-button class="button" type="submit" green @click="registerClicked">Зарегистрироваться!</game-button>
-          <a class="link" @click="mode = 'login'">У меня уже есть аккаунт</a>
-        </form>
+            <text-input class="input"
+                        v-for="field in registration.form"
+                        :key="field.id"
+                        :type="field.type"
+                        :hint="field.hint"
+                        v-model="field.value"
+                        :error-hint="field.errorHint"/>
+            <game-button class="button" type="submit" green @click="registerClicked">Зарегистрироваться!</game-button>
+            <a class="link" @click="mode = 'login'">У меня уже есть аккаунт</a>
+          </form>
 
-      </loading-screen-container>
-    </div>
-  </transition-expand>
+        </loading-screen-container>
+      </div>
+    </transition-expand>
+  </div>
 </template>
 
 <script>
@@ -245,14 +247,26 @@
 </script>
 
 <style lang="scss" scoped>
+  .login_dialog_wrapper {
+    pointer-events: all;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:not(.enabled) {
+      pointer-events: none;
+    }
+  }
+
   .login_dialog {
     border-radius: 10px;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.25);
-    transform: translate(-50%, -50%);
-    left: 50%;
-    top: 50%;
     background: white;
-    position: fixed;
     padding: 30px;
   }
 
