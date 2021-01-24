@@ -16,5 +16,12 @@ interface MachineInstanceRepository: CrudRepository<MachineInstanceEntity, Int> 
 
     @Transactional
     @Procedure(procedureName = "buy_machine")
+    /**
+     * Сhecks whether the user has enough money to buy this machine.
+     * If it is enough, it will be inserted into the table
+     * and the amount of the user's money will be reduced.
+     * There is no check for coordinates here, it will be performed in Spring.
+     * !!! Call the function only if this check has passed !!!
+     */
     fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Boolean
 }
