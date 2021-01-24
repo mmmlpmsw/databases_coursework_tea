@@ -39,19 +39,19 @@ class MachineInstanceOrmService @Autowired constructor(
 
     // todo this should be in service level
     private fun validateMachinePosition(instance: MachineInstanceEntity, allInstances: Collection<MachineInstanceEntity>): Boolean {
-        val topX = instance.areaX!!
-        val leftY = instance.areaY!!
-        val bottomX = instance.areaX!! + instance.machine!!.sizeX!!
-        val rightY = instance.areaY!! + instance.machine!!.sizeY!!
-        return  topX >= 0 || bottomX < 1000 || leftY >= 0 || rightY < 1000 ||
+        val leftX = instance.areaX!!
+        val topY = instance.areaY!!
+        val rightX = instance.areaX!! + instance.machine!!.sizeX!!
+        val bottomY = instance.areaY!! + instance.machine!!.sizeY!!
+        return  leftX >= 0 || rightX < 1000 || topY >= 0 || bottomY < 1000 ||
                 allInstances.stream().anyMatch {
                     instance != it
                             && (
-                                it.areaX in topX until bottomX ||
-                                        topX in it.areaX!! until it.areaX!! + it.machine!!.sizeX!!
+                                it.areaX in leftX until rightX ||
+                                        leftX in it.areaX!! until it.areaX!! + it.machine!!.sizeX!!
                             ) && (
-                                it.areaY in leftY until rightY ||
-                                        leftY in it.areaY!! until it.areaY!! + it.machine!!.sizeY!!
+                                it.areaY in topY until bottomY ||
+                                        topY in it.areaY!! until it.areaY!! + it.machine!!.sizeY!!
                             )
                 }
     }

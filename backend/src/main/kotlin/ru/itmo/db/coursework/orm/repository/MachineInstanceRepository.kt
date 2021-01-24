@@ -13,4 +13,8 @@ interface MachineInstanceRepository: CrudRepository<MachineInstanceEntity, Int> 
     @Transactional
     @Procedure(procedureName = "update_machine_instance_coordinates")
     fun setInstancePosition(instanceId: Int, x: Int, y: Int)
+
+    @Transactional
+    @Procedure(procedureName = "buy_machine")
+    fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Boolean
 }
