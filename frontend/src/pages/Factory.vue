@@ -154,7 +154,7 @@
     /* used */
     &.dialog_mode {
       pointer-events: none;
-      filter: brightness(0.75);
+      filter: brightness(0.6);
     }
   }
 

@@ -69,8 +69,8 @@
     border-radius: 10px;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.25);
     background: white;
-    height: 600px;
-    width: calc(30vw + 400px);
+    height: 700px;
+    width: calc(20vw + 650px);
     display: flex;
     position: relative;
     flex-direction: column;
@@ -88,15 +88,18 @@
 
       .items_container {
         background-color: #f3f3f3;
+        overflow-y: auto;
         padding: 20px;
         flex: 1;
       }
 
       .item_info {
+        box-sizing: content-box;
+        overflow-y: auto;
         background-color: #f9f9f9;
         border-left: 1px solid #e8e8e8;
         padding: 20px;
-        width: 320px;
+        width: 300px;
       }
     }
   }
