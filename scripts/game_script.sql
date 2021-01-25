@@ -250,7 +250,7 @@ $$
         cur_model_width integer := 0;
         cur_model_height integer := 0;
     begin
-        if !(left_x >= 0 or right_x < 1000 or top_y >= 0 or bottom_y < 1000) then
+        if not(left_x >= 0 or right_x < 1000 or top_y >= 0 or bottom_y < 1000) then
             return false;
         end if;
         select count(*) from circuit_board_instance where user_id = _user_id into machines_count;
@@ -289,8 +289,8 @@ $$
         select price from machine where id = _machine_id into machine_price;
         select machine.size_x from machine where id = _machine_id into machine_w;
         select machine.size_y from machine where id = _machine_id into machine_h;
-        perform check_coordinates(_user_id, _x, _y, machine_w, machine_h) into check_coords;
-        if (!check_coords) then return -1;
+        select check_coordinates(_user_id, _x, _y, machine_w, machine_h) into check_coords;
+        if (check_coords is FALSE) then return -1;
         else
             if (money_amount - machine_price >= 0) then
                 perform insert_playing_field_item(_user_id, _machine_id, _x, _y);
