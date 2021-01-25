@@ -280,12 +280,16 @@ $$
     declare
         money_amount integer := 0;
         machine_price bigint := 0;
+        machine_w integer := 0;
+        machine_h integer := 0;
         instance_id integer := 0;
         check_coords boolean := false;
     begin
         select money from "user" where id = _user_id into money_amount;
         select price from machine where id = _machine_id into machine_price;
-        perform check_coordinates(_user_id, _machine_id, _x, _y) into check_coords;
+        select machine.size_x from machine where id = _machine_id into machine_w;
+        select machine.size_y from machine where id = _machine_id into machine_h;
+        perform check_coordinates(_user_id, _x, _y, machine_w, machine_h) into check_coords;
         if (!check_coords) then return -1;
         else
             if (money_amount - machine_price >= 0) then
