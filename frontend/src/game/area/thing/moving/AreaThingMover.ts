@@ -65,6 +65,10 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
       intersections.forEach(i => ctx.fillRect(i.inGameX, i.inGameY, i.inGameSizeX, i.inGameSizeY));
       ctx.restore();
 
+      for (let i = 0; i < this.allAreaThings.length; i++)
+        if (this.allAreaThings[i] != this.target)
+          this.allAreaThings[i].render(ctx, i);
+
       ctx.globalAlpha = 0.5;
       this.target.render(ctx, idx);
 

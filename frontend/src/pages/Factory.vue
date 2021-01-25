@@ -32,7 +32,6 @@
   import AreaThing from "$src/game/area/thing/AreaThing";
   import LoginDialog from '$src/components/dialogs/LoginDialog';
   import EventBusConstants from "$src/util/EventBusConstants";
-  import MachineAreaThing from "$src/game/area/thing/MachineAreaThing";
   import MachineInstancePositionDto from "$src/api/dto/request/MachineInstancePositionDto";
   import MachineInstance from "$src/game/model/MachineInstance";
   import MachineInstanceRemoveRequestDto from "$src/api/dto/request/MachineInstanceRemoveRequestDto";
@@ -42,6 +41,7 @@
   import GameHudButtonPanel from "$src/components/game/GameHudButtonsPanel"
   import ShopDialog from "$src/components/dialogs/ShopDialog";
   import InventoryDialog from "$src/components/dialogs/InventoryDialog";
+  import MachineAreaThingFactory, {MachineAreaThing} from "$src/game/area/thing/MachineAreaThingFactory";
 
   export default {
     data: function() {
@@ -49,14 +49,12 @@
         dialogMode: false,
         eventBus: new Vue(),
         renderer: null,
-        instanceByAreaThing: {}
       }
     },
     methods: {
       initGame() {
         for (const [key, value] of Object.entries(this.$store.state.game.machineInstances)) {
-          let thing = new MachineAreaThing(this.$store, value);
-          this.instanceByAreaThing[thing] = value;
+          let thing = MachineAreaThingFactory.createInstance(key, this.$store);
           this.renderer.addAreaThing(thing);
         }
         this.startEventListening();
@@ -69,7 +67,7 @@
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onAreaThingMovingRequest);
       },
       onAreaThingRemovalRequest(areaThing) {
-        let instance = this.instanceByAreaThing[areaThing];
+        let instance = areaThing.instance;  // Workaround
         this.renderer.removeAreaThing(areaThing);
         this.$api.post(
           '/area/remove',
@@ -84,7 +82,7 @@
         );
       },
       onAreaThingMovingRequest(areaThing) {
-        let instance = this.instanceByAreaThing[areaThing];
+        let instance = areaThing.instance; // Workaround
         this.$api.post(
           '/area/position',
           new MachineInstancePositionDto(
