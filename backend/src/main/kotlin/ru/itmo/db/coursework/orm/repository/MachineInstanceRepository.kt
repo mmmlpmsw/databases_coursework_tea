@@ -22,6 +22,7 @@ interface MachineInstanceRepository: CrudRepository<MachineInstanceEntity, Int> 
      * and the amount of the user's money will be reduced.
      * There is no check for coordinates here, it will be performed in Spring.
      * !!! Call the function only if this check has passed !!!
+     * Returns id if succeed and -1 if failed
      */
-    fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Boolean
+    fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Int
 }
