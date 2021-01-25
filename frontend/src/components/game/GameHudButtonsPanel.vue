@@ -1,6 +1,7 @@
 <template>
   <div class="game_button_panel" v-if="$store.state.user">
-    <game-button @click="openShopDialog">Магазин</game-button>
+    <game-button @click="openMachineShopDialog">Магазин машин</game-button>
+    <game-button @click="openTeaShopDialog">Магазин чаёв</game-button>
     <game-button @click="openInventoryDialog">Инвентарь</game-button>
   </div>
 </template>
@@ -16,8 +17,11 @@
       eventBus: Vue
     },
     methods: {
-      openShopDialog() {
-        this.eventBus.$emit(EventBusConstants.REQUEST_SHOP_DIALOG);
+      openMachineShopDialog() {
+        this.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_SHOP_DIALOG);
+      },
+      openTeaShopDialog() {
+        this.eventBus.$emit(EventBusConstants.REQUEST_TEA_SHOP_DIALOG);
       },
       openInventoryDialog() {
         this.eventBus.$emit(EventBusConstants.REQUEST_INVENTORY_DIALOG);

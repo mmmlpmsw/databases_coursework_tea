@@ -2,6 +2,7 @@ import AreaThing from "$src/game/area/thing/AreaThing";
 import {Store} from "vuex";
 import GameState from "$src/game/model/GameState";
 import Machine from "$src/game/model/Machine";
+import EventBusConstants from "$src/util/EventBusConstants";
 
 function getAreaThingImageUrl(id, index) {
   return `assets/image/game/area/things/id${id}/${index}.png`;
@@ -77,12 +78,29 @@ export default class MachineAreaThingFactory {
     let machine = store.state.game.machines[instance.machineId];
     let thing = new AreaThing(instance.areaX, instance.areaY, machine.sizeX, machine.sizeY);
     thing.render = RENDERER_GENERATOR_BY_MACHINE_ID[instance.machineId](thing);
+    let superClickFn = thing.processMouseClick;
+    thing.processMouseClick = (x, y) => {
+      if (thing.selected && thing.eventBus && thing['instance'])
+        thing.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_RECIPES_DIALOG, thing['instance'].id);
+      else
+        superClickFn.apply(thing, [x, y]);
+      return false;
+    };
+    thing['instance'] = instance;
     return thing;
   }
 
   public static createAnonymousInstance(machine: Machine, areaX: number, areaY: number) {
     let thing = new AreaThing(areaX, areaY, machine.sizeX, machine.sizeY);
     thing.render = RENDERER_GENERATOR_BY_MACHINE_ID[machine.id](thing);
+    let superClickFn = thing.processMouseClick;
+    thing.processMouseClick = (x, y) => {
+      if (thing.selected && thing.eventBus && thing['instance'])
+        thing.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_RECIPES_DIALOG, thing['instance'].id);
+      else
+        superClickFn.apply(thing, [x, y]);
+      return false;
+    };
     return thing;
   }
 }

@@ -196,7 +196,7 @@ $$
         money_amount integer := 0;
         tea_price bigint := 0;
     begin
-        if _amount <= 0 then
+        if _amount < 0 then
             return false;
         end if;
         select money from "user" where id = _user_id into money_amount;
@@ -204,8 +204,9 @@ $$
         if (money_amount - tea_price * _amount >= 0) then
             if exists(select * from tea_instance where user_id = _user_id and tea_id = _tea_id) then
                 update tea_instance set amount = amount - _amount where user_id = _user_id and tea_id = _tea_id;
+            else
+                insert into tea_instance (user_id, tea_id, amount) values (_user_id, _tea_id, _amount);
             end if;
-            insert into tea_instance (user_id, tea_id, amount) values (_user_id, _tea_id, _amount);
             update "user" set money = money_amount - tea_price * _amount where id = _user_id;
             return true;
         else

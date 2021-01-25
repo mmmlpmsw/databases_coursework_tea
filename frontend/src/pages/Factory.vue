@@ -16,8 +16,10 @@
     </div>
 
     <shop-dialog :event-bus="eventBus"/>
+    <tea-shop-dialog :event-bus="eventBus"/>
     <inventory-dialog :event-bus="eventBus"/>
     <login-dialog :event-bus="eventBus"/>
+    <machine-recipes-dialog :event-bus="eventBus"/>
   </div>
 </template>
 
@@ -42,7 +44,9 @@
   import ShopDialog from "$src/components/dialogs/ShopDialog";
   import InventoryDialog from "$src/components/dialogs/InventoryDialog";
   import MachineAreaThingFactory, {MachineAreaThing} from "$src/game/area/thing/MachineAreaThingFactory";
-  import BuyMachineDto from "$src/api/dto/request/BuyMachineDto";
+  import BuyMachineRequestDto from "$src/api/dto/request/BuyMachineRequestDto";
+  import MachineRecipesDialog from "$src/components/dialogs/MachineRecipesDialog";
+  import TeaShopDialog from "$src/components/dialogs/TeaShopDialog";
 
   export default {
     data: function() {
@@ -67,6 +71,7 @@
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_REMOVAL_EVENT, this.onAreaThingRemovalRequest);
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onAreaThingMovingRequest);
         this.eventBus.$on(EventBusConstants.MACHINE_PURCHASE_CONFIRMED, this.onMachinePurchaseConfirm);
+        this.eventBus.$on(EventBusConstants.REQUEST_MACHINE_RECIPE_START, this.onMachineRecipeStartRequest);
       },
       onAreaThingRemovalRequest(areaThing) {
         let instance = areaThing.instance;  // Workaround
@@ -114,7 +119,7 @@
 
         this.$api.post(
           '/area/buy',
-          new BuyMachineDto(machineId, inGameX, inGameY),
+          new BuyMachineRequestDto(machineId, inGameX, inGameY),
           (response) => {
             thing.instance = response;
             this.$store.commit('addMachineInstance', response);
@@ -126,6 +131,9 @@
             this.$store.commit('addUserMoney', this.$store.state.game.machines[machineId].price);
           }
         );
+      },
+      onMachineRecipeStartRequest(instanceId, recipeId) {
+
       },
       render() {
         this.eventBus.$emit('render');
@@ -146,6 +154,8 @@
       this.startRenderingScene();
     },
     components: {
+      TeaShopDialog,
+      MachineRecipesDialog,
       InventoryDialog,
       ShopDialog,
       UserMoney,

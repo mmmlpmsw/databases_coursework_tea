@@ -16,6 +16,8 @@
 
 <style lang="scss" scoped>
   .loading_screen_wrapper.loading {
+    position: relative;
+
     .loading_screen_container {
       opacity: .5;
       pointer-events: none;

@@ -2,6 +2,7 @@ import Vuex, {Store} from "vuex";
 import Bootstrap from "$src/game/model/Bootstrap";
 import GameState from "$src/game/model/GameState";
 import MachineInstance from "$src/game/model/MachineInstance";
+import TeaInstance from "$src/game/model/TeaInstance";
 
 export default function createGameStore(): Store<GameState> {
   return new Vuex.Store({
@@ -32,6 +33,12 @@ export default function createGameStore(): Store<GameState> {
       },
       addMachineInstance(state: GameState, instance: MachineInstance) {
         state.game.machineInstances[instance.id] = instance;
+      },
+      buyTeaInstance(state: GameState, instance: TeaInstance) {
+        let current = state.game.teaInstances[instance.teaId] || new TeaInstance(instance.teaId, 0);
+        current.amount += instance.amount;
+        state.game.teaInstances[instance.teaId] = current;
+        state.user.money -= state.game.teas[instance.teaId].price * instance.amount;
       }
     }
   })

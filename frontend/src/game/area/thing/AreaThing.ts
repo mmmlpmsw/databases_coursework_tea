@@ -4,6 +4,7 @@
 import Renderable from "$src/game/Renderable";
 import Interactive from "$src/game/Interactive";
 import * as Vue from "vue/types/umd";
+import MachineInstance from "$src/game/model/MachineInstance";
 
 export default class AreaThing extends Interactive implements Renderable {
   protected static AREA_TRANSFORMATION = new DOMMatrix()
@@ -33,6 +34,7 @@ export default class AreaThing extends Interactive implements Renderable {
 
   public eventBus: Vue = null;
   public selected = false;
+  public instance: MachineInstance = null;
 
   constructor(inGameX: number, inGameY: number, inGameSizeX: number, inGameSizeY: number) {
     super(0, 0, 0, 0);

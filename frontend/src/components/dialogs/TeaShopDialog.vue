@@ -7,13 +7,13 @@
       <div class="items">
 
         <div  class="item"
-              v-for="item in $store.state.game.machines"
+              v-for="item in $store.state.game.teas"
               :class="{
                 too_expensive: item.price > $store.state.user.money,
                 selected: selectedItem === item
               }"
               @click="selectedItem = item">
-          <div class="image" :style="{ backgroundImage: `url('assets/image/game/area/things/id${item.id}/0.png')` }"></div>
+          <div class="image" :style="{ backgroundImage: `url('assets/image/game/teas/id${item.id}/image.png')` }"></div>
           <div class="title">{{ item.name }}</div>
           <div class="price">
             <div class="money_icon_wrapper">
@@ -28,51 +28,31 @@
     <template v-slot:info>
       <div class="item_info_wrapper" v-if="selectedItem">
         <div class="item_info_scrollable">
-          <div class="image" :style="{ backgroundImage: `url('assets/image/game/area/things/id${selectedItem.id}/0.png')` }"></div>
+          <div class="image" :style="{ backgroundImage: `url('assets/image/game/teas/id${selectedItem.id}/image.png')` }"></div>
           <div class="title">{{ selectedItem.name }}</div>
-          <div class="recipes">
-            <div class="recipes_title">Может произвести</div>
-            <div class="recipe" v-for="recipe in selectedItem.recipes" :key="recipe.id">
-              <div class="recipe_body">
-                <div class="recipe_ingredients">
-                  <bubble-hint-tea-icon class="recipe_ingredient" v-for="(ingredient, amount) in recipe.teas" :key="ingredient.id" :id="ingredient" :amount="amount"/>
-                </div>
-                <div class="recipe_arrow">
-                  <img class="recipe_arrow_icon" src="assets/image/game/shop/right_arrow.svg" alt="Right arrow icon">
-                </div>
-                <bubble-hint-circuit-board-icon class="recipe_result" :id="recipe.circuitBoardId" :amount="recipe.circuitBoardAmount"/>
-              </div>
-              <div class="recipe_footer">
-                <div class="recipe_cost" v-if="recipe.price !== 0">
-<!--                  TODO отдельный компонент-->
-                  <div class="price">
-                    <div class="money_icon_wrapper">
-                      <img class="money_icon" src="assets/image/game/money_icon.svg">
-                    </div>
-                    {{ recipe.price }}
-                  </div>
-                </div>
-                <div class="recipe_time">
-                  {{ recipeTimeCost(recipe.workTime) }}
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="description">{{ selectedItem.description }}</div>
+          <div class="in_inventory" v-if="$store.state.game.teaInstances[selectedItem.id]">Имеется {{$store.state.game.teaInstances[selectedItem.id].amount}} шт. в инвентаре</div>
         </div>
         <div class="item_info_bottom">
-          <game-button green class="item_info_buy_button" v-if="selectedItem.price <= $store.state.user.money" @click="onBuyButtonClick">
-            Приобрести за
-<!--            TODO отдельный компонент-->
-            <div class="price">
-              <div class="money_icon_wrapper">
-                <img class="money_icon" src="assets/image/game/money_icon.svg">
-              </div>
-              {{ selectedItem.price }}
+          <loading-screen-container :loading="loading">
+            <label>
+              Количество:
+              <input type="number" min="1" v-model="selectedAmount">
+            </label>
+              <game-button green class="item_info_buy_button" v-if="selectedItem.price * selectedAmount <= $store.state.user.money" @click="onBuyButtonClick">
+                Приобрести за
+                <!--            TODO отдельный компонент-->
+                <div class="price">
+                  <div class="money_icon_wrapper">
+                    <img class="money_icon" src="assets/image/game/money_icon.svg">
+                  </div>
+                  {{ selectedItem.price * selectedAmount }}
+                </div>
+              </game-button>
+            <div v-else class="item_info_too_expensive">
+              Недостаточно тикоинов, чтобы приобрести
             </div>
-          </game-button>
-          <div v-else class="item_info_too_expensive">
-            Недостаточно тикоинов, чтобы приобрести
-          </div>
+          </loading-screen-container>
         </div>
       </div>
       <div v-else class="item_info_placeholder_wrapper">
@@ -91,33 +71,21 @@
   import Button from '$src/components/Button'
   import BubbleHintCircuitBoardIcon from "$src/components/game/BubbleHintCircuitBoardIcon";
   import BubbleHintTeaIcon from "$src/components/game/BubbleHintTeaIcon";
+  import BuyTeaRequestDto from "$src/api/dto/request/BuyTeaRequestDto";
+  import TeaInstance from "$src/game/model/TeaInstance";
+  import LoadingScreenContainer from "$src/components/LoadingScreenContainer";
 
   export default {
-    components: {BubbleHintTeaIcon, BubbleHintCircuitBoardIcon, CommonItemsDialog, GameButton: Button },
+    components: {LoadingScreenContainer, BubbleHintTeaIcon, BubbleHintCircuitBoardIcon, CommonItemsDialog, GameButton: Button },
     props: {
       eventBus: Vue
     },
     data() {
       return {
+        loading: false,
         enabled: false,
-        selectedItem: null
-      }
-    },
-    computed: {
-      recipeTimeCost() {
-        return seconds => {
-          let minutes = Math.floor(seconds/60);
-          let hours = Math.floor(minutes/60);
-          let result = seconds%60 + 'с';
-
-          if (minutes !== 0)
-            result = minutes%60 + 'м ';
-
-          if (hours !== 0)
-            result = hours + 'ч ';
-
-          return result
-        }
+        selectedItem: null,
+        selectedAmount: 1
       }
     },
     methods: {
@@ -130,12 +98,26 @@
         this.eventBus.$emit(EventBusConstants.DIALOG_CLOSED);
       },
       onBuyButtonClick() {
-        this.closeDialog();
-        this.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_PURCHASE_PLACEMENT, this.selectedItem.id);
+        this.loading = true;
+        if (this.selectedAmount < 0) {
+          this.selectedAmount = 0;
+        }
+        this.$api.post(
+          '/tea/buy',
+          new BuyTeaRequestDto(this.selectedItem.id, this.selectedAmount),
+          () => {
+            this.$store.commit('buyTeaInstance', new TeaInstance(this.selectedItem.id, +this.selectedAmount))
+          },
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+          },
+          () => this.loading = false
+        )
       }
     },
     mounted() {
-      this.eventBus.$on(EventBusConstants.REQUEST_MACHINE_SHOP_DIALOG, this.openDialog);
+      this.eventBus.$on(EventBusConstants.REQUEST_TEA_SHOP_DIALOG, this.openDialog);
     }
   }
 </script>
@@ -227,6 +209,11 @@
       .title {
         font-size: 24px;
         margin: 10px 0;
+      }
+
+      .in_inventory {
+        color: green;
+        font-weight: bold;
       }
     }
 

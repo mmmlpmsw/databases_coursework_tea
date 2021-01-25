@@ -3,20 +3,18 @@ package ru.itmo.db.coursework.orm.service
 import org.hibernate.service.spi.ServiceException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.itmo.db.coursework.model.MachineInstance
 import ru.itmo.db.coursework.orm.entity.MachineInstanceEntity
-import ru.itmo.db.coursework.orm.entity.TeaEntity
 import ru.itmo.db.coursework.orm.mapping.MachineInstanceEntityMapper
-import ru.itmo.db.coursework.orm.mapping.TeaInstanceEntityMapper
 import ru.itmo.db.coursework.orm.repository.MachineInstanceRepository
-import ru.itmo.db.coursework.service.UserService
+import java.util.stream.Collectors
 
 @Service
 class MachineInstanceOrmService @Autowired constructor(
         private val machineInstanceRepository: MachineInstanceRepository,
         private val machineInstanceEntityMapper: MachineInstanceEntityMapper,
-        private val teaInstanceOrmService: TeaInstanceOrmService,
-        private val userService: UserService
+        private val teaInstanceOrmService: TeaInstanceOrmService
 ) {
     fun getAllByUser(userId: Int) =
         machineInstanceRepository
@@ -69,30 +67,26 @@ class MachineInstanceOrmService @Autowired constructor(
                 }
     }
 
-    fun produceCircuitBoardInstance(instanceId: Int, recipeId: Int) {
+    @Transactional
+    fun produceCircuitBoardInstance(userId: Int, instanceId: Int, recipeId: Int) {
         val instance = machineInstanceRepository.findById(instanceId)
                 .orElseThrow{ ServiceException("no_such_machine_instance") }
         if (instance.currentRecipe != null)
             throw ServiceException("machine_in_use")
-        val recipeTeas = instance.machine!!.recipes.parallelStream()
-                .filter { data -> data.id == recipeId }
-                .findFirst().get().teas
-        recipeTeas.forEach { r ->
-            teaInstanceOrmService
-                    .getAllByUser(userService.getCurrentUser().id)
-                    .stream().map {
-                        data ->
-                        if (data.teaId ==  r.tea!!.id) {
-                            data.amount -= r.amount!!
-                            if (data.amount < 0)
-                                throw ServiceException("not_enough_tea")
-                            teaInstanceOrmService.save(data, userService.getCurrentUser().id)
-                        }
+        val userTeas = teaInstanceOrmService.getAllByUser(userId).stream()
+            .collect(Collectors.toMap({ it.teaId }, { it.amount }))
 
-                    }
-        }
-        machineInstanceRepository.produceCircuitBoardInstance(instanceId, recipeId)
-
-
+        if (
+            instance.machine!!.recipes
+            .stream()
+            .filter { it.id == recipeId }
+            .findFirst().get().teas
+            .stream().allMatch {
+                userTeas.containsKey(it?.tea?.id) && userTeas[it?.tea?.id]!! >= it?.amount!!
+            }
+        )
+            machineInstanceRepository.produceCircuitBoardInstance(userId, instanceId, recipeId)
+        else
+            throw ServiceException("not_enough_teas")
     }
 }
