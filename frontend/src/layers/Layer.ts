@@ -27,4 +27,8 @@ export default class Layer implements Renderable {
     if (index != -1)
       this.renderables.splice(index, 1);
   }
+
+  sort(compareFunction) {
+    this.renderables.sort(compareFunction);
+  }
 }

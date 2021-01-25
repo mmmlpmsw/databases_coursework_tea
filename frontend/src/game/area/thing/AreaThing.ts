@@ -11,6 +11,7 @@ export default class AreaThing extends Interactive implements Renderable {
     .rotate(45);
 
   public static DEV_DRAW_BOUNDS = false;
+  // todo все ивенты в EventBusConstants
   public static REQUEST_AREA_THING_CONTROLS_EVENT = "request_area_thing_controls";
   public static REQUEST_AREA_THING_REMOVAL_EVENT = "request_area_thing_removal";
   public static REQUEST_AREA_THING_MOVING_START_EVENT = "request_area_thing_moving_start";
@@ -93,7 +94,7 @@ export default class AreaThing extends Interactive implements Renderable {
     let t = AreaThing.AREA_TRANSFORMATION;
     ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
 
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.25)';
+    // ctx.fillStyle = 'rgba(0, 255, 0, 0.25)';
     ctx.lineWidth = 2;
 
     ctx.strokeStyle = "transparent";
@@ -105,7 +106,7 @@ export default class AreaThing extends Interactive implements Renderable {
       ctx.lineWidth = AreaThing.HOVER_LINE_WIDTH;
     }
 
-    ctx.fillRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
+    // ctx.fillRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
     ctx.strokeRect(this.inGameX, this.inGameY, this.inGameSizeX, this.inGameSizeY);
 
     ctx.restore();

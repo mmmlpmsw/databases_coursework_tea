@@ -114,6 +114,7 @@
         this.thingsInteractive.addInteractive(areaThing);
         this.areaThings.push(areaThing);
         areaThing.eventBus = this.eventBus;
+        this.sortAreaThings();
       },
       removeAreaThing(areaThing) {
         areaThing.eventBus = null;
@@ -127,13 +128,14 @@
         // Workaround
         setTimeout(() => {
           this.switchableThingsInteractive.switch("mover");
-          this.thingsLayer.removeRenderable(areaThing);
+          this.thingsLayer.enabled = false;
           this.areaThingMover.move(areaThing);
         }, 0);
       },
       onRequestAreaThingMovingDone(areaThing) {
         this.switchableThingsInteractive.switch("default");
-        this.thingsLayer.addRenderable(areaThing);
+        this.sortAreaThings();
+        this.thingsLayer.enabled = true;
       },
       onRequestAreaThingControls(areaThing) {
         let that = this;
@@ -144,6 +146,9 @@
         controls.hover = true; // Assuming mouse is on the controls object when areaThing is clicked
         this.areaHudLayer.addRenderable(controls);
         this.hudInteractive.addInteractive(controls);
+      },
+      sortAreaThings() {
+        this.thingsLayer.sort((a, b) => (a.inGameX*a.inGameX + a.inGameY*a.inGameY) - (b.inGameX*b.inGameX + b.inGameY*b.inGameY));
       }
     },
     components: {
