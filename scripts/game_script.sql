@@ -338,3 +338,29 @@ $$
         update "user" set money = money + _amount * model_price where id = _user_id;
     end
 $$ language plpgsql;
+
+create or replace function buy_circuit_board_instance (_user_id integer, _circuit_board_id integer, _amount integer)
+returns boolean as
+$$
+    declare
+        money_amount integer := 0;
+        curcuit_board_price bigint := 0;
+    begin
+        if _amount < 0 then
+            return false;
+        end if;
+        select money from "user" where id = _user_id into money_amount;
+        select sell_price from circuit_board where id = _circuit_board_id into curcuit_board_price;
+        if (money_amount - curcuit_board_price * _amount >= 0) then
+            if exists(select * from circuit_board_instance where user_id = _user_id and model_id = _circuit_board_id) then
+                update circuit_board_instance set amount = amount - _amount where user_id = _user_id and model_id = _circuit_board_id;
+            else
+                insert into circuit_board_instance (user_id, model_id, amount) values (_user_id, _circuit_board_id, _amount);
+            end if;
+            update "user" set money = money_amount - curcuit_board_price * _amount where id = _user_id;
+            return true;
+        else
+            return false;
+        end if;
+    end
+$$ language plpgsql;
