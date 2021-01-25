@@ -207,7 +207,7 @@ $$
         select money from "user" where id = _user_id into money_amount;
         select price from tea where id = _tea_id into tea_price;
         if (money_amount - tea_price * _amount >= 0) then
-            select insert_user_tea_instance(_user_id, _tea_id, _amount);
+            perform insert_user_tea_instance(_user_id, _tea_id, _amount);
             update "user" set money = money_amount - tea_price * _amount where id = _user_id;
             return true;
         else
@@ -311,6 +311,12 @@ $$
         select work_time from machine_recipe where id = _recipe_id into _recipe_time;
         update machine_instance set current_recipe_id = _recipe_id where id = _instance_id;
         update machine_instance set current_recipe_completion_time = now() + _recipe_time where id = _instance_id;
+        update tea_instance i
+        set amount = i.amount - (select amount from machine_recipe_tea recipe_tea
+            where machine_recipe_id = _recipe_id and recipe_tea.tea_id = i.tea_id)
+        where user_id = _user_id and tea_id = any(
+            select tea_id from machine_recipe_tea where machine_recipe_id = _recipe_id
+        );
         return 0;
     end;
 $$ language plpgsql;
