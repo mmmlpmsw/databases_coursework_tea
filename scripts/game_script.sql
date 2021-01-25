@@ -251,6 +251,9 @@ $$
         cur_model_width integer := 0;
         cur_model_height integer := 0;
     begin
+        if !(left_x >= 0 or right_x < 1000 or top_y >= 0 or bottom_y < 1000) then
+            return false;
+        end if;
         select count(*) from circuit_board_instance where user_id = _user_id into machines_count;
         if (machines_count = 0) then return true;
         else
