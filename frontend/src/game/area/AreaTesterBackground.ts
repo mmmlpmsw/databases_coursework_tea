@@ -21,20 +21,14 @@ export default class AreaTesterBackground implements Renderable {
     ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
     ctx.fillRect(0, 0, this.inGameSizeX, this.inGameSizeY);
 
-    ctx.strokeStyle = 'rgba(0, 0, 0, .5)';
-    ctx.fillStyle = 'black';
-    ctx.setLineDash([2, 2]);
-    ctx.lineWidth = 2;
-    ctx.textBaseline = "top";
-    ctx.font = '18px sans-serif';
+    ctx.strokeStyle = "grey";
+    ctx.lineWidth = 1;
 
     for (let i = 0; i <= this.inGameSizeX; i += GRID_STEP) {
       ctx.beginPath();
       ctx.moveTo(i, 0);
       ctx.lineTo(i, this.inGameSizeY);
       ctx.stroke();
-
-      ctx.fillText(i.toString(), i + TEXT_MARGIN, TEXT_MARGIN);
     }
 
     for (let i = 0; i <= this.inGameSizeY; i += GRID_STEP) {
@@ -42,9 +36,32 @@ export default class AreaTesterBackground implements Renderable {
       ctx.moveTo(0, i);
       ctx.lineTo(this.inGameSizeX, i);
       ctx.stroke();
-
-      ctx.fillText(i.toString(), TEXT_MARGIN, i + TEXT_MARGIN);
     }
+
+    // ctx.strokeStyle = 'rgba(0, 0, 0, .5)';
+    // ctx.fillStyle = 'black';
+    // ctx.setLineDash([2, 2]);
+    // ctx.lineWidth = 2;
+    // ctx.textBaseline = "top";
+    // ctx.font = '18px sans-serif';
+
+    // for (let i = 0; i <= this.inGameSizeX; i += GRID_STEP) {
+    //   ctx.beginPath();
+    //   ctx.moveTo(i, 0);
+    //   ctx.lineTo(i, this.inGameSizeY);
+    //   ctx.stroke();
+    //
+    //   ctx.fillText(i.toString(), i + TEXT_MARGIN, TEXT_MARGIN);
+    // }
+    //
+    // for (let i = 0; i <= this.inGameSizeY; i += GRID_STEP) {
+    //   ctx.beginPath();
+    //   ctx.moveTo(0, i);
+    //   ctx.lineTo(this.inGameSizeX, i);
+    //   ctx.stroke();
+    //
+    //   ctx.fillText(i.toString(), TEXT_MARGIN, i + TEXT_MARGIN);
+    // }
 
     ctx.restore();
   }

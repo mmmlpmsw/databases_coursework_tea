@@ -3,6 +3,7 @@ import Bootstrap from "$src/game/model/Bootstrap";
 import GameState from "$src/game/model/GameState";
 import MachineInstance from "$src/game/model/MachineInstance";
 import TeaInstance from "$src/game/model/TeaInstance";
+import CircuitBoardInstance from "$src/game/model/CircuitBoardInstance";
 
 export default function createGameStore(): Store<GameState> {
   return new Vuex.Store({
@@ -39,6 +40,18 @@ export default function createGameStore(): Store<GameState> {
         current.amount += instance.amount;
         state.game.teaInstances[instance.teaId] = current;
         state.user.money -= state.game.teas[instance.teaId].price * instance.amount;
+      },
+      addCircuitBoardInstance(state: GameState, instance: CircuitBoardInstance) {
+        let current = state.game.circuitBoardInstances[instance.modelId] || new CircuitBoardInstance(instance.modelId, 0);
+        current.amount += instance.amount;
+        state.game.circuitBoardInstances[instance.modelId] = current;
+      },
+      spendTeaInstance(state: GameState, instance: TeaInstance) {
+        state.game.teaInstances[instance.teaId].amount -= instance.amount;
+      },
+      setMachineInstanceCurrentRecipeId(state: GameState, data: { instanceId: number, recipeId: number, completionTime: number }) {
+        state.game.machineInstances[data.instanceId].currentRecipeId = data.recipeId;
+        state.game.machineInstances[data.instanceId].currentRecipeIdCompletionTime = data.completionTime;
       }
     }
   })

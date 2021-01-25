@@ -305,14 +305,20 @@ $$
     end
 $$ language plpgsql;
 
-create or replace function produce_circuit_board (_instance_id integer, _recipe_id integer) returns int as
+create or replace function produce_circuit_board (_user_id integer, _instance_id integer, _recipe_id integer) returns int as
 $$
     declare
         _recipe_time integer := 0;
     begin
         select work_time from machine_recipe where id = _recipe_id into _recipe_time;
         update machine_instance set current_recipe_id = _recipe_id where id = _instance_id;
-        update machine_instance set current_recipe_completion_time = now() + _recipe_time where id = _instance_id;
+        update machine_instance set current_recipe_completion_time = extract(epoch from now()) + _recipe_time where id = _instance_id;
+        update tea_instance i
+        set amount = i.amount - (select amount from machine_recipe_tea recipe_tea
+                                 where machine_recipe_id = _recipe_id and recipe_tea.tea_id = i.tea_id)
+        where user_id = _user_id and tea_id = any(
+            select tea_id from machine_recipe_tea where machine_recipe_id = _recipe_id
+        );
         return 0;
     end;
 $$ language plpgsql;

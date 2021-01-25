@@ -127,6 +127,9 @@
         if (index !== -1)
           this.areaThings.splice(index, 1);
       },
+      getAreaThings() {
+        return this.areaThings;
+      },
       onRequestAreaThingMovingStart(areaThing) {
         // Workaround
         setTimeout(() => {

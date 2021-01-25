@@ -14,12 +14,15 @@ import java.util.stream.Collectors
 class MachineInstanceOrmService @Autowired constructor(
         private val machineInstanceRepository: MachineInstanceRepository,
         private val machineInstanceEntityMapper: MachineInstanceEntityMapper,
+        private val circuitBoardInstanceOrmService: CircuitBoardInstanceOrmService,
         private val teaInstanceOrmService: TeaInstanceOrmService
 ) {
     fun getAllByUser(userId: Int) =
         machineInstanceRepository
             .findAllByUserId(userId)
             .map(machineInstanceEntityMapper::fromEntity)
+
+    fun getById(id: Int) = machineInstanceEntityMapper.fromEntity(machineInstanceRepository.findById(id).get())
 
     fun add(instance: MachineInstance, userId: Int): MachineInstanceEntity =
         machineInstanceRepository.save(machineInstanceEntityMapper.toEntity(instance, userId))
@@ -29,6 +32,20 @@ class MachineInstanceOrmService @Autowired constructor(
 
     fun removeInstance(instanceId: Int) {
         machineInstanceRepository.deleteById(instanceId)
+    }
+
+    fun updateState(userId: Int, instanceId: Int) {
+        val instance = machineInstanceRepository.findById(instanceId).orElseThrow { ServiceException("no_such_instance") }
+        if (instance.currentRecipe != null && instance.currentRecipeCompletionTime!! < System.currentTimeMillis()/1000) {
+            circuitBoardInstanceOrmService.addInstance(
+                userId,
+                instance.currentRecipe!!.machineId!!,
+                instance.currentRecipe!!.circuitBoardAmount!!
+            )
+            instance.currentRecipe = null
+            instance.currentRecipeCompletionTime = null
+            machineInstanceRepository.save(instance)
+        }
     }
 
     fun buyMachine(userId: Int, machineId: Int, areaX: Int, areaY: Int): MachineInstance {

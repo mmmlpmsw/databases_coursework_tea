@@ -35,7 +35,7 @@
             <div class="recipe" v-for="recipe in selectedItem.recipes" :key="recipe.id">
               <div class="recipe_body">
                 <div class="recipe_ingredients">
-                  <bubble-hint-tea-icon class="recipe_ingredient" v-for="(ingredient, amount) in recipe.teas" :key="ingredient.id" :id="ingredient" :amount="amount"/>
+                  <bubble-hint-tea-icon class="recipe_ingredient" v-for="(amount, ingredient) in recipe.teas" :key="ingredient.id" :id="ingredient" :amount="amount"/>
                 </div>
                 <div class="recipe_arrow">
                   <img class="recipe_arrow_icon" src="assets/image/game/shop/right_arrow.svg" alt="Right arrow icon">
@@ -108,13 +108,16 @@
         return seconds => {
           let minutes = Math.floor(seconds/60);
           let hours = Math.floor(minutes/60);
-          let result = seconds%60 + 'с';
+
+          let result = '';
+          if (seconds !== 0)
+            result = Math.floor(seconds%60) + 'с';
 
           if (minutes !== 0)
-            result = minutes%60 + 'м ';
+            result = minutes%60 + 'м ' + result;
 
           if (hours !== 0)
-            result = hours + 'ч ';
+            result = hours + 'ч ' + result;
 
           return result
         }
@@ -278,6 +281,7 @@
       display: flex;
       align-items: center;
       flex-direction: column;
+      flex: 2;
     }
 
     .recipe_ingredient {
@@ -287,6 +291,7 @@
 
     .recipe_arrow {
       display: flex;
+      flex: 1;
     }
 
     .recipe_arrow_icon {
@@ -294,6 +299,7 @@
     }
 
     .recipe_result {
+      flex: 2;
       padding: 5px;
       display: flex;
       align-items: center;

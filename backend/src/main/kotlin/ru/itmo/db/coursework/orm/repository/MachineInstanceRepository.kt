@@ -26,6 +26,8 @@ interface MachineInstanceRepository: CrudRepository<MachineInstanceEntity, Int> 
      */
     fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Int
 
+
+
     @Procedure(procedureName = "produce_circuit_board")
     fun produceCircuitBoardInstance(userId: Int, instanceId: Int, recipeId: Int): Int
 }

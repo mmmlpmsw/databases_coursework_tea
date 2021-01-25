@@ -9,10 +9,10 @@ import MachineInstance from "$src/game/model/MachineInstance";
 
 export default class MachineInstanceDtoMapper {
   public static fromDto(dto: MachineInstanceDto) {
-    return new MachineInstance(dto.id, dto.machine_id, dto.area_x, dto.area_y, dto.current_recipe_id, new Date(dto.current_recipe_completion_time))
+    return new MachineInstance(dto.id, dto.machine_id, dto.area_x, dto.area_y, dto.current_recipe_id, dto.current_recipe_completion_time)
   }
 
   public static toDto(model: MachineInstance) {
-    return new MachineInstanceDto(model.id, model.machineId, model.areaX, model.areaY, model.currentRecipeId, model.currentRecipeIdCompletionTime.getDate())
+    return new MachineInstanceDto(model.id, model.machineId, model.areaX, model.areaY, model.currentRecipeId, model.currentRecipeIdCompletionTime)
   }
 }

@@ -47,6 +47,10 @@
   import BuyMachineRequestDto from "$src/api/dto/request/BuyMachineRequestDto";
   import MachineRecipesDialog from "$src/components/dialogs/MachineRecipesDialog";
   import TeaShopDialog from "$src/components/dialogs/TeaShopDialog";
+  import MachineProduceRequestDto from "$src/api/dto/request/MachineProduceRequestDto";
+  import TeaInstance from "$src/game/model/TeaInstance";
+  import CircuitBoardInstance from "$src/game/model/CircuitBoardInstance";
+  import MachineUpdateStateRequestDto from "$src/api/dto/request/MachineUpdateStateRequestDto";
 
   export default {
     data: function() {
@@ -132,11 +136,47 @@
           }
         );
       },
-      onMachineRecipeStartRequest(instanceId, recipeId) {
-
+      onMachineRecipeStartRequest(instanceId, recipe) {
+        this.$api.post(
+          '/machine/produce',
+          new MachineProduceRequestDto(instanceId, recipe.id),
+          (response) => {
+            this.$store.commit('setMachineInstanceCurrentRecipeId', {
+              instanceId, recipeId: recipe.id, completionTime: response.completion_time
+            });
+            for (let teaId in recipe.teas)
+              this.$store.commit('spendTeaInstance', new TeaInstance(teaId, recipe.teas[teaId]));
+          },
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+          }
+        )
+      },
+      onMachineStateUpdateRequest(instanceId, circuitBoardModelId, amount) {
+        this.$api.post(
+          '/machine/update',
+          new MachineUpdateStateRequestDto(instanceId),
+          () => this.$store.commit('addCircuitBoardInstance', new CircuitBoardInstance(circuitBoardModelId, amount)),
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+          }
+        );
       },
       render() {
         this.eventBus.$emit('render');
+        let things = this.renderer.getAreaThings();
+        for (let thing of things) {
+          if (thing.instance && thing.instance.currentRecipeId && thing.instance.currentRecipeIdCompletionTime < Date.now()/1000) {
+            this.onMachineStateUpdateRequest(thing.instance.id, thing.instance.machineId, this.$store.state.game.machines[thing.instance.machineId].recipes[thing.instance.currentRecipeId].circuitBoardAmount)
+            this.$store.commit('setMachineInstanceCurrentRecipeId', {
+              instanceId: thing.instance.id,
+              recipeId: null,
+              completionTime: null
+            });
+          }
+        }
         if (!this.dialogMode)
           window.requestAnimationFrame(this.render);
         else

@@ -7,7 +7,7 @@ import * as Vue from "vue/types/umd";
 import MachineInstance from "$src/game/model/MachineInstance";
 
 export default class AreaThing extends Interactive implements Renderable {
-  protected static AREA_TRANSFORMATION = new DOMMatrix()
+  public static AREA_TRANSFORMATION = new DOMMatrix()
     .scale(1, 0.5)
     .rotate(45);
 

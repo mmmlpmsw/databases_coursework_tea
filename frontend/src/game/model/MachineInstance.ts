@@ -5,6 +5,6 @@ export default class MachineInstance {
     public areaX: number,
     public areaY: number,
     public currentRecipeId: number,
-    public currentRecipeIdCompletionTime: Date
+    public currentRecipeIdCompletionTime: number
   ) {}
 }

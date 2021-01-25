@@ -21,6 +21,31 @@ let STATIC_IMAGE_RENDERER_GENERATOR_GENERATOR = (imageSrc, xOffset, yOffset) => 
       let y = thisRef.y + thisRef.height + yOffset - image.height*scale;
       context.drawImage(image, x, y, image.width*scale, image.height*scale);
       context.restore();
+
+      // todo
+      if (thisRef.instance?.currentRecipeIdCompletionTime) {
+        context.fillStyle = 'white';
+        context.strokeStyle = 'black';
+        context.font = '18px sans-serif';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+
+        let seconds = thisRef.instance.currentRecipeIdCompletionTime - Date.now()/1000;
+        let minutes = Math.floor(seconds/60);
+        let hours = Math.floor(minutes/60);
+
+        let text = '';
+        if (seconds !== 0)
+          text = Math.floor(seconds%60).toString();
+        if (minutes !== 0)
+          text = minutes%60 + ':' + text;
+        if (hours !== 0)
+          text = hours + ':' + text;
+
+        let textPos = thisRef.inGameCenter.matrixTransform(AreaThing.AREA_TRANSFORMATION);
+        context.strokeText(text, textPos.x, textPos.y);
+        context.fillText(text, textPos.x, textPos.y);
+      }
     }
   }
 };
@@ -55,6 +80,30 @@ let ANIMATED_IMAGE_RENDERER_GENERATOR_GENERATOR = (imageSources, xOffset, yOffse
         normalizedAnimationPosition = 0;
         srcIdx = (srcIdx + 1) % images.length;
         dstIdx = (dstIdx + 1) % images.length;
+      }
+      // todo
+      if (thisRef.instance?.currentRecipeIdCompletionTime) {
+        context.fillStyle = 'white';
+        context.strokeStyle = 'black';
+        context.font = '18px sans-serif';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+
+        let seconds = thisRef.instance.currentRecipeIdCompletionTime - Date.now()/1000;
+        let minutes = Math.floor(seconds/60);
+        let hours = Math.floor(minutes/60);
+
+        let text = '';
+        if (seconds !== 0)
+          text = Math.floor(seconds%60).toString();
+        if (minutes !== 0)
+          text = minutes%60 + ':' + text;
+        if (hours !== 0)
+          text = hours + ':' + text;
+
+        let textPos = thisRef.inGameCenter.matrixTransform(AreaThing.AREA_TRANSFORMATION);
+        context.strokeText(text, textPos.x, textPos.y);
+        context.fillText(text, textPos.x, textPos.y);
       }
     }
   }

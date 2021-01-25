@@ -13,4 +13,8 @@ class CircuitBoardInstanceOrmService @Autowired constructor(
     fun getAllByUser(userId: Int) =
         circuitBoardInstanceRepository.findAllByUserId(userId)
             .map(circuitBoardInstanceEntityMapper::fromEntity)
+
+    fun addInstance(userId: Int, modelId: Int, amount: Int) {
+        circuitBoardInstanceRepository.addInstance(userId, modelId, amount)
+    }
 }

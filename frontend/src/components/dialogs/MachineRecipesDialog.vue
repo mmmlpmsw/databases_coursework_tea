@@ -5,10 +5,10 @@
     </template>
     <template v-slot:container>
       <div class="recipes" v-if="machine">
-        <div class="recipe" v-for="recipe in machine.recipes" :key="recipe.id">
+        <div class="recipe" v-for="(recipe, idx) in machine.recipes" :key="recipe.id">
           <div class="recipe_body">
             <div class="recipe_ingredients">
-              <bubble-hint-tea-icon class="recipe_ingredient" v-for="(ingredient, amount) in recipe.teas" :key="ingredient.id" :id="ingredient" :amount="amount"/>
+              <bubble-hint-tea-icon class="recipe_ingredient" v-for="(amount, ingredient) in recipe.teas" :key="ingredient.id" :id="ingredient" :amount="amount"/>
             </div>
             <div class="recipe_arrow">
               <img class="recipe_arrow_icon" src="assets/image/game/shop/right_arrow.svg" alt="Right arrow icon">
@@ -28,11 +28,14 @@
             <div class="recipe_time">
               {{ recipeTimeCost(recipe.workTime) }}
             </div>
-            <div class="recipe_make" v-if="!instance.currentRecipeId">
-              <game-button green @click="onMakeRecipeRequest(recipe.id)">Произвести</game-button>
+            <div class="recipe_work_until" v-if="instance.currentRecipeId === recipe.id">
+              Выполнится через: {{ instance.currentRecipeIdCompletionTime ? recipeTimeCost(instance.currentRecipeIdCompletionTime - currentTimeMillisReactive/1000) : '-' }}
             </div>
-            <div class="recipe_work_until" v-else-if="instance.currentRecipeId === recipe.id">
-              Выполнится через: {{ recipeTimeCost(instance.currentRecipeIdCompletionTime.getDate() - currentTimeMillisReactive) }}
+            <div class="recipe_not_enough_teas" v-else-if="!canUserAffordRecipe(recipe)">
+              Не хватает ингредиентов
+            </div>
+            <div class="recipe_make" v-else-if="!instance.currentRecipeId">
+              <game-button green @click="onMakeRecipeRequest(recipe)">Произвести</game-button>
             </div>
             <div class="recipe_other_recipe_hint" v-else>
               Сейчас выполняется другой рецепт
@@ -81,13 +84,16 @@
         return seconds => {
           let minutes = Math.floor(seconds/60);
           let hours = Math.floor(minutes/60);
-          let result = seconds%60 + 'с';
+
+          let result = '';
+          if (seconds !== 0)
+            result = Math.floor(seconds%60) + 'с';
 
           if (minutes !== 0)
-            result = minutes%60 + 'м ';
+            result = minutes%60 + 'м ' + result;
 
           if (hours !== 0)
-            result = hours + 'ч ';
+            result = hours + 'ч ' + result;
 
           return result
         }
@@ -102,9 +108,16 @@
       onRender() {
         this.currentTimeMillisReactive = Date.now();
       },
-      onMakeRecipeRequest(recipeId) {
-        this.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_RECIPE_START, this.currentInstanceId, recipeId);
+      onMakeRecipeRequest(recipe) {
+        this.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_RECIPE_START, this.currentInstanceId, recipe);
         this.closeDialog();
+      },
+      canUserAffordRecipe(recipe) {
+        for (let teaId in recipe.teas) {
+          if (!this.$store.state.game.teaInstances[teaId] || this.$store.state.game.teaInstances[teaId]?.amount < recipe.teas[teaId])
+            return false;
+        }
+        return true;
       },
       closeDialog() {
         this.enabled = false;
@@ -187,6 +200,11 @@
         color: grey;
       }
     }
+  }
+
+  .recipe_other_recipe_hint,
+  .recipe_not_enough_teas {
+    color: grey;
   }
 
   .info_wrapper {
