@@ -5,13 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import ru.itmo.db.coursework.model.MachineInstance
 import ru.itmo.db.coursework.orm.entity.MachineInstanceEntity
+import ru.itmo.db.coursework.orm.entity.TeaEntity
 import ru.itmo.db.coursework.orm.mapping.MachineInstanceEntityMapper
+import ru.itmo.db.coursework.orm.mapping.TeaInstanceEntityMapper
 import ru.itmo.db.coursework.orm.repository.MachineInstanceRepository
+import ru.itmo.db.coursework.service.UserService
 
 @Service
 class MachineInstanceOrmService @Autowired constructor(
-    private val machineInstanceRepository: MachineInstanceRepository,
-    private val machineInstanceEntityMapper: MachineInstanceEntityMapper
+        private val machineInstanceRepository: MachineInstanceRepository,
+        private val machineInstanceEntityMapper: MachineInstanceEntityMapper,
+        private val teaInstanceOrmService: TeaInstanceOrmService,
+        private val userService: UserService
 ) {
     fun getAllByUser(userId: Int) =
         machineInstanceRepository
@@ -22,7 +27,7 @@ class MachineInstanceOrmService @Autowired constructor(
         machineInstanceRepository.save(machineInstanceEntityMapper.toEntity(instance, userId))
 
     fun addAll(instances: MutableIterable<MachineInstance>, userId: Int): MutableIterable<MachineInstanceEntity> =
-        machineInstanceRepository.saveAll(instances.map {machineInstanceEntityMapper.toEntity(it, userId)})
+        machineInstanceRepository.saveAll(instances.map { machineInstanceEntityMapper.toEntity(it, userId) })
 
     fun removeInstance(instanceId: Int) {
         machineInstanceRepository.deleteById(instanceId)
@@ -62,5 +67,32 @@ class MachineInstanceOrmService @Autowired constructor(
                                         topY in it.areaY!! until it.areaY!! + it.machine!!.sizeY!!
                             )
                 }
+    }
+
+    fun produceCircuitBoardInstance(instanceId: Int, recipeId: Int) {
+        val instance = machineInstanceRepository.findById(instanceId)
+                .orElseThrow{ ServiceException("no_such_machine_instance") }
+        if (instance.currentRecipe != null)
+            throw ServiceException("machine_in_use")
+        val recipeTeas = instance.machine!!.recipes.parallelStream()
+                .filter { data -> data.id == recipeId }
+                .findFirst().get().teas
+        recipeTeas.forEach { r ->
+            teaInstanceOrmService
+                    .getAllByUser(userService.getCurrentUser().id)
+                    .stream().map {
+                        data ->
+                        if (data.teaId ==  r.tea!!.id) {
+                            data.amount -= r.amount!!
+                            if (data.amount < 0)
+                                throw ServiceException("not_enough_tea")
+                            teaInstanceOrmService.save(data, userService.getCurrentUser().id)
+                        }
+
+                    }
+        }
+        machineInstanceRepository.produceCircuitBoardInstance(instanceId, recipeId)
+
+
     }
 }

@@ -8,4 +8,5 @@ import ru.itmo.db.coursework.orm.entity.id.TeaInstanceEntityId
 @Repository
 interface TeaInstanceRepository : CrudRepository<TeaInstanceEntity, TeaInstanceEntityId> {
     fun findAllByUserId(userId: Int): List<TeaInstanceEntity>
+//    fun save(teaInstanceEntity: TeaInstanceEntity): TeaInstanceEntity
 }

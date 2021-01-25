@@ -25,4 +25,8 @@ interface MachineInstanceRepository: CrudRepository<MachineInstanceEntity, Int> 
      * Returns id if succeed and -1 if failed
      */
     fun buyMachine(userId: Int, machineId: Int, x: Int, y: Int): Int
+
+    @Procedure(procedureName = "produce_circuit_board")
+    fun produceCircuitBoardInstance(instanceId: Int, recipeId: Int): Int
+
 }

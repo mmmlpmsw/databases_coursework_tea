@@ -302,6 +302,20 @@ $$
     end
 $$ language plpgsql;
 
+create or replace function produce_circuit_board (_instance_id integer, _recipe_id integer) returns int as
+$$
+    declare
+        _recipe_time integer := 0;
+        
+    begin
+        select work_time from machine_recipe where id = _recipe_id into _recipe_time;
+        update machine_instance set current_recipe_id = _recipe_id where id = _instance_id;
+        update machine_instance set current_recipe_completion_time = now() + _recipe_time where id = _instance_id;
+        return 0;
+    end;
+$$ language plpgsql;
+
+
 create or replace function sell_user_circuit_board_instance (_user_id integer, _model_id integer,
                                         _amount integer)
 returns void as
