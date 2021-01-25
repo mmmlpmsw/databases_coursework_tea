@@ -176,14 +176,6 @@ $$
     end
 $$ language plpgsql;
 
-create or replace function insert_user_tea_instance (_user_id integer, _tea_id integer, _amount integer)
-returns void as
-$$
-    begin
-        insert into tea_instance (user_id, tea_id, amount) values (_user_id, _tea_id, _amount);
-    end
-$$ language plpgsql;
-
 create or replace function _trigger_delete_user_tea_instance() returns trigger as $$
 begin
     if new.amount = 0 then
@@ -204,10 +196,16 @@ $$
         money_amount integer := 0;
         tea_price bigint := 0;
     begin
+        if _amount <= 0 then
+            return false;
+        end if;
         select money from "user" where id = _user_id into money_amount;
         select price from tea where id = _tea_id into tea_price;
         if (money_amount - tea_price * _amount >= 0) then
-            perform insert_user_tea_instance(_user_id, _tea_id, _amount);
+            if exists(select * from tea_instance where user_id = _user_id and tea_id = _tea_id) then
+                update tea_instance set amount = amount - _amount where user_id = _user_id and tea_id = _tea_id;
+            end if;
+            insert into tea_instance (user_id, tea_id, amount) values (_user_id, _tea_id, _amount);
             update "user" set money = money_amount - tea_price * _amount where id = _user_id;
             return true;
         else
@@ -306,17 +304,10 @@ create or replace function produce_circuit_board (_instance_id integer, _recipe_
 $$
     declare
         _recipe_time integer := 0;
-        
     begin
         select work_time from machine_recipe where id = _recipe_id into _recipe_time;
         update machine_instance set current_recipe_id = _recipe_id where id = _instance_id;
         update machine_instance set current_recipe_completion_time = now() + _recipe_time where id = _instance_id;
-        update tea_instance i
-        set amount = i.amount - (select amount from machine_recipe_tea recipe_tea
-            where machine_recipe_id = _recipe_id and recipe_tea.tea_id = i.tea_id)
-        where user_id = _user_id and tea_id = any(
-            select tea_id from machine_recipe_tea where machine_recipe_id = _recipe_id
-        );
         return 0;
     end;
 $$ language plpgsql;
