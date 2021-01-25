@@ -239,6 +239,38 @@ $$
     end
 $$ language plpgsql;
 
+create or replace function check_coordinates(_user_id integer, left_x integer, top_y integer, _w integer, _h integer)
+returns boolean as
+$$
+    declare
+        i integer := 0;
+        right_x integer := left_x + _w;
+        bottom_y integer := top_y + _h;
+        machines_count integer := 0;
+        it machine_instance%ROWTYPE;
+        cur_model_width integer := 0;
+        cur_model_height integer := 0;
+    begin
+        select count(*) from circuit_board_instance where user_id = _user_id into machines_count;
+        if (machines_count = 0) then return true;
+        else
+            for i in 1 .. machines_count loop
+                select * into it from machine_instance where user_id = _user_id limit 1 offset i;
+                select size_x from machine where id = it.id into cur_model_width;
+                select size_y from machine where id = it.id into cur_model_height;
+                if (((it.area_x >= left_x and it.area_x <= right_x) or (left_x >= it.area_x and left_x <= it.area_x + cur_model_width))
+                       and
+                   ((it.area_y >= top_y and it.area_y <= bottom_y) or (top_y >= it.area_y and top_y <= it.area_y + cur_model_height)))
+                then
+                    return false;
+                else continue;
+                end if;
+            end loop;
+        return true;
+        end if;
+    end;
+$$ language plpgsql;
+
 create or replace function buy_machine (_user_id integer, _machine_id integer,
                                         _x integer, _y integer)
 returns integer as
@@ -247,17 +279,22 @@ $$
         money_amount integer := 0;
         machine_price bigint := 0;
         instance_id integer := 0;
+        check_coords boolean := false;
     begin
         select money from "user" where id = _user_id into money_amount;
         select price from machine where id = _machine_id into machine_price;
-        if (money_amount - machine_price >= 0) then
-            perform insert_playing_field_item(_user_id, _machine_id, _x, _y);
-            update "user" set money = money_amount - machine_price where id = _user_id;
-            select id from machine_instance where user_id = _user_id and machine_id = _machine_id and
-                                                  area_x = _x and area_y = _y into instance_id;
-            return instance_id;
+        perform check_coordinates(_user_id, _machine_id, _x, _y) into check_coords;
+        if (!check_coords) then return -1;
         else
-            return -1;
+            if (money_amount - machine_price >= 0) then
+                perform insert_playing_field_item(_user_id, _machine_id, _x, _y);
+                update "user" set money = money_amount - machine_price where id = _user_id;
+                select id from machine_instance where user_id = _user_id and machine_id = _machine_id and
+                                                      area_x = _x and area_y = _y into instance_id;
+                return instance_id;
+            else
+                return -1;
+            end if;
         end if;
     end
 $$ language plpgsql;
