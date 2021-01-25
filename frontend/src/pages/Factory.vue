@@ -42,6 +42,7 @@
   import ShopDialog from "$src/components/dialogs/ShopDialog";
   import InventoryDialog from "$src/components/dialogs/InventoryDialog";
   import MachineAreaThingFactory, {MachineAreaThing} from "$src/game/area/thing/MachineAreaThingFactory";
+  import BuyMachineDto from "$src/api/dto/request/BuyMachineDto";
 
   export default {
     data: function() {
@@ -65,6 +66,7 @@
       startEventListening() {
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_REMOVAL_EVENT, this.onAreaThingRemovalRequest);
         this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onAreaThingMovingRequest);
+        this.eventBus.$on(EventBusConstants.MACHINE_PURCHASE_CONFIRMED, this.onMachinePurchaseConfirm);
       },
       onAreaThingRemovalRequest(areaThing) {
         let instance = areaThing.instance;  // Workaround
@@ -103,6 +105,25 @@
             // revert to old position
             areaThing.inGameX = instance.areaX;
             areaThing.inGameY = instance.areaY;
+          }
+        );
+      },
+      onMachinePurchaseConfirm(thing, machineId, inGameX, inGameY) {
+        this.renderer.addAreaThing(thing);
+        this.$store.commit('addUserMoney', -this.$store.state.game.machines[machineId].price);
+
+        this.$api.post(
+          '/area/buy',
+          new BuyMachineDto(machineId, inGameX, inGameY),
+          (response) => {
+            thing.instance = response;
+            this.$store.commit('addMachineInstance', response);
+          },
+          (error) => {
+            console.error("PANIC!"); // todo
+            console.error(error);
+            this.renderer.removeAreaThing(thing);
+            this.$store.commit('addUserMoney', this.$store.state.game.machines[machineId].price);
           }
         );
       },

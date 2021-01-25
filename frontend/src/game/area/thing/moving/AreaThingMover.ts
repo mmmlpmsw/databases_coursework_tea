@@ -13,6 +13,8 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
   private readonly transformation: DOMMatrix;
 
   private target: AreaThing = null;
+  private applyCallback = null;
+  private cancelCallback = null;
   private allAreaThings: AreaThing[];
   private eventBus: Vue;
 
@@ -28,19 +30,9 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
   private buttonsSpacing = 8;
   private buttonsTopMargin = 8;
 
-  private applyButton = new AreaThingMoverApplyButton(() => {
-    this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
-    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
-    this.target = null;
-  });
+  private applyButton = new AreaThingMoverApplyButton(() => this.onApplyClick());
 
-  private cancelButton = new AreaThingMoverCancelButton(() => {
-    this.target.inGameX = this.oldX;
-    this.target.inGameY = this.oldY;
-    this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
-    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
-    this.target = null;
-  });
+  private cancelButton = new AreaThingMoverCancelButton(() => this.onCancelClick());
 
   private buttons = [this.applyButton, this.cancelButton];
 
@@ -51,6 +43,7 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     this.transformation = inGameTransformation;
     this.bound = bound;
     this.buttons.forEach(b => this.addInteractive(b));
+    document.body.addEventListener('keydown', (e) => e.key === 'Escape' ? this.onCancelClick() : 0)
   }
 
   render(ctx: CanvasRenderingContext2D, idx: number) {
@@ -80,11 +73,45 @@ export default class AreaThingMover extends CompositeInteractive implements Rend
     ctx.restore();
   }
 
-  move(areaThing: AreaThing) {
+  move(areaThing: AreaThing, instantMoveOrigin: DOMPoint = null, applyFn: Function = null, cancelFn: Function = null) {
     this.target = areaThing;
     this.oldX = this.target.inGameX;
     this.oldY = this.target.inGameY;
+    this.applyCallback = applyFn;
+    this.cancelCallback = cancelFn;
+    if (instantMoveOrigin) {
+      this.draggingOrigin = instantMoveOrigin;
+      this.dragging = true;
+    }
     this.updateButtons();
+  }
+
+  private onApplyClick() {
+    if (!this.target) return;
+    if (this.applyCallback)
+      this.applyCallback.apply(null, this.target);
+    else {
+      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
+    }
+    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
+    this.target = null;
+    this.applyCallback = null;
+    this.cancelCallback = null;
+  }
+
+  private onCancelClick() {
+    if (!this.target) return;
+    if (this.cancelCallback)
+      this.cancelCallback.apply(null, this.target);
+    else {
+      this.target.inGameX = this.oldX;
+      this.target.inGameY = this.oldY;
+      this.eventBus.$emit(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.target);
+    }
+    this.target.cursor = AreaThingMover.CURSOR_DEFAULT;
+    this.target = null;
+    this.applyCallback = null;
+    this.cancelCallback = null;
   }
 
   processMouseDown(x: number, y: number): boolean {

@@ -68,6 +68,13 @@ export default class AreaThing extends Interactive implements Renderable {
     this.updateBounds();
   }
 
+  get inGameCenter(): DOMPoint {
+    return new DOMPoint(
+      this.inGameX + this.inGameSizeX/2,
+      this.inGameY + this.inGameSizeY/2
+    )
+  }
+
   processMouseMove(x: number, y: number) {
     let inGamePoint = new DOMPoint(x, y).matrixTransform(AreaThing.AREA_TRANSFORMATION.inverse());
     inGamePoint.x -= this.inGameX;

@@ -60,7 +60,7 @@
           </div>
         </div>
         <div class="item_info_bottom">
-          <game-button green class="item_info_buy_button" v-if="selectedItem.price <= $store.state.user.money">
+          <game-button green class="item_info_buy_button" v-if="selectedItem.price <= $store.state.user.money" @click="onBuyButtonClick">
             Приобрести за
 <!--            TODO отдельный компонент-->
             <div class="price">
@@ -128,6 +128,10 @@
       closeDialog() {
         this.enabled = false;
         this.eventBus.$emit(EventBusConstants.DIALOG_CLOSED);
+      },
+      onBuyButtonClick() {
+        this.closeDialog();
+        this.eventBus.$emit(EventBusConstants.REQUEST_MACHINE_PURCHASE_PLACEMENT, this.selectedItem.id);
       }
     },
     mounted() {

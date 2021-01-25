@@ -28,6 +28,14 @@ class MachineInstanceOrmService @Autowired constructor(
         machineInstanceRepository.deleteById(instanceId)
     }
 
+    fun buyMachine(userId: Int, machineId: Int, areaX: Int, areaY: Int): MachineInstance {
+        // Validation is in database routine
+        val result = machineInstanceRepository.buyMachine(userId, machineId, areaX, areaY)
+        if (result == -1)
+            throw ServiceException("machine_purchase_failed")
+        return machineInstanceEntityMapper.fromEntity(machineInstanceRepository.findById(result).get())
+    }
+
     fun setInstancePosition(machineInstanceId: Int, x: Int, y: Int) {
         val allEntities = machineInstanceRepository.findAll()
         val instance = machineInstanceRepository.findById(machineInstanceId)

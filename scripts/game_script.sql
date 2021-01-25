@@ -251,7 +251,7 @@ $$
         select money from "user" where id = _user_id into money_amount;
         select price from machine where id = _machine_id into machine_price;
         if (money_amount - machine_price >= 0) then
-            select insert_playing_field_item(_user_id, _machine_id, _x, _y);
+            perform insert_playing_field_item(_user_id, _machine_id, _x, _y);
             update "user" set money = money_amount - machine_price where id = _user_id;
             select id from machine_instance where user_id = _user_id and machine_id = _machine_id and
                                                   area_x = _x and area_y = _y into instance_id;

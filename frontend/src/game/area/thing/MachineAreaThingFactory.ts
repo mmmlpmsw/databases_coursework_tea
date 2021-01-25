@@ -2,14 +2,13 @@ import AreaThing from "$src/game/area/thing/AreaThing";
 import {Store} from "vuex";
 import GameState from "$src/game/model/GameState";
 import Machine from "$src/game/model/Machine";
-import MachineInstance from "$src/game/model/MachineInstance";
 
 function getAreaThingImageUrl(id, index) {
   return `assets/image/game/area/things/id${id}/${index}.png`;
 }
 
 let STATIC_IMAGE_RENDERER_GENERATOR_GENERATOR = (imageSrc, xOffset, yOffset) => {
-  return (thisRef: MachineAreaThing) => {
+  return (thisRef: AreaThing) => {
     let image = new Image();
     image.src = imageSrc;
     let superRender = thisRef.render;
@@ -26,7 +25,7 @@ let STATIC_IMAGE_RENDERER_GENERATOR_GENERATOR = (imageSrc, xOffset, yOffset) => 
 };
 
 let ANIMATED_IMAGE_RENDERER_GENERATOR_GENERATOR = (imageSources, xOffset, yOffset) => {
-  return (thisRef: MachineAreaThing) => {
+  return (thisRef: AreaThing) => {
     let images = [];
     for (let source of imageSources) {
       let img = new Image();
@@ -69,27 +68,21 @@ let RENDERER_GENERATOR_BY_MACHINE_ID: { [key:number]: (MachineAreaThing) => (Can
   6: STATIC_IMAGE_RENDERER_GENERATOR_GENERATOR(getAreaThingImageUrl(6, 0), 0, 0)
 };
 
-export class MachineAreaThing extends AreaThing {
-  private model: Machine;
-  constructor(private store: Store<GameState>, public instance: MachineInstance) {
-    super(
-      instance.areaX,
-      instance.areaY,
-      store.state.game.machines[instance.machineId].sizeX,
-      store.state.game.machines[instance.machineId].sizeY
-    );
-    this.model = store.state.game.machines[instance.machineId];
-  }
-}
-
 export default class MachineAreaThingFactory {
   public static createInstance(instanceId: number, store: Store<GameState>): AreaThing {
     let instance = store.state.game.machineInstances[instanceId];
     if (!instance)
       throw new Error(`Instance with id ${instanceId} not found`);
 
-    let thing = new MachineAreaThing(store, instance);
+    let machine = store.state.game.machines[instance.machineId];
+    let thing = new AreaThing(instance.areaX, instance.areaY, machine.sizeX, machine.sizeY);
     thing.render = RENDERER_GENERATOR_BY_MACHINE_ID[instance.machineId](thing);
+    return thing;
+  }
+
+  public static createAnonymousInstance(machine: Machine, areaX: number, areaY: number) {
+    let thing = new AreaThing(areaX, areaY, machine.sizeX, machine.sizeY);
+    thing.render = RENDERER_GENERATOR_BY_MACHINE_ID[machine.id](thing);
     return thing;
   }
 }

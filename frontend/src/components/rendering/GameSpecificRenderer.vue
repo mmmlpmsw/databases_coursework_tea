@@ -24,6 +24,8 @@
   import CloudsRenderer from "$src/game/environment/CloudsRenderer";
   import SwitchingInteractive from "$src/game/SwitchingInteractive";
   import AreaThingMover from "$src/game/area/thing/moving/AreaThingMover";
+  import EventBusConstants from "$src/util/EventBusConstants";
+  import MachineAreaThingFactory from "$src/game/area/thing/MachineAreaThingFactory";
 
   let inGameAreaTransformation = new DOMMatrix()
     .scale(1, 0.5)
@@ -107,6 +109,7 @@
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_CONTROLS_EVENT, this.onRequestAreaThingControls);
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_START_EVENT, this.onRequestAreaThingMovingStart);
       this.eventBus.$on(AreaThing.REQUEST_AREA_THING_MOVING_DONE_EVENT, this.onRequestAreaThingMovingDone);
+      this.eventBus.$on(EventBusConstants.REQUEST_MACHINE_PURCHASE_PLACEMENT, this.onRequestMachinePurchasePlacement);
     },
     methods: {
       addAreaThing(areaThing) {
@@ -132,7 +135,7 @@
           this.areaThingMover.move(areaThing);
         }, 0);
       },
-      onRequestAreaThingMovingDone(areaThing) {
+      onRequestAreaThingMovingDone() {
         this.switchableThingsInteractive.switch("default");
         this.sortAreaThings();
         this.thingsLayer.enabled = true;
@@ -146,6 +149,28 @@
         controls.hover = true; // Assuming mouse is on the controls object when areaThing is clicked
         this.areaHudLayer.addRenderable(controls);
         this.hudInteractive.addInteractive(controls);
+      },
+      onRequestMachinePurchasePlacement(machineId) {
+        // Workaround
+        setTimeout(() => {
+          this.switchableThingsInteractive.switch("mover");
+          let thing = MachineAreaThingFactory.createAnonymousInstance(this.$store.state.game.machines[machineId], 0, 0);
+          this.areaThingMover.move(
+            thing,
+            thing.inGameCenter,
+            () => {
+              this.switchableThingsInteractive.switch("default");
+              this.eventBus.$emit(
+                EventBusConstants.MACHINE_PURCHASE_CONFIRMED,
+                thing, machineId, thing.inGameX, thing.inGameY
+              )
+            },
+            this.onMachinePurchasePlacementCancelled
+          );
+        }, 0);
+      },
+      onMachinePurchasePlacementCancelled() {
+        this.switchableThingsInteractive.switch("default");
       },
       sortAreaThings() {
         this.thingsLayer.sort((a, b) => (a.inGameX*a.inGameX + a.inGameY*a.inGameY) - (b.inGameX*b.inGameX + b.inGameY*b.inGameY));

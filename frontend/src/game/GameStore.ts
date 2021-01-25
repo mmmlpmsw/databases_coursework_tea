@@ -1,6 +1,7 @@
 import Vuex, {Store} from "vuex";
 import Bootstrap from "$src/game/model/Bootstrap";
 import GameState from "$src/game/model/GameState";
+import MachineInstance from "$src/game/model/MachineInstance";
 
 export default function createGameStore(): Store<GameState> {
   return new Vuex.Store({
@@ -25,6 +26,12 @@ export default function createGameStore(): Store<GameState> {
       },
       removeMachineInstance(state: GameState, instanceId: number) {
         delete state.game.machineInstances[instanceId]
+      },
+      addUserMoney(state: GameState, amount: number) {
+        state.user.money += amount;
+      },
+      addMachineInstance(state: GameState, instance: MachineInstance) {
+        state.game.machineInstances[instance.id] = instance;
       }
     }
   })
